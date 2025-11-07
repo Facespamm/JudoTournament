@@ -4,7 +4,7 @@ import HomePage from '../components/View/HomePage/HomePage.vue'
 import Login from '../components/View/Authentication/Login/Login.vue'
 
 const routes = [
-{ path: '/', component: Login },
+{ path: '/Login', component: Login },
 { path: '/Home', component: HomePage },
 ]
 
