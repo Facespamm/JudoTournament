@@ -13,10 +13,12 @@
           <label class="form-title">Телефон</label>
           <input type="text" maxlength="11" placeholder="+7 (999) 999-9999">
           <label class="form-title">Пароль</label>
-          <input type="password" name="auth_password" required maxlength="50">
-          <button class="regis-button" type="submit">Зарегистрироватся</button><br>
+          <input type="password" name="auth_password" required maxlength="50" v-model="password">
+          <label class="form-title">Повторить Пароль</label>
+          <input type="password" name="auth_password" required maxlength="50" v-model="passwordConfirm">
+          <button @click="checkPasswordCorrect" class="regis-button" type="submit">Зарегистрироватся</button><br>
           <div class="login-button">
-            <p>Есть аккауннт: <a @click="RedirectToLogin()">Войти</a></p>
+            <p>Есть аккауннт, то войдите: <a @click="RedirectToLogin()">Войти</a></p>
           </div>
         </form>
       </div>
@@ -67,4 +69,19 @@ form input {
 
 <script setup lang="js">
 import {RedirectToLogin} from "@/router/redirect.js";
+import {ref} from "vue";
+
+let password = ref();
+let passwordConfirm = ref();
+
+//TODO
+//временная проверка
+function checkPasswordCorrect(){
+  if (password.value === password.value) {
+    console.log("Пароль правельный");
+  }
+  else{
+    console.log("Пароль не правельный");
+  }
+};
 </script>
