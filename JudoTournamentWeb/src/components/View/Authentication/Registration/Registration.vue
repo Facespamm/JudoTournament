@@ -83,5 +83,5 @@ function checkPasswordCorrect(){
   else{
     console.log("Пароль не правельный");
   }
-};
+}
 </script>
