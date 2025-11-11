@@ -22,7 +22,7 @@
 
 <style scoped>
 .auth-background {
-  background-image: url('@/assets/BackgroundAutorisation.png');
+  background-image: url('@/assets/Background.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
