@@ -8,7 +8,7 @@
           <input type="email" name="auth_login" required maxlength="50" placeholder="judoCoolName">
           <label class="form-title">Имя пользователя</label>
           <input type="text" name="auth_name" required maxlength="50" min="3" placeholder="Саша">
-          <label class="form-title">Электроная почта</label>
+          <label class="form-title">Электронная почта</label>
           <input type="email" name="auth_email" placeholder="example@example.com">
           <label class="form-title">Телефон</label>
           <input type="text" maxlength="11" placeholder="+7 (999) 999-9999">
@@ -78,10 +78,10 @@ let passwordConfirm = ref();
 //временная проверка
 function checkPasswordCorrect(){
   if (password.value === password.value) {
-    console.log("Пароль правельный");
+    console.log("Пароль правильный");
   }
   else{
-    console.log("Пароль не правельный");
+    console.log("Пароль не правильный");
   }
 }
 </script>
