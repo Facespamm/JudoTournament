@@ -1,51 +1,309 @@
 <template>
-  <div class="auth-background">
-    <div class="auth-form_container">
-      <div class="auth-form_container_content">
-        <h1> Добро поажловать в <i>Judo tournament</i></h1>
-        <p class="form_auth_block_header_text"> Авторизация</p>
-        <form class="auth-form_style" action="#" method="post"><label>Логин</label>
-          <input type="text" name="auth_name" placeholder="Введите логин" required>
-          <label>Пароль</label>
-          <input type="password" name="auth_password" placeholder="Введите пароль" required>
-          <button class="auth-form_button_submit" name="`auth_submit" type="submit"> Войти</button>
-          <p class="auth-form_button">Нет аккауннта?Тогда зарегистрируйтесь</p>
-          <button @click="RedirectToRegistration" type="button" class="auth-form_button" name="auth_button_redirect">Регистрация</button>
+  <div class="auth-background" :style="{ backgroundImage: `url(${BackgroundImage})` }">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h1 class="title-login">
+            <img :src="TrophyIcon" alt="Trophy" class="header-icon" />
+            Вход
+          </h1>
+          <p class="subtitle-login">
+            <span class="judo">Judo</span><span class="stream">-Stream</span>
+          </p>
+          <p class="welcome-text">Добро пожаловать!</p>
+        </div>
+
+        <form @submit.prevent="handleLogin" class="auth-form">
+          <div class="input-group">
+            <label for="login" class="form-title">Логин</label>
+            <input
+                id="login"
+                v-model="form.login"
+                type="text"
+                placeholder="Введите логин"
+                required
+                autocomplete="username"
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="password" class="form-title">Пароль</label>
+            <input
+                id="password"
+                v-model="form.password"
+                type="password"
+                placeholder="Введите пароль"
+                required
+                autocomplete="current-password"
+            />
+          </div>
+
+          <button type="submit" class="btn-primary">
+            Войти
+          </button>
         </form>
+
+        <div class="auth-footer">
+          <p>Нет аккаунта?</p>
+          <button @click="RedirectToRegistration" class="btn-link">
+            Зарегистрироваться
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import TrophyIcon from '@/components/icons/CupIcon.png'
+import BackgroundImage from '@/assets/Background.png'
+
+const router = useRouter()
+
+const form = ref({
+  login: '',
+  password: ''
+})
+
+const handleLogin = () => {
+  if (form.value.login && form.value.password) {
+    console.log('Логин:', form.value)
+    // router.push('/home')
+  }
+}
+
+const RedirectToRegistration = () => {
+  router.push({ name: 'registration' })
+}
+</script>
+
 <style scoped>
+/* === ФОН === */
 .auth-background {
-  background-image: url('@/assets/Background.jpg');
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
   height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem 1rem;
+  overflow: hidden;
+}
+
+/* === КОНТЕЙНЕР === */
+.auth-container {
   width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
+  max-width: 420px;
+  margin-left: 5%;
 }
 
-.form_auth_block_header_text {
-  color: black;
+/* === КАРТОЧКА === */
+.auth-card {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(200, 155, 60, 0.2);
+  padding: 2.5rem 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.5s ease-out;
 }
 
-.auth-form_container_content label {
-  color: black;
+/* === ЗАГОЛОВОК === */
+.auth-header {
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
-.auth-form_container_content H1 {
-  color: black;
+.title-login {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  margin: 0 0 0.6rem 0;
 }
 
-.auth-form_container_content p {
-  color: black;
+.subtitle-login {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 0.8rem 0;
+  letter-spacing: 0.5px;
+}
+
+.judo {
+  color: #1a1a1a;
+}
+
+.stream {
+  color: #c89b3c;
+}
+
+.welcome-text {
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.header-icon {
+  width: 36px;
+  height: 36px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* === ФОРМА === */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-title {
+  color: #333;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.input-group input {
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #e8e8e8;
+  border-radius: 12px;
+  background: #fafafa;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.input-group input::placeholder {
+  color: #999;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #c89b3c;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(200, 155, 60, 0.1);
+  transform: translateY(-1px);
+}
+
+/* === КНОПКИ === */
+.btn-primary {
+  margin-top: 0.5rem;
+  padding: 0.9rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #c89b3c, #e0b456);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(200, 155, 60, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(200, 155, 60, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* === ФУТЕР === */
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid #e8e8e8;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.auth-footer p {
+  margin: 0 0 0.5rem;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #c89b3c;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+}
+
+.btn-link:hover {
+  color: #b8872c;
+  background: rgba(200, 155, 60, 0.1);
+}
+
+/* === АНИМАЦИЯ === */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === АДАПТИВ === */
+@media (max-width: 992px) {
+  .auth-container {
+    margin-left: 3%;
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-background {
+    padding: 1.5rem 1rem;
+  }
+
+  .auth-container {
+    margin-left: 0;
+    max-width: 100%;
+    justify-content: center;
+    display: flex;
+  }
+
+  .auth-card {
+    padding: 2rem 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-background {
+    padding: 1rem;
+  }
+
+  .auth-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .title-login {
+    font-size: 1.9rem;
+  }
+
+  .subtitle-login {
+    font-size: 1.2rem;
+  }
+
+  .header-icon {
+    width: 30px;
+    height: 30px;
+  }
 }
 </style>
-<script setup lang="js">
-import {RedirectToRegistration} from "@/router/redirect.js";
-</script>

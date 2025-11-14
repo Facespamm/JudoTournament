@@ -12,8 +12,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@primeuix/themes": "^1.2.5",
     "@primevue/themes": "^4.4.1",
+    "oh-vue-icons": "^1.0.0-rc3",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primevue": "^4.4.1",
