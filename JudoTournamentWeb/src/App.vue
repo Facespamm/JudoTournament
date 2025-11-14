@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <!-- Сайдбар: скрыт на login и registration -->
+    <Header v-if="route.meta.hideSidebar !== true" />
     <Sidebar v-if="route.meta.hideSidebar !== true" />
     <div class="main-content" :class="{ 'with-sidebar': route.meta.hideSidebar !== true }">
       <router-view />
@@ -11,6 +12,7 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import Sidebar from "@/components/Sidebar/Sidebar.vue"
+import Header from "@/components/Header/Header.vue"
 
 const route = useRoute()
 </script>
