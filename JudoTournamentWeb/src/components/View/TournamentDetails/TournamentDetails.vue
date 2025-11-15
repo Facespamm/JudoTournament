@@ -83,6 +83,11 @@
                   v-for="(match, matchIndex) in round.matches"
                   :key="matchIndex"
                   class="match-card"
+                  :class="{
+                    'status-scheduled': match.status === 'SCHEDULED',
+                    'status-live': match.status === 'LIVE',
+                    'status-completed': match.status === 'COMPLETED'
+                  }"
               >
                 <div class="team-slot" :class="{ winner: match.winner === 1 }">
                   <span class="team-name">{{ match.team1 || 'TBD' }}</span>
@@ -91,7 +96,7 @@
                       type="number"
                       min="0"
                       class="score-input"
-                      @input="updateWinner(match)"
+                      @input="updateMatch(roundIndex, matchIndex)"
                   />
                 </div>
                 <div class="vs-divider">VS</div>
@@ -102,7 +107,7 @@
                       type="number"
                       min="0"
                       class="score-input"
-                      @input="updateWinner(match)"
+                      @input="updateMatch(roundIndex, matchIndex)"
                   />
                 </div>
               </div>
@@ -160,15 +165,12 @@ const generateBracket = () => {
     return
   }
 
-  // Дополняем до нужного количества
   while (names.length < participantsCount.value) {
     names.push(`Участник ${names.length + 1}`)
   }
 
-  // Обрезаем если больше
   const teamsList = names.slice(0, participantsCount.value)
 
-  // Создаём раунды
   const rounds = []
   let currentTeams = [...teamsList]
 
@@ -184,7 +186,8 @@ const generateBracket = () => {
         team2: currentTeams[i + 1] || 'TBD',
         score1: 0,
         score2: 0,
-        winner: null
+        winner: null,
+        status: 'SCHEDULED'
       })
     }
 
@@ -197,13 +200,38 @@ const generateBracket = () => {
   showModal.value = false
 }
 
-const updateWinner = (match) => {
+const updateMatch = (roundIdx, matchIdx) => {
+  const match = bracketData.value[roundIdx].matches[matchIdx]
+
+  if (match.score1 > 0 || match.score2 > 0) {
+    match.status = 'LIVE'
+  } else {
+    match.status = 'SCHEDULED'
+  }
+
   if (match.score1 > match.score2) {
     match.winner = 1
   } else if (match.score2 > match.score1) {
     match.winner = 2
   } else {
     match.winner = null
+  }
+
+  if (match.winner && roundIdx < bracketData.value.length - 1) {
+    const winnerName = match.winner === 1 ? match.team1 : match.team2
+    const nextRound = bracketData.value[roundIdx + 1]
+    const nextMatchIdx = Math.floor(matchIdx / 2)
+    const slot = matchIdx % 2 === 0 ? 'team1' : 'team2'
+    nextRound.matches[nextMatchIdx][slot] = winnerName
+
+    match.status = 'COMPLETED'
+  }
+
+  if (roundIdx < bracketData.value.length - 1) {
+    const nextMatch = bracketData.value[roundIdx + 1].matches[Math.floor(matchIdx / 2)]
+    if (nextMatch.team1 && nextMatch.team2 && nextMatch.team1 !== 'TBD' && nextMatch.team2 !== 'TBD') {
+      nextMatch.status = 'SCHEDULED'
+    }
   }
 }
 
@@ -217,7 +245,8 @@ const resetBracket = () => {
 
 <style scoped>
 .tournament-details {
-  max-width: 1600px;
+  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
   padding: 90px 2rem 4rem;
   background: #ffffff;
@@ -236,6 +265,7 @@ const resetBracket = () => {
   margin-bottom: 1.5rem;
   transition: all 0.3s ease;
   text-align: center;
+  width: 100%;
 }
 
 .tournament-info:hover {
@@ -279,6 +309,7 @@ const resetBracket = () => {
   margin-bottom: 1.5rem;
   text-align: center;
   transition: all 0.3s ease;
+  width: 100%;
 }
 
 .scoreboard-section:hover {
@@ -326,6 +357,7 @@ const resetBracket = () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   position: relative;
   aspect-ratio: 16 / 9;
+  width: 100%;
 }
 
 .video-placeholder {
@@ -519,19 +551,23 @@ const resetBracket = () => {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   overflow-x: auto;
+  width: 100%;
 }
 
 .bracket {
   display: flex;
   gap: 2rem;
   min-width: fit-content;
-  padding: 0.75rem;
+  width: 100%;
+  justify-content: space-between;
+  padding: 0.75rem 0;
 }
 
 .bracket-round {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  flex: 1;
 }
 
 .bracket-round h3 {
@@ -560,8 +596,22 @@ const resetBracket = () => {
   transition: all 0.3s ease;
 }
 
-.match-card:hover {
+.match-card.status-scheduled {
+  border-color: #ccc;
+  background: #f5f5f5;
+}
+
+.match-card.status-live {
+  border-color: #4CAF50;
+  background: #e8f5e9;
+}
+
+.match-card.status-completed {
   border-color: #c89b3c;
+  background: #fff8e1;
+}
+
+.match-card:hover {
   box-shadow: 0 3px 10px rgba(200, 155, 60, 0.15);
 }
 
@@ -657,6 +707,7 @@ const resetBracket = () => {
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.25rem;
   padding: 0 0.5rem;
+  width: 100%;
 }
 
 .participant-card {
@@ -689,42 +740,24 @@ const resetBracket = () => {
 }
 
 /* АДАПТИВ */
+@media (max-width: 1600px) {
+  .tournament-details { padding: 90px 1.5rem 4rem; }
+}
+@media (max-width: 1200px) {
+  .tournament-details { padding: 80px 1rem 3rem; }
+  .bracket { gap: 1.5rem; }
+}
 @media (max-width: 992px) {
-  .tournament-details {
-    padding: 80px 1.5rem 3rem;
-  }
-
-  .participants-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  }
+  .tournament-details { padding: 75px 0.75rem 2rem; }
+  .bracket { gap: 1rem; }
+  .bracket-header { flex-direction: column; gap: 1rem; }
 }
-
 @media (max-width: 768px) {
-  .tournament-details {
-    padding: 75px 1rem 2rem;
-  }
-
-  .bracket-header {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .participants-grid {
-    grid-template-columns: 1fr;
-  }
+  .tournament-details { padding: 70px 0.5rem 1.5rem; }
+  .participants-grid { grid-template-columns: 1fr; }
 }
-
 @media (max-width: 480px) {
-  .tournament-details {
-    padding: 70px 0.75rem 1.5rem;
-  }
-
-  .match-card {
-    min-width: 180px;
-  }
-
-  .team-name {
-    font-size: 0.85rem;
-  }
+  .tournament-details { padding: 65px 0.25rem 1rem; }
+  .match-card { min-width: 160px; }
 }
 </style>
