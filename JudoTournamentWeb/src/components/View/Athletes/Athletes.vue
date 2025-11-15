@@ -33,13 +33,20 @@
           placeholder="Поиск спортсменов"
           class="search-input"
       />
+
+      <button
+          type="button"
+          class="register-button"
+          @click="$router.push('/registrationathletes')"
+      >
+        Зарегистрировать участника
+      </button>
     </div>
 
     <!-- СПИСОК -->
     <div class="judo_form-athletes_info">
       <section class="judo-list">
         <h2>Лучшие дзюдоисты</h2>
-
         <div class="cards-container">
           <article class="judo-card">
             <div class="rank-badge">#1</div>
@@ -52,7 +59,6 @@
               </div>
             </div>
           </article>
-
           <article class="judo-card">
             <div class="rank-badge">#2</div>
             <div class="judo_card_info">
@@ -64,7 +70,6 @@
               </div>
             </div>
           </article>
-
           <article class="judo-card">
             <div class="rank-badge">#3</div>
             <div class="judo_card_info">
@@ -76,7 +81,6 @@
               </div>
             </div>
           </article>
-
           <article class="judo-card">
             <div class="rank-badge">#4</div>
             <div class="judo_card_info">
