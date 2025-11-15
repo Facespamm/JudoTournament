@@ -297,7 +297,13 @@
     display: flex;
     flex-direction: column;
 }
-
+.judo-tournament-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.judo-tournament-card:hover {
+    transform: scale(1.02);
+}
 .form-group label {
     font-size: 0.95rem;
     font-weight: 500;
