@@ -7,6 +7,7 @@ import Registration from "@/components/View/Authentication/Registration/Registra
 import Athletes from "../components/View/Athletes/Athletes.vue"
 import Tournament from "@/components/View/Tournaments/Tournament.vue"
 import RegistrationAthletes from "@/components/View/RegistrationAthletes/RegistrationAthletes.vue";
+import TournamentDetails from "@/components/View/TournamentDetails/TournamentDetails.vue";
 
 const routes = [
     { path: '/', redirect: '/home' },
@@ -42,6 +43,11 @@ const routes = [
         path: '/registrationathletes',
         name: 'registrationathletes',
         component: RegistrationAthletes
+    },
+    {
+        path: '/tournamentdetails',
+        name: 'tournamentdetails',
+        component: TournamentDetails,
     },
 ]
 

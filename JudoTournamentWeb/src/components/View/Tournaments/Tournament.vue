@@ -20,23 +20,15 @@
         <option value="2024">2024</option>
         <option value="2023">2023</option>
       </select>
-      <input
-          type="search"
-          name="tournament_search"
-          placeholder="Поиск турниров"
-          class="search-input"
-      />
-      <button class="judo-tournament_button_create" @click="openCreateModal">
-        Создать турнир
-      </button>
+      <input type="search" name="tournament_search" placeholder="Поиск турниров" class="search-input" />
+      <button class="judo-tournament_button_create" @click="openCreateModal"> Создать турнир </button>
     </div>
-
     <!-- СПИСОК ТУРНИРОВ -->
     <div class="judo-tournament_info">
       <section class="judo-tournament-list">
         <h2>Ближайшие турниры</h2>
         <div class="tournament-cards-container">
-          <article class="judo-tournament-card">
+          <article class="judo-tournament-card" @click="navigateToDetails('champ-kz-cadets-2025')">
             <div class="judo-tournament_card_info">
               <span class="tournament-date-badge">17 марта 2025</span>
               <h3 class="judo-tournament_card_name">Чемпионат Казахстана среди кадетов</h3>
@@ -48,7 +40,7 @@
               </div>
             </div>
           </article>
-          <article class="judo-tournament-card featured">
+          <article class="judo-tournament-card featured" @click="navigateToDetails('grand-prix-kz-2025')">
             <div class="featured-badge">Главный турнир</div>
             <div class="judo-tournament_card_info">
               <span class="tournament-date-badge">10-12 мая 2025</span>
@@ -64,14 +56,10 @@
         </div>
       </section>
     </div>
-
     <!-- КНОПКА ЗАГРУЗИТЬ ЕЩЁ -->
     <div class="judo-tournament_button_pagination">
-      <button type="button" class="judo-tournament_button_pagination_next">
-        Показать ещё турниры
-      </button>
+      <button type="button" class="judo-tournament_button_pagination_next"> Показать ещё турниры </button>
     </div>
-
     <!-- МОДАЛЬНОЕ ОКНО -->
     <div v-if="isCreateModalOpen" class="modal-overlay">
       <div class="modal-content">
@@ -80,130 +68,62 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="name">Название турнира</label>
-              <input
-                  v-model="form.name"
-                  type="text"
-                  id="name"
-                  placeholder="Введите название"
-                  required
-              />
+              <input v-model="form.name" type="text" id="name" placeholder="Введите название" required />
               <span v-if="errors.name" class="error">{{ errors.name }}</span>
             </div>
             <div class="form-group">
               <label for="description">Описание</label>
-              <textarea
-                  v-model="form.description"
-                  id="description"
-                  placeholder="Введите описание турнира"
-              ></textarea>
+              <textarea v-model="form.description" id="description" placeholder="Введите описание турнира"></textarea>
             </div>
             <div class="form-group">
               <label for="start_date">Дата начала</label>
-              <input
-                  v-model="form.start_date"
-                  type="date"
-                  id="start_date"
-                  required
-              />
+              <input v-model="form.start_date" type="date" id="start_date" required />
               <span v-if="errors.start_date" class="error">{{ errors.start_date }}</span>
             </div>
             <div class="form-group">
               <label for="end_date">Дата окончания</label>
-              <input
-                  v-model="form.end_date"
-                  type="date"
-                  id="end_date"
-                  required
-              />
+              <input v-model="form.end_date" type="date" id="end_date" required />
               <span v-if="errors.end_date" class="error">{{ errors.end_date }}</span>
             </div>
             <div class="form-group">
               <label for="venue">Место проведения</label>
-              <input
-                  v-model="form.venue"
-                  type="text"
-                  id="venue"
-                  placeholder="Введите место"
-                  required
-              />
+              <input v-model="form.venue" type="text" id="venue" placeholder="Введите место" required />
               <span v-if="errors.venue" class="error">{{ errors.venue }}</span>
             </div>
             <div class="form-group">
               <label for="city">Город</label>
-              <input
-                  v-model="form.city"
-                  type="text"
-                  id="city"
-                  placeholder="Введите город"
-              />
+              <input v-model="form.city" type="text" id="city" placeholder="Введите город" />
             </div>
             <div class="form-group">
-              <label for="country">Country</label>
-              <input
-                  v-model="form.country"
-                  type="text"
-                  id="country"
-                  placeholder="Введите страну"
-                  value="Казахстан"
-              />
+              <label for="country">Страна</label>
+              <input v-model="form.country" type="text" id="country" placeholder="Введите страну" value="Казахстан" />
             </div>
             <div class="form-group">
               <label for="tatami_count">Количество татами</label>
-              <input
-                  v-model.number="form.tatami_count"
-                  type="number"
-                  id="tatami_count"
-                  min="1"
-                  required
-              />
+              <input v-model.number="form.tatami_count" type="number" id="tatami_count" min="1" required />
               <span v-if="errors.tatami_count" class="error">{{ errors.tatami_count }}</span>
             </div>
             <div class="form-group">
               <label for="fight_duration">Длительность схватки (сек)</label>
-              <input
-                  v-model.number="form.fight_duration"
-                  type="number"
-                  id="fight_duration"
-                  min="60"
-                  required
-              />
+              <input v-model.number="form.fight_duration" type="number" id="fight_duration" min="60" required />
               <span v-if="errors.fight_duration" class="error">{{ errors.fight_duration }}</span>
             </div>
             <div class="form-group">
               <label for="golden_score_duration">Длительность золотого скора (сек)</label>
-              <input
-                  v-model.number="form.golden_score_duration"
-                  type="number"
-                  id="golden_score_duration"
-                  min="60"
-              />
+              <input v-model.number="form.golden_score_duration" type="number" id="golden_score_duration" min="60" />
             </div>
             <div class="form-group">
               <label for="organizer">Организатор</label>
-              <input
-                  v-model="form.organizer"
-                  type="text"
-                  id="organizer"
-                  placeholder="Введите организатора"
-              />
+              <input v-model="form.organizer" type="text" id="organizer" placeholder="Введите организатора" />
             </div>
             <div class="form-group">
               <label for="min_athletes_per_category">Мин. участников в категории</label>
-              <input
-                  v-model.number="form.min_athletes_per_category"
-                  type="number"
-                  id="min_athletes_per_category"
-                  min="2"
-              />
+              <input v-model.number="form.min_athletes_per_category" type="number" id="min_athletes_per_category" min="2" />
             </div>
           </div>
           <div class="modal-actions">
-            <button type="button" class="modal-button cancel" @click="closeCreateModal">
-              Отмена
-            </button>
-            <button type="submit" class="modal-button submit">
-              Создать
-            </button>
+            <button type="button" class="modal-button cancel" @click="closeCreateModal"> Отмена </button>
+            <button type="submit" class="modal-button submit"> Создать </button>
           </div>
         </form>
       </div>
@@ -213,7 +133,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import '@/components/View/Tournaments/Tournaments.css'
+
+const router = useRouter()
 
 // Состояние модалки
 const isCreateModalOpen = ref(false)
@@ -268,7 +191,6 @@ const closeCreateModal = () => {
 const validateForm = () => {
   errors.value = {}
   let isValid = true
-
   if (!form.value.name) {
     errors.value.name = 'Название турнира обязательно'
     isValid = false
@@ -301,15 +223,12 @@ const validateForm = () => {
     errors.value.min_athletes_per_category = 'Минимум 2 участника в категории'
     isValid = false
   }
-
   return isValid
 }
 
 // Создание турнира
 const createTournament = async () => {
   if (!validateForm()) return
-
-  // Формируем данные для отправки
   const payload = {
     name: form.value.name,
     description: form.value.description || undefined,
@@ -325,7 +244,6 @@ const createTournament = async () => {
     min_athletes_per_category: form.value.min_athletes_per_category || undefined,
     status: form.value.status
   }
-
   try {
     const response = await fetch('/api/tournaments', {
       method: 'POST',
@@ -335,13 +253,10 @@ const createTournament = async () => {
       },
       body: JSON.stringify(payload)
     })
-
     if (!response.ok) {
       const errorData = await response.json()
       throw new Error(errorData.error || 'Неизвестная ошибка')
     }
-
-    const data = await response.json()
     alert('Турнир успешно создан!')
     closeCreateModal()
     // TODO: Добавить обновление списка турниров
@@ -350,7 +265,19 @@ const createTournament = async () => {
     alert('Не удалось создать турнир: ' + error.message)
   }
 }
+
+// Навигация к деталям турнира
+const navigateToDetails = (tournamentId) => {
+  router.push({ name: 'tournamentdetails', params: { id: tournamentId } })
+}
 </script>
 
 <style scoped>
+.judo-tournament-card {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.judo-tournament-card:hover {
+  transform: scale(1.02);
+}
 </style>
