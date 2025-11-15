@@ -352,14 +352,15 @@ const resetBracket = () => {
 .stream-player {
   background: white;
   border: 2px solid #e0b456;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   position: relative;
   aspect-ratio: 16 / 9;
   width: 100%;
+  max-width: 800px;        /* Ограничиваем максимальную ширину */
+  margin: 0 auto;          /* Центрируем */
 }
-
 .video-placeholder {
   display: flex;
   flex-direction: column;
