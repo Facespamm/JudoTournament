@@ -8,7 +8,8 @@ import Athletes from "../components/View/Athletes/Athletes.vue"
 import Tournament from "@/components/View/Tournaments/Tournament.vue"
 import RegistrationAthletes from "@/components/View/RegistrationAthletes/RegistrationAthletes.vue";
 import TournamentDetails from "@/components/View/TournamentDetails/TournamentDetails.vue";
-
+import Referees from"@/components/View/Referee/Referee.vue"
+import Tatami from "@/components/View/Tatami/Tatami.vue";
 const routes = [
     { path: '/', redirect: '/home' },
 
@@ -48,6 +49,16 @@ const routes = [
         path: '/tournamentdetails',
         name: 'tournamentdetails',
         component: TournamentDetails,
+    },
+    {
+        path: '/referee',
+        name: 'referee',
+        component: Referees,
+    },
+    {
+        path: '/tatami',
+        name: 'tatami',
+        component: Tatami,
     },
 ]
 

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@heroicons/vue": "^2.2.0",
     "@primeuix/themes": "^1.2.5",
     "@primevue/themes": "^4.4.1",
     "oh-vue-icons": "^1.0.0-rc3",

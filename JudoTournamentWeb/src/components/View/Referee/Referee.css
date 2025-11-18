@@ -1,0 +1,247 @@
+/* ============================================= */
+/*          СУДЕЙСКАЯ ПАНЕЛЬ — ПОЛНЫЙ CSS        */
+/* ============================================= */
+
+.referee-panel {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e8f0f8 50%, #f5f7fa 100%);
+    padding: 90px 2rem 4rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.panel-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    background: linear-gradient(90deg, #1a1a1a, #2c3e50);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
+.fight-card {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 24px;
+    box-shadow:
+            0 20px 40px rgba(0, 0, 0, 0.08),
+            0 8px 20px rgba(0, 0, 0, 0.06),
+            0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.athlete-section {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    position: relative;
+}
+
+.white { background: linear-gradient(135deg, #ffffff 0%, #f8fbfd 100%); }
+.blue  { background: linear-gradient(135deg, #f0f8ff 0%, #e1f0ff 100%); }
+
+.athlete-name {
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: center;
+    color: #1a1a1a;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.scores p {
+    margin: 0.5rem 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #2c3e50;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn-score, .btn-penalty {
+    padding: 0.9rem 1.8rem;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: none;
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
+
+.btn-score  { background: linear-gradient(135deg, #43a047, #66bb6a); }
+.btn-penalty { background: linear-gradient(135deg, #e53935, #f44336); }
+
+.hansoku {
+    background: linear-gradient(135deg, #c62828, #d32f2f) !important;
+    box-shadow: 0 6px 20px rgba(198, 40, 40, 0.3);
+}
+
+.btn-score:hover, .btn-penalty:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+}
+
+.technique-select {
+    padding: 0.9rem 1rem;
+    border-radius: 16px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    width: 100%;
+    max-width: 220px;
+    text-align: center;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.technique-select:focus {
+    outline: none;
+    border-color: #c89b3c;
+    box-shadow: 0 0 0 4px rgba(200, 155, 60, 0.15);
+}
+
+/* ============ ТАЙМЕР ============ */
+.timer-section {
+    flex: 1;
+    background: linear-gradient(145deg, #fdfdfd, #f5f5f5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    border-left: 1px solid #e8e8e8;
+    border-right: 1px solid #e8e8e8;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.03);
+}
+
+.timer-display {
+    font-size: 4.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #c89b3c, #e6c06a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    letter-spacing: -2px;
+    text-shadow: 0 4px 10px rgba(200, 155, 60, 0.2);
+}
+
+.golden-score {
+    color: #ffd700;
+    font-weight: 800;
+    font-size: 1.3rem;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    margin-bottom: 1.5rem;
+}
+
+.timer-controls {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-timer {
+    padding: 1.1rem 2.4rem;
+    border-radius: 50px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.start  { background: linear-gradient(135deg, #43a047, #66bb6a); }
+.pause  { background: linear-gradient(135deg, #3949ab, #5c6bc0); } /* ← ИСПРАВЛЕНО! Теперь яркий индиго */
+.reset  { background: linear-gradient(135deg, #e53935, #f44336); }
+
+.btn-timer:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+}
+
+.fight-status {
+    margin-top: 1.5rem;
+    font-weight: 600;
+    color: #424242;
+    font-size: 1.1rem;
+}
+
+/* ============ ЗАВЕРШЕНИЕ СХВАТКИ ============ */
+.result-section {
+    margin-top: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    width: 100%;
+    max-width: 600px;
+}
+
+.result-section select {
+    padding: 1rem 1.8rem;
+    border-radius: 16px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    width: 100%;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.btn-complete {
+    padding: 1.2rem 3.5rem;
+    background: linear-gradient(135deg, #b8860b, #d4af37);
+    color: white;
+    border-radius: 50px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 8px 25px rgba(184, 134, 11, 0.3);
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-complete:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 15px 35px rgba(184, 134, 11, 0.4);
+    background: linear-gradient(135deg, #d4af37, #e6c06a);
+}
+
+/* ============ АДАПТИВ ============ */
+@media (max-width: 992px) {
+    .fight-card {
+        flex-direction: column;
+        border-radius: 20px;
+    }
+    .timer-section {
+        border: none;
+        border-top: 1px solid #e8e8e8;
+        border-bottom: 1px solid #e8e8e8;
+    }
+    .timer-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+}
