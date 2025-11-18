@@ -1,4 +1,5 @@
-/* === ОСНОВА — ОТСТУП ПОД ХЕДЕР === */
+/* Tournaments.css — все стили, включая новые статус-бейджи */
+
 .judo-tournament {
     width: 100%;
     min-height: 100vh;
@@ -6,11 +7,10 @@
     font-family: 'Inter', 'Segoe UI', sans-serif;
     color: #1a1a1a;
     padding: 90px 0 4rem 0;
-    margin: 0;
     box-sizing: border-box;
 }
 
-/* === ФИЛЬТРЫ — СМЕЩЕНИЕ ВПРАВО === */
+/* Фильтры */
 .judo-tournament-setting_search {
     display: flex;
     gap: 1rem;
@@ -20,7 +20,6 @@
     align-items: center;
 }
 
-/* === ФИЛЬТРЫ И ПОИСК === */
 .judo-tournament-setting_search_select_category,
 .judo-tournament-setting_select_age_group,
 .judo-tournament-setting_date {
@@ -64,17 +63,13 @@
     transition: all 0.2s ease;
 }
 
-.search-input:hover {
-    border-color: #c89b3c;
-}
-
+.search-input:hover { border-color: #c89b3c; }
 .search-input:focus {
     outline: none;
     border-color: #c89b3c;
     box-shadow: 0 0 0 3px rgba(200, 155, 60, 0.1);
 }
 
-/* === КНОПКА "СОЗДАТЬ ТУРНИР" === */
 .judo-tournament_button_create {
     background: #c89b3c;
     color: white;
@@ -93,7 +88,7 @@
     box-shadow: 0 4px 12px rgba(200, 155, 60, 0.3);
 }
 
-/* === СПИСОК ТУРНИРОВ === */
+/* Заголовок и карточки */
 .judo-tournament-list h2 {
     font-size: 2rem;
     font-weight: 700;
@@ -123,29 +118,24 @@
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .judo-tournament-card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     height: 4px;
     background: linear-gradient(90deg, #c89b3c, #e0b456);
     transform: scaleX(0);
     transition: transform 0.3s ease;
 }
 
-.judo-tournament-card:hover::before {
-    transform: scaleX(1);
-}
-
+.judo-tournament-card:hover::before { transform: scaleX(1); }
 .judo-tournament-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     border-color: #c89b3c;
-    cursor: pointer;
 }
 
 .judo-tournament-card.featured {
@@ -166,10 +156,13 @@
     box-shadow: 0 2px 8px rgba(200, 155, 60, 0.3);
 }
 
-.judo-tournament_card_info {
+/* Новый блок: дата + статус */
+.tournament-header {
     display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
 }
 
 .tournament-date-badge {
@@ -180,7 +173,42 @@
     font-weight: 600;
     padding: 0.4rem 0.9rem;
     border-radius: 8px;
-    width: fit-content;
+}
+
+/* Статус-бейджи */
+.tournament-status-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-planned {
+    background: #e3f2fd;
+    color: #1565c0;
+    border: 1px solid #bbdefb;
+}
+
+.status-live {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+    animation: pulse 2s infinite;
+}
+
+.status-completed {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(198, 40, 40, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(198, 40, 40, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(198, 40, 40, 0); }
 }
 
 .judo-tournament_card_name {
@@ -192,9 +220,7 @@
     padding-right: 8rem;
 }
 
-.featured .judo-tournament_card_name {
-    padding-right: 10rem;
-}
+.featured .judo-tournament_card_name { padding-right: 10rem; }
 
 .judo-tournament_card_location {
     margin: 0;
@@ -210,18 +236,10 @@
     margin-top: 0.3rem;
 }
 
-.stat-item {
-    font-size: 0.9rem;
-    color: #888;
-    font-weight: 500;
-}
+.stat-item { font-size: 0.9rem; color: #888; font-weight: 500; }
+.stat-divider { color: #ccc; }
 
-.stat-divider {
-    color: #ccc;
-    font-weight: 300;
-}
-
-/* === ПАГИНАЦИЯ === */
+/* Пагинация */
 .judo-tournament_button_pagination {
     text-align: center;
     margin: 3rem 0 2rem 0;
@@ -248,13 +266,10 @@
     box-shadow: 0 6px 20px rgba(200, 155, 60, 0.3);
 }
 
-/* === МОДАЛЬНОЕ ОКНО === */
+/* Модальное окно */
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
@@ -266,9 +281,9 @@
     background: white;
     border-radius: 16px;
     padding: 2.5rem;
-    max-width: 900px; /* Увеличена ширина */
-    width: 95%; /* Масштабируется до 95% экрана */
-    max-height: 85vh; /* Ограничение высоты */
+    max-width: 900px;
+    width: 95%;
+    max-height: 85vh;
     overflow-y: auto;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
@@ -277,33 +292,17 @@
     font-size: 1.75rem;
     font-weight: 700;
     margin: 0 0 2rem;
-    color: #1a1a1a;
     text-align: center;
 }
 
-/* Двухколоночная раскладка для формы */
 .form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Две колонки */
-    gap: 1.5rem 2rem; /* Отступы между полями */
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 2rem;
 }
 
-/* Поле description занимает обе колонки */
-.form-group:nth-child(2) {
-    grid-column: 1 / -1; /* Description на всю ширину */
-}
+.form-group:nth-child(2) { grid-column: 1 / -1; }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-.judo-tournament-card {
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-.judo-tournament-card:hover {
-    transform: scale(1.02);
-}
 .form-group label {
     font-size: 0.95rem;
     font-weight: 500;
@@ -318,14 +317,10 @@
     border: 2px solid #e8e8e8;
     border-radius: 12px;
     font-size: 0.95rem;
-    color: #333;
     transition: all 0.2s ease;
 }
 
-.form-group textarea {
-    resize: vertical;
-    min-height: 120px;
-}
+.form-group textarea { resize: vertical; min-height: 120px; }
 
 .form-group input:focus,
 .form-group textarea:focus {
@@ -362,9 +357,7 @@
     border: 2px solid #e8e8e8;
 }
 
-.modal-button.cancel:hover {
-    background: #e8e8e8;
-}
+.modal-button.cancel:hover { background: #e8e8e8; }
 
 .modal-button.submit {
     background: #c89b3c;
@@ -378,121 +371,26 @@
     box-shadow: 0 4px 12px rgba(200, 155, 60, 0.3);
 }
 
-/* === АДАПТИВ === */
+/* Адаптив */
 @media (max-width: 992px) {
-    .judo-tournament-setting_search {
-        margin: 1.5rem 1.5rem 2.5rem 0;
-        padding-left: 1.5rem;
-    }
-
-    .judo-tournament_info {
-        padding: 0 1.5rem;
-    }
-
-    .modal-content {
-        max-width: 700px; /* Уменьшенная ширина для средних экранов */
-        padding: 2rem;
-    }
+    .modal-content { max-width: 700px; padding: 2rem; }
 }
 
 @media (max-width: 768px) {
-    .judo-tournament {
-        padding-top: 80px;
-    }
-
-    .judo-tournament-setting_search {
-        flex-direction: column;
-        margin: 1.5rem 1rem 2rem 0;
-        padding-left: 1rem;
-    }
-
+    .judo-tournament { padding-top: 80px; }
+    .judo-tournament-setting_search { flex-direction: column; margin: 1.5rem 1rem 2rem 0; padding-left: 1rem; }
     .judo-tournament-setting_search_select_category,
     .judo-tournament-setting_select_age_group,
     .judo-tournament-setting_date,
     .search-input,
-    .judo-tournament_button_create {
-        width: 100%;
-        max-width: 100%;
-        min-width: 100%;
-    }
+    .judo-tournament_button_create { width: 100%; max-width: 100%; }
 
-    .judo-tournament_info {
-        padding: 0 1rem;
-    }
-
-    .judo-tournament_card_name {
-        font-size: 1.2rem;
-        padding-right: 0;
-    }
-
-    .featured .judo-tournament_card_name {
-        padding-right: 0;
-        padding-top: 2rem;
-    }
-
-    .featured-badge {
-        top: 0.8rem;
-        right: 0.8rem;
-    }
-
-    .judo-tournament-list h2 {
-        font-size: 1.6rem;
-    }
-
-    .modal-content {
-        width: 95%;
-        max-width: 600px;
-        padding: 1.5rem;
-        max-height: 90vh;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr; /* Одна колонка для мобильных */
-        gap: 1rem;
-    }
-
-    .form-group:nth-child(2) {
-        grid-column: auto; /* Description в одной колонке */
-    }
-
-    .modal-content h2 {
-        font-size: 1.3rem;
-    }
-
-    .modal-button {
-        padding: 0.75rem 1.2rem;
-        font-size: 0.9rem;
-    }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group:nth-child(2) { grid-column: auto; }
+    .featured .judo-tournament_card_name { padding-right: 0; padding-top: 2rem; }
+    .featured-badge { top: 0.8rem; right: 0.8rem; }
 }
 
 @media (max-width: 480px) {
-    .judo-tournament {
-        padding-top: 75px;
-    }
-
-    .judo-tournament-setting_search {
-        margin: 1rem 0.75rem 1.5rem 0;
-        padding-left: 0.75rem;
-    }
-
-    .judo-tournament_info {
-        padding: 0 0.75rem;
-    }
-
-    .judo-tournament_card_name {
-        font-size: 1.1rem;
-    }
-
-    .modal-content {
-        width: 100%;
-        border-radius: 0;
-        max-height: 100vh;
-        padding: 1rem;
-    }
-
-    .form-group input,
-    .form-group textarea {
-        font-size: 0.9rem;
-        padding: 0.75rem;
-    }
+    .modal-content { width: 100%; border-radius: 0; max-height: 100vh; padding: 1rem; }
 }

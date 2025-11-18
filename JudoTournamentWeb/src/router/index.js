@@ -10,6 +10,7 @@ import RegistrationAthletes from "@/components/View/RegistrationAthletes/Registr
 import TournamentDetails from "@/components/View/TournamentDetails/TournamentDetails.vue";
 import Referees from"@/components/View/Referee/Referee.vue"
 import Tatami from "@/components/View/Tatami/Tatami.vue";
+import Scoreboard from "@/components/View/Scoreboard/Scoreboard.vue";
 const routes = [
     { path: '/', redirect: '/home' },
 
@@ -59,6 +60,10 @@ const routes = [
         path: '/tatami',
         name: 'tatami',
         component: Tatami,
+    }, {
+        path: '/scoreboard',
+        name: 'scoreboard',
+        component: Scoreboard,
     },
 ]
 

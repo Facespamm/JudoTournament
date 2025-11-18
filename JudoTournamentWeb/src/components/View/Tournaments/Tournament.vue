@@ -21,16 +21,21 @@
         <option value="2023">2023</option>
       </select>
       <input type="search" name="tournament_search" placeholder="Поиск турниров" class="search-input" />
-      <button class="judo-tournament_button_create" @click="openCreateModal"> Создать турнир </button>
+      <button class="judo-tournament_button_create" @click="openCreateModal">Создать турнир</button>
     </div>
+
     <!-- СПИСОК ТУРНИРОВ -->
     <div class="judo-tournament_info">
       <section class="judo-tournament-list">
         <h2>Ближайшие турниры</h2>
         <div class="tournament-cards-container">
+          <!-- Примеры с разными статусами -->
           <article class="judo-tournament-card" @click="navigateToDetails('champ-kz-cadets-2025')">
             <div class="judo-tournament_card_info">
-              <span class="tournament-date-badge">17 марта 2025</span>
+              <div class="tournament-header">
+                <span class="tournament-date-badge">17 марта 2025</span>
+                <span class="tournament-status-badge status-planned">PLANNED</span>
+              </div>
               <h3 class="judo-tournament_card_name">Чемпионат Казахстана среди кадетов</h3>
               <p class="judo-tournament_card_location">Астана, Казахстан</p>
               <div class="tournament-stats">
@@ -40,10 +45,14 @@
               </div>
             </div>
           </article>
+
           <article class="judo-tournament-card featured" @click="navigateToDetails('grand-prix-kz-2025')">
             <div class="featured-badge">Главный турнир</div>
             <div class="judo-tournament_card_info">
-              <span class="tournament-date-badge">10-12 мая 2025</span>
+              <div class="tournament-header">
+                <span class="tournament-date-badge">10–12 мая 2025</span>
+                <span class="tournament-status-badge status-live">LIVE</span>
+              </div>
               <h3 class="judo-tournament_card_name">Гран-при Казахстана 2025</h3>
               <p class="judo-tournament_card_location">Астана, Казахстан</p>
               <div class="tournament-stats">
@@ -53,15 +62,35 @@
               </div>
             </div>
           </article>
+
+          <article class="judo-tournament-card" @click="navigateToDetails('cup-astana-2024')">
+            <div class="judo-tournament_card_info">
+              <div class="tournament-header">
+                <span class="tournament-date-badge">15 ноября 2024</span>
+                <span class="tournament-status-badge status-completed">COMPLETED</span>
+              </div>
+              <h3 class="judo-tournament_card_name">Кубок Астаны 2024</h3>
+              <p class="judo-tournament_card_location">Астана, Казахстан</p>
+              <div class="tournament-stats">
+                <span class="stat-item">12 регионов</span>
+                <span class="stat-divider">•</span>
+                <span class="stat-item">180 дзюдоистов</span>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
     </div>
-    <!-- КНОПКА ЗАГРУЗИТЬ ЕЩЁ -->
+
+    <!-- ПАГИНАЦИЯ -->
     <div class="judo-tournament_button_pagination">
-      <button type="button" class="judo-tournament_button_pagination_next"> Показать ещё турниры </button>
+      <button type="button" class="judo-tournament_button_pagination_next">
+        Показать ещё турниры
+      </button>
     </div>
-    <!-- МОДАЛЬНОЕ ОКНО -->
-    <div v-if="isCreateModalOpen" class="modal-overlay">
+
+    <!-- МОДАЛЬНОЕ ОКНО СОЗДАНИЯ -->
+    <div v-if="isCreateModalOpen" class="modal-overlay" @click.self="closeCreateModal">
       <div class="modal-content">
         <h2>Создать новый турнир</h2>
         <form @submit.prevent="createTournament">
@@ -96,17 +125,15 @@
             </div>
             <div class="form-group">
               <label for="country">Страна</label>
-              <input v-model="form.country" type="text" id="country" placeholder="Введите страну" value="Казахстан" />
+              <input v-model="form.country" type="text" id="country" value="Казахстан" />
             </div>
             <div class="form-group">
               <label for="tatami_count">Количество татами</label>
               <input v-model.number="form.tatami_count" type="number" id="tatami_count" min="1" required />
-              <span v-if="errors.tatami_count" class="error">{{ errors.tatami_count }}</span>
             </div>
             <div class="form-group">
               <label for="fight_duration">Длительность схватки (сек)</label>
               <input v-model.number="form.fight_duration" type="number" id="fight_duration" min="60" required />
-              <span v-if="errors.fight_duration" class="error">{{ errors.fight_duration }}</span>
             </div>
             <div class="form-group">
               <label for="golden_score_duration">Длительность золотого скора (сек)</label>
@@ -122,8 +149,8 @@
             </div>
           </div>
           <div class="modal-actions">
-            <button type="button" class="modal-button cancel" @click="closeCreateModal"> Отмена </button>
-            <button type="submit" class="modal-button submit"> Создать </button>
+            <button type="button" class="modal-button cancel" @click="closeCreateModal">Отмена</button>
+            <button type="submit" class="modal-button submit">Создать</button>
           </div>
         </form>
       </div>
@@ -134,14 +161,10 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import '@/components/View/Tournaments/Tournaments.css'
 
 const router = useRouter()
 
-// Состояние модалки
 const isCreateModalOpen = ref(false)
-
-// Данные формы
 const form = ref({
   name: '',
   description: '',
@@ -157,86 +180,40 @@ const form = ref({
   min_athletes_per_category: 2,
   status: 'PLANNED'
 })
-
-// Ошибки валидации
 const errors = ref({})
 
-// Открытие модалки
 const openCreateModal = () => {
   isCreateModalOpen.value = true
-  form.value = {
-    name: '',
-    description: '',
-    start_date: '',
-    end_date: '',
-    venue: '',
-    city: '',
-    country: 'Казахстан',
-    tatami_count: 1,
-    fight_duration: 300,
-    golden_score_duration: 180,
-    organizer: '',
-    min_athletes_per_category: 2,
-    status: 'PLANNED'
-  }
+  form.value = { ...form.value, name: '', description: '', start_date: '', end_date: '', venue: '', city: '', organizer: '' }
   errors.value = {}
 }
 
-// Закрытие модалки
 const closeCreateModal = () => {
   isCreateModalOpen.value = false
 }
 
-// Валидация формы
 const validateForm = () => {
   errors.value = {}
   let isValid = true
-  if (!form.value.name) {
-    errors.value.name = 'Название турнира обязательно'
-    isValid = false
-  }
-  if (!form.value.start_date) {
-    errors.value.start_date = 'Дата начала обязательна'
-    isValid = false
-  }
-  if (!form.value.end_date) {
-    errors.value.end_date = 'Дата окончания обязательна'
-    isValid = false
-  }
-  if (form.value.start_date && form.value.end_date && form.value.start_date > form.value.end_date) {
-    errors.value.end_date = 'Дата окончания не может быть раньше даты начала'
-    isValid = false
-  }
-  if (!form.value.venue) {
-    errors.value.venue = 'Место проведения обязательно'
-    isValid = false
-  }
-  if (!form.value.tatami_count || form.value.tatami_count < 1) {
-    errors.value.tatami_count = 'Количество татами должно быть больше 0'
-    isValid = false
-  }
-  if (!form.value.fight_duration || form.value.fight_duration < 60) {
-    errors.value.fight_duration = 'Длительность схватки должна быть не менее 60 секунд'
-    isValid = false
-  }
-  if (form.value.min_athletes_per_category && form.value.min_athletes_per_category < 2) {
-    errors.value.min_athletes_per_category = 'Минимум 2 участника в категории'
-    isValid = false
-  }
+  if (!form.value.name) { errors.value.name = 'Название обязательно'; isValid = false }
+  if (!form.value.start_date) { errors.value.start_date = 'Дата начала обязательна'; isValid = false }
+  if (!form.value.end_date) { errors.value.end_date = 'Дата окончания обязательна'; isValid = false }
+  if (form.value.start_date > form.value.end_date) { errors.value.end_date = 'Дата окончания не может быть раньше начала'; isValid = false }
+  if (!form.value.venue) { errors.value.venue = 'Место проведения обязательно'; isValid = false }
+  if (form.value.tatami_count < 1) { errors.value.tatami_count = 'Минимум 1 татами'; isValid = false }
+  if (form.value.fight_duration < 60) { errors.value.fight_duration = 'Минимум 60 секунд'; isValid = false }
   return isValid
 }
 
-// Создание турнира
 const createTournament = async () => {
   if (!validateForm()) return
+
   const payload = {
     name: form.value.name,
     description: form.value.description || undefined,
     start_date: form.value.start_date,
     end_date: form.value.end_date,
-    location: [form.value.venue, form.value.city, form.value.country]
-        .filter(Boolean)
-        .join(', '),
+    location: [form.value.venue, form.value.city, form.value.country].filter(Boolean).join(', '),
     organizer: form.value.organizer || undefined,
     tatami_count: form.value.tatami_count,
     fight_duration: form.value.fight_duration,
@@ -244,6 +221,7 @@ const createTournament = async () => {
     min_athletes_per_category: form.value.min_athletes_per_category || undefined,
     status: form.value.status
   }
+
   try {
     const response = await fetch('/api/tournaments', {
       method: 'POST',
@@ -253,31 +231,17 @@ const createTournament = async () => {
       },
       body: JSON.stringify(payload)
     })
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || 'Неизвестная ошибка')
-    }
+    if (!response.ok) throw new Error((await response.json()).error || 'Ошибка сервера')
     alert('Турнир успешно создан!')
     closeCreateModal()
-    // TODO: Добавить обновление списка турниров
   } catch (error) {
-    console.error('Ошибка при создании турнира:', error)
-    alert('Не удалось создать турнир: ' + error.message)
+    alert('Ошибка: ' + error.message)
   }
 }
 
-// Навигация к деталям турнира
-const navigateToDetails = (tournamentId) => {
-  router.push({ name: 'tournamentdetails', params: { id: tournamentId } })
+const navigateToDetails = (id) => {
+  router.push({ name: 'tournamentdetails', params: { id } })
 }
 </script>
 
-<style scoped>
-.judo-tournament-card {
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-.judo-tournament-card:hover {
-  transform: scale(1.02);
-}
-</style>
+<style scoped src="./Tournaments.css"></style>
