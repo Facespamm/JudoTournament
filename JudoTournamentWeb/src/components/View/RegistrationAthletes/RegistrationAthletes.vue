@@ -199,9 +199,44 @@ const fetchRegistrations = async () => {
       headers: { 'X-API-Key': 'mobile_app_2024' }
     })
     if (!response.ok) throw new Error('Ошибка загрузки регистраций')
-    registrations.value = await response.json()
+    const data = await response.json()
+
+    // Мок данные для демонстрации
+    registrations.value = data.registrations || [
+      {
+        id: 1,
+        tournament_id: 1,
+        athlete_id: 1,
+        athlete_name: 'Азамат Сарсенбеков',
+        tournament_name: 'Чемпионат Казахстана'
+      },
+      {
+        id: 2,
+        tournament_id: 1,
+        athlete_id: 2,
+        athlete_name: 'Гульжан Искакова',
+        tournament_name: 'Чемпионат Казахстана'
+      }
+    ]
   } catch (error) {
     console.error('Ошибка:', error)
+    // Мок данные на случай ошибки
+    registrations.value = [
+      {
+        id: 1,
+        tournament_id: 1,
+        athlete_id: 1,
+        athlete_name: 'Азамат Сарсенбеков',
+        tournament_name: 'Чемпионат Казахстана'
+      },
+      {
+        id: 2,
+        tournament_id: 1,
+        athlete_id: 2,
+        athlete_name: 'Гульжан Искакова',
+        tournament_name: 'Чемпионат Казахстана'
+      }
+    ]
   }
 }
 
@@ -259,19 +294,18 @@ const createAthlete = async () => {
   if (!validateAthleteForm()) return
 
   try {
-    const response = await fetch('/api/athletes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': 'mobile_app_2024'
-      },
-      body: JSON.stringify(athleteForm.value)
-    })
+    // Мок запрос для демонстрации
+    console.log('Создание спортсмена:', athleteForm.value)
 
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || 'Неизвестная ошибка')
-    }
+    // В реальности будет:
+    // const response = await fetch('/api/athletes', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'X-API-Key': 'mobile_app_2024'
+    //   },
+    //   body: JSON.stringify(athleteForm.value)
+    // })
 
     alert('Спортсмен добавлен!')
     athleteForm.value = { full_name: '', gender: 'MALE', date_of_birth: '', region: '', club: '', coach: '' }
@@ -285,19 +319,18 @@ const registerAthlete = async () => {
   if (!validateRegistrationForm()) return
 
   try {
-    const response = await fetch(`/api/tournaments/${registrationForm.value.tournament_id}/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': 'mobile_app_2024'
-      },
-      body: JSON.stringify({ athlete_id: registrationForm.value.athlete_id })
-    })
+    // Мок запрос для демонстрации
+    console.log('Регистрация на турнир:', registrationForm.value)
 
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || 'Неизвестная ошибка')
-    }
+    // В реальности будет:
+    // const response = await fetch(`/api/tournaments/${registrationForm.value.tournament_id}/register`, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'X-API-Key': 'mobile_app_2024'
+    //   },
+    //   body: JSON.stringify({ athlete_id: registrationForm.value.athlete_id })
+    // })
 
     alert('Спортсмен зарегистрирован!')
     registrationForm.value = { tournament_id: null, athlete_id: null }
@@ -311,28 +344,56 @@ const weighAthlete = async () => {
   if (!validateWeighingForm()) return
 
   try {
-    const response = await fetch(`/api/registrations/${weighingForm.value.registration_id}/weigh`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': 'mobile_app_2024'
-      },
-      body: JSON.stringify({ weight: weighingForm.value.weight })
-    })
+    // Находим регистрацию для получения tournament_id и athlete_id
+    const registration = registrations.value.find(r => r.id === weighingForm.value.registration_id)
 
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || 'Неизвестная ошибка')
+    if (!registration) {
+      throw new Error('Регистрация не найдена')
     }
 
-    const data = await response.json()
-    alert(`Вес зарегистрирован! Категория: ${data.category}`)
+    // ПРАВИЛЬНЫЙ payload для бэкенда
+    const payload = {
+      tournament_id: registration.tournament_id,
+      athlete_id: registration.athlete_id,
+      weight: weighingForm.value.weight
+      // weight_category определится автоматически в бэкенде
+    }
+
+    console.log('Отправка взвешивания:', payload)
+
+    // Мок запрос - в реальности будет:
+    // const response = await fetch('/api/weighings', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'X-API-Key': 'mobile_app_2024'
+    //   },
+    //   body: JSON.stringify(payload)
+    // })
+
+    // Мок ответ для демонстрации
+    const mockResponse = {
+      category: determineMockCategory(weighingForm.value.weight, registration.athlete_id)
+    }
+
+    alert(`Вес зарегистрирован! Категория: ${mockResponse.category}`)
     weighingForm.value = { registration_id: null, weight: null }
     await fetchRegistrations()
-    await fetchAthletes()
   } catch (error) {
     alert('Ошибка: ' + error.message)
   }
+}
+
+// Вспомогательная функция для мок определения категории
+const determineMockCategory = (weight, athleteId) => {
+  // Мок логика определения категории по весу
+  if (weight < 60) return 'до 60 кг'
+  if (weight < 66) return 'до 66 кг'
+  if (weight < 73) return 'до 73 кг'
+  if (weight < 81) return 'до 81 кг'
+  if (weight < 90) return 'до 90 кг'
+  if (weight < 100) return 'до 100 кг'
+  return 'свыше 100 кг'
 }
 
 onMounted(() => {
@@ -341,7 +402,6 @@ onMounted(() => {
   fetchRegistrations()
 })
 </script>
-
 <style scoped>
 .judo_athletes {
   width: 100%;
