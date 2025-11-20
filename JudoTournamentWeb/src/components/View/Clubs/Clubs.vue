@@ -90,126 +90,18 @@
     </div>
 
     <!-- МОДАЛКА СОЗДАНИЯ/РЕДАКТИРОВАНИЯ КЛУБА -->
-    <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-content">
-        <h2>{{ editingClub ? 'Редактирование клуба' : 'Создание клуба' }}</h2>
-
-        <form @submit.prevent="saveClub">
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="club_name">Название клуба *</label>
-              <input
-                  v-model="clubForm.name"
-                  type="text"
-                  id="club_name"
-                  placeholder="Введите название клуба"
-                  required
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="short_name">Короткое название</label>
-              <input
-                  v-model="clubForm.short_name"
-                  type="text"
-                  id="short_name"
-                  placeholder="Сокращенное название"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="city">Город *</label>
-              <input
-                  v-model="clubForm.city"
-                  type="text"
-                  id="city"
-                  placeholder="Введите город"
-                  required
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="country">Страна</label>
-              <input
-                  v-model="clubForm.country"
-                  type="text"
-                  id="country"
-                  placeholder="Страна"
-                  value="Казахстан"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="coach_name">Тренер</label>
-              <input
-                  v-model="clubForm.coach_name"
-                  type="text"
-                  id="coach_name"
-                  placeholder="ФИО тренера"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="phone">Телефон</label>
-              <input
-                  v-model="clubForm.phone"
-                  type="tel"
-                  id="phone"
-                  placeholder="+7 (XXX) XXX-XX-XX"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input
-                  v-model="clubForm.email"
-                  type="email"
-                  id="email"
-                  placeholder="email@example.com"
-              />
-            </div>
-
-            <div class="form-group full-width">
-              <label for="website">Веб-сайт</label>
-              <input
-                  v-model="clubForm.website"
-                  type="url"
-                  id="website"
-                  placeholder="https://example.com"
-              />
-            </div>
-
-            <div class="form-group full-width">
-              <label for="address">Адрес</label>
-              <textarea
-                  v-model="clubForm.address"
-                  id="address"
-                  placeholder="Полный адрес клуба"
-                  rows="3"
-              ></textarea>
-            </div>
-          </div>
-
-          <div class="form-notes">
-            <p>* - обязательные поля для заполнения</p>
-          </div>
-
-          <div class="modal-actions">
-            <button type="button" class="modal-button cancel" @click="closeModal">
-              Отмена
-            </button>
-            <button type="submit" class="modal-button submit">
-              {{ editingClub ? 'Сохранить' : 'Создать' }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <ClubModal
+        :is-open="isModalOpen"
+        :editing-club="editingClub"
+        @close="closeModal"
+        @submit="handleClubSubmission"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import ClubModal from '@/components/View/Clubs/ClubModal.vue'
 
 // Данные клубов
 const clubs = ref([])
@@ -219,19 +111,6 @@ const cityFilter = ref('')
 // Модалки
 const isModalOpen = ref(false)
 const editingClub = ref(null)
-
-// Форма клуба
-const clubForm = ref({
-  name: '',
-  short_name: '',
-  city: '',
-  country: 'Казахстан',
-  coach_name: '',
-  phone: '',
-  email: '',
-  website: '',
-  address: ''
-})
 
 // Фильтрация клубов
 const filteredClubs = computed(() => {
@@ -249,13 +128,13 @@ const filteredClubs = computed(() => {
 // Загрузка данных
 const loadClubs = async () => {
   try {
-    const response = await fetch('/api/clubs', {
+    const response = await fetch('http://127.0.0.1:5000/api/clubs/', {
       headers: { 'X-API-Key': 'mobile_app_2024' }
     })
 
     if (response.ok) {
       const data = await response.json()
-      clubs.value = data.clubs || []
+      clubs.value = data.clubs || data || []
     } else {
       // Мок данные для демонстрации
       clubs.value = [
@@ -270,7 +149,8 @@ const loadClubs = async () => {
           email: 'dinamo.almaty@mail.ru',
           website: 'https://dinamo-almaty.kz',
           address: 'ул. Абая, 123',
-          athletes_count: 25
+          athletes_count: 25,
+          founded_year: 1995
         },
         {
           id: 2,
@@ -281,31 +161,30 @@ const loadClubs = async () => {
           coach_name: 'Мария Сидорова',
           phone: '+7 (717) 234-56-78',
           email: 'president.club@mail.ru',
-          athletes_count: 18
-        },
-        {
-          id: 3,
-          name: 'Южный ветер',
-          short_name: 'Южный ветер',
-          city: 'Шымкент',
-          country: 'Казахстан',
-          coach_name: 'Алексей Ким',
-          phone: '+7 (725) 345-67-89',
-          athletes_count: 32
-        },
-        {
-          id: 4,
-          name: 'Актобе Дзюдо',
-          short_name: 'Актобе',
-          city: 'Актобе',
-          country: 'Казахстан',
-          coach_name: 'Нурлан Омаров',
-          athletes_count: 15
+          athletes_count: 18,
+          founded_year: 2010
         }
       ]
     }
   } catch (error) {
     console.error('Ошибка загрузки клубов:', error)
+    // Мок данные при ошибке
+    clubs.value = [
+      {
+        id: 1,
+        name: 'Динамо Алматы',
+        short_name: 'Динамо',
+        city: 'Алматы',
+        country: 'Казахстан',
+        coach_name: 'Иван Петров',
+        phone: '+7 (777) 123-45-67',
+        email: 'dinamo.almaty@mail.ru',
+        website: 'https://dinamo-almaty.kz',
+        address: 'ул. Абая, 123',
+        athletes_count: 25,
+        founded_year: 1995
+      }
+    ]
   }
 }
 
@@ -313,17 +192,6 @@ const loadClubs = async () => {
 const openCreateModal = () => {
   isModalOpen.value = true
   editingClub.value = null
-  clubForm.value = {
-    name: '',
-    short_name: '',
-    city: '',
-    country: 'Казахстан',
-    coach_name: '',
-    phone: '',
-    email: '',
-    website: '',
-    address: ''
-  }
 }
 
 const closeModal = () => {
@@ -333,44 +201,16 @@ const closeModal = () => {
 const editClub = (club) => {
   isModalOpen.value = true
   editingClub.value = club
-  clubForm.value = { ...club }
 }
 
-// Сохранение клуба
-const saveClub = async () => {
-  try {
-    if (editingClub.value) {
-      // Редактирование клуба
-      const response = await fetch(`/admin/clubs/${editingClub.value.id}/edit`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': 'mobile_app_2024'
-        },
-        body: JSON.stringify(clubForm.value)
-      })
-
-      if (!response.ok) throw new Error('Ошибка обновления клуба')
-      alert('Клуб успешно обновлен!')
-    } else {
-      // Создание клуба
-      const response = await fetch('/admin/clubs/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': 'mobile_app_2024'
-        },
-        body: JSON.stringify(clubForm.value)
-      })
-
-      if (!response.ok) throw new Error('Ошибка создания клуба')
-      alert('Клуб успешно создан!')
-    }
-
-    closeModal()
-    loadClubs() // Перезагружаем список
-  } catch (error) {
-    alert('Ошибка: ' + error.message)
+// Обработка сохранения клуба
+const handleClubSubmission = (result) => {
+  if (result.success) {
+    // Успешное сохранение - перезагружаем список
+    loadClubs()
+    // Модалка закроется автоматически через 3 секунды
+  } else {
+    alert('Ошибка: ' + result.error)
   }
 }
 
@@ -381,12 +221,13 @@ const deleteClub = async (clubId) => {
   }
 
   try {
-    const response = await fetch(`/admin/clubs/${clubId}/delete`, {
-      method: 'POST',
+    const response = await fetch(`http://127.0.0.1:5000/api/clubs/${clubId}`, {
+      method: 'DELETE',
       headers: { 'X-API-Key': 'mobile_app_2024' }
     })
 
     if (!response.ok) throw new Error('Ошибка удаления клуба')
+
     alert('Клуб успешно удален!')
     loadClubs()
   } catch (error) {
@@ -400,6 +241,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Стили остаются без изменений */
 .clubs-management {
   padding: 90px 2rem 2rem;
   max-width: 1400px;
@@ -618,124 +460,6 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgba(200, 155, 60, 0.3);
 }
 
-/* Модалка */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 16px;
-  padding: 2rem;
-  max-width: 800px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
-.modal-content h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #1a1a1a;
-  text-align: center;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group.full-width {
-  grid-column: 1 / -1;
-}
-
-.form-group label {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  padding: 0.75rem;
-  border: 2px solid #e8e8e8;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-  font-family: inherit;
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #c89b3c;
-}
-
-.form-notes {
-  margin-bottom: 1.5rem;
-}
-
-.form-notes p {
-  font-size: 0.85rem;
-  color: #666;
-  font-style: italic;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-}
-
-.modal-button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.modal-button.cancel {
-  background: #f5f5f5;
-  color: #666;
-}
-
-.modal-button.cancel:hover {
-  background: #e8e8e8;
-}
-
-.modal-button.submit {
-  background: linear-gradient(135deg, #c89b3c, #e0b456);
-  color: white;
-}
-
-.modal-button.submit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(200, 155, 60, 0.3);
-}
-
 /* Адаптив */
 @media (max-width: 768px) {
   .clubs-management {
@@ -769,19 +493,6 @@ onMounted(() => {
   .actions {
     flex-direction: row;
     justify-content: flex-start;
-  }
-
-  .modal-content {
-    padding: 1.5rem;
-    margin: 1rem;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .modal-actions {
-    flex-direction: column;
   }
 }
 

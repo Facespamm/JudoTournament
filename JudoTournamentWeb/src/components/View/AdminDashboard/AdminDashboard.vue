@@ -115,77 +115,28 @@
     </div>
 
     <!-- МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ТУРНИРА -->
-    <div v-if="isCreateModalOpen" class="modal-overlay" @click.self="closeCreateModal">
-      <div class="modal-content">
-        <h2>Создать новый турнир</h2>
-        <form @submit.prevent="createTournament">
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="name">Название турнира</label>
-              <input v-model="form.name" type="text" id="name" placeholder="Введите название" required />
-              <span v-if="errors.name" class="error">{{ errors.name }}</span>
-            </div>
-            <div class="form-group">
-              <label for="description">Описание</label>
-              <textarea v-model="form.description" id="description" placeholder="Введите описание турнира"></textarea>
-            </div>
-            <div class="form-group">
-              <label for="start_date">Дата начала</label>
-              <input v-model="form.start_date" type="date" id="start_date" required />
-              <span v-if="errors.start_date" class="error">{{ errors.start_date }}</span>
-            </div>
-            <div class="form-group">
-              <label for="end_date">Дата окончания</label>
-              <input v-model="form.end_date" type="date" id="end_date" required />
-              <span v-if="errors.end_date" class="error">{{ errors.end_date }}</span>
-            </div>
-            <div class="form-group">
-              <label for="venue">Место проведения</label>
-              <input v-model="form.venue" type="text" id="venue" placeholder="Введите место" required />
-              <span v-if="errors.venue" class="error">{{ errors.venue }}</span>
-            </div>
-            <div class="form-group">
-              <label for="city">Город</label>
-              <input v-model="form.city" type="text" id="city" placeholder="Введите город" />
-            </div>
-            <div class="form-group">
-              <label for="country">Страна</label>
-              <input v-model="form.country" type="text" id="country" value="Казахстан" />
-            </div>
-            <div class="form-group">
-              <label for="tatami_count">Количество татами</label>
-              <input v-model.number="form.tatami_count" type="number" id="tatami_count" min="1" required />
-            </div>
-            <div class="form-group">
-              <label for="fight_duration">Длительность схватки (сек)</label>
-              <input v-model.number="form.fight_duration" type="number" id="fight_duration" min="60" required />
-            </div>
-            <div class="form-group">
-              <label for="golden_score_duration">Длительность золотого скора (сек)</label>
-              <input v-model.number="form.golden_score_duration" type="number" id="golden_score_duration" min="60" />
-            </div>
-            <div class="form-group">
-              <label for="organizer">Организатор</label>
-              <input v-model="form.organizer" type="text" id="organizer" placeholder="Введите организатора" />
-            </div>
-            <div class="form-group">
-              <label for="min_athletes_per_category">Мин. участников в категории</label>
-              <input v-model.number="form.min_athletes_per_category" type="number" id="min_athletes_per_category" min="2" />
-            </div>
-          </div>
-          <div class="modal-actions">
-            <button type="button" class="modal-button cancel" @click="closeCreateModal">Отмена</button>
-            <button type="submit" class="modal-button submit">Создать</button>
-          </div>
-        </form>
+    <CreateTournamentModal
+        :is-open="isCreateModalOpen"
+        @close="closeCreateModal"
+        @submit="handleTournamentCreation"
+    />
+
+    <!-- TOAST УВЕДОМЛЕНИЕ (встроенное) -->
+    <transition name="fade">
+      <div v-if="toast.visible" class="toast-notification" :class="toast.type">
+        <div class="toast-content">
+          <span class="toast-icon">{{ toast.type === 'success' ? '✓' : '✕' }}</span>
+          <span class="toast-message">{{ toast.message }}</span>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import CreateTournamentModal from '@/components/View/AdminDashboard/CreateTournamentModal.vue'
 
 const router = useRouter()
 
@@ -195,100 +146,42 @@ const recentEvents = ref([])
 
 // Модалка создания турнира
 const isCreateModalOpen = ref(false)
-const form = ref({
-  name: '',
-  description: '',
-  start_date: '',
-  end_date: '',
-  venue: '',
-  city: '',
-  country: 'Казахстан',
-  tatami_count: 1,
-  fight_duration: 300,
-  golden_score_duration: 180,
-  organizer: '',
-  min_athletes_per_category: 2,
-  status: 'PLANNED'
+
+// Toast состояние
+const toast = ref({
+  visible: false,
+  message: '',
+  type: 'success' // success | error
 })
-const errors = ref({})
 
 const openCreateModal = () => {
   isCreateModalOpen.value = true
-  // Сброс формы
-  form.value = {
-    name: '',
-    description: '',
-    start_date: '',
-    end_date: '',
-    venue: '',
-    city: '',
-    country: 'Казахстан',
-    tatami_count: 1,
-    fight_duration: 300,
-    golden_score_duration: 180,
-    organizer: '',
-    min_athletes_per_category: 2,
-    status: 'PLANNED'
-  }
-  errors.value = {}
 }
 
 const closeCreateModal = () => {
   isCreateModalOpen.value = false
 }
 
-const validateForm = () => {
-  errors.value = {}
-  let isValid = true
-  if (!form.value.name) { errors.value.name = 'Название обязательно'; isValid = false }
-  if (!form.value.start_date) { errors.value.start_date = 'Дата начала обязательна'; isValid = false }
-  if (!form.value.end_date) { errors.value.end_date = 'Дата окончания обязательна'; isValid = false }
-  if (form.value.start_date > form.value.end_date) { errors.value.end_date = 'Дата окончания не может быть раньше начала'; isValid = false }
-  if (!form.value.venue) { errors.value.venue = 'Место проведения обязательно'; isValid = false }
-  if (form.value.tatami_count < 1) { errors.value.tatami_count = 'Минимум 1 татами'; isValid = false }
-  if (form.value.fight_duration < 60) { errors.value.fight_duration = 'Минимум 60 секунд'; isValid = false }
-  return isValid
-}
+// Главная функция — обработка создания турнира
+const handleTournamentCreation = async (result) => {
+  closeCreateModal() // закрываем модалку сразу
 
-const createTournament = async () => {
-  if (!validateForm()) return
-
-  const payload = {
-    name: form.value.name,
-    description: form.value.description || undefined,
-    start_date: form.value.start_date,
-    end_date: form.value.end_date,
-    venue: form.value.venue,
-    city: form.value.city,
-    country: form.value.country,
-    tatami_count: form.value.tatami_count,
-    fight_duration: form.value.fight_duration,
-    golden_score_duration: form.value.golden_score_duration || undefined,
-    organizer: form.value.organizer || undefined,
-    min_athletes_per_category: form.value.min_athletes_per_category || undefined,
-    status: form.value.status
-  }
-
-  try {
-    const response = await fetch('/api/tournament', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': 'mobile_app_2024'
-      },
-      body: JSON.stringify(payload)
-    })
-    if (!response.ok) throw new Error((await response.json()).error || 'Ошибка сервера')
-    alert('Турнир успешно создан!')
-    closeCreateModal()
-    // Перезагружаем данные
-    loadDashboardData()
-  } catch (error) {
-    alert('Ошибка: ' + error.message)
+  if (result.success) {
+    showToast('Турнир успешно создан!', 'success')
+    await loadDashboardData() // обновляем статистику и список турниров
+  } else {
+    showToast(result.error || 'Ошибка при создании турнира', 'error')
   }
 }
 
-// Остальной код без изменений...
+// Универсальная функция показа toast
+const showToast = (message, type = 'success', duration = type === 'success' ? 3000 : 4000) => {
+  toast.value = { visible: true, message, type }
+  setTimeout(() => {
+    toast.value.visible = false
+  }, duration)
+}
+
 const loadDashboardData = async () => {
   try {
     // Загрузка статистики
@@ -407,117 +300,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Добавляем стили для модалки */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 16px;
-  padding: 2rem;
-  max-width: 800px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
-.modal-content h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #1a1a1a;
-  text-align: center;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  padding: 0.75rem;
-  border: 2px solid #e8e8e8;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #c89b3c;
-}
-
-.error {
-  color: #ff4444;
-  font-size: 0.85rem;
-  margin-top: 0.25rem;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-}
-
-.modal-button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.modal-button.cancel {
-  background: #f5f5f5;
-  color: #666;
-}
-
-.modal-button.cancel:hover {
-  background: #e8e8e8;
-}
-
-.modal-button.submit {
-  background: linear-gradient(135deg, #c89b3c, #e0b456);
-  color: white;
-}
-
-.modal-button.submit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(200, 155, 60, 0.3);
-}
-
-/* Остальные стили без изменений... */
 .admin-dashboard {
   padding: 90px 2rem 2rem;
   max-width: 1400px;
@@ -781,48 +563,6 @@ onMounted(() => {
   margin-top: 1rem;
 }
 
-.recent-events-section h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #1a1a1a;
-}
-
-.events-list {
-  background: white;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.event-item {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.event-item:last-child {
-  border-bottom: none;
-}
-
-.event-time {
-  font-weight: 600;
-  color: #c89b3c;
-  min-width: 60px;
-}
-
-.event-text {
-  color: #333;
-  flex: 1;
-}
-
-.no-events {
-  text-align: center;
-  padding: 2rem;
-  color: #666;
-}
-
 @media (max-width: 768px) {
   .admin-dashboard {
     padding: 80px 1rem 1rem;
@@ -845,18 +585,36 @@ onMounted(() => {
     gap: 1rem;
     align-items: flex-start;
   }
+}
 
-  .modal-content {
-    padding: 1.5rem;
-    margin: 1rem;
-  }
+/* TOAST УВЕДОМЛЕНИЕ */
+.toast-notification {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  min-width: 320px;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  z-index: 10000;
+  animation: slideIn 0.4s ease-out;
+}
+.toast-notification.success { background: linear-gradient(135deg, #28a745, #34ce57); }
+.toast-notification.error   { background: linear-gradient(135deg, #dc3545, #e4606d); }
+.toast-content { display: flex; align-items: center; gap: 12px; }
+.toast-icon { font-size: 1.5rem; font-weight: bold; }
 
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
+.fade-enter-active, .fade-leave-active { transition: opacity .3s ease, transform .3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(20px); }
 
-  .modal-actions {
-    flex-direction: column;
-  }
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .toast-notification { left: 20px; right: 20px; bottom: 20px; }
 }
 </style>
