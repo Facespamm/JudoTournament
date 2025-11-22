@@ -193,7 +193,7 @@ const loadDashboardData = async () => {
     }
 
     // Загрузка активных турниров
-    const tournamentsResponse = await fetch('/api/tournaments?status=LIVE', {
+    const tournamentsResponse = await fetch('/api/tournament?status=LIVE', {
       headers: { 'X-API-Key': 'mobile_app_2024' }
     })
     if (tournamentsResponse.ok) {
@@ -275,7 +275,7 @@ const formatDate = (dateString) => {
 
 // Навигация
 const navigateToTournaments = () => {
-  router.push('/tournaments')
+  router.push('/tournament')
 }
 
 const navigateToUsers = () => {

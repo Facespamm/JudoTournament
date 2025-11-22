@@ -1,0 +1,286 @@
+/* Основной контейнер */
+.registration_athletes {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #fefefe, #f8f9fa);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: #1a1a1a;
+    padding: 90px 0 2rem 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.judo_form-athletes_info {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.athlete-registration {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.athlete-registration h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #1a1a1a;
+    text-align: center;
+}
+
+.form-section {
+    margin-bottom: 3rem;
+    position: relative;
+    padding: 1.5rem;
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+}
+
+.form-section:last-child {
+    margin-bottom: 0;
+}
+
+.form-section h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #1a1a1a;
+}
+
+/* Стили для индикатора загрузки */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    z-index: 10;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #c89b3c;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Стили форм */
+.form-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.form-grid-multi {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.form-grid-double {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.75rem;
+    border: 2px solid #e8e8e8;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #c89b3c;
+}
+
+.form-group input:disabled,
+.form-group select:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+    width: auto;
+}
+
+.error {
+    color: #ff4444;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+/* ОТСТУПЫ ДЛЯ КНОПОК КАК В ПЕРВОМ БЛОКЕ */
+.form-actions {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+/* Для блоков "Зарегистрировать на турнир" и "Взвешивание" */
+.form-section:not(:first-child) .submit-button {
+    margin-top: 1.5rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.submit-button {
+    background: linear-gradient(135deg, #c89b3c, #e0b456);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+.submit-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(200, 155, 60, 0.3);
+}
+
+.submit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* TOAST УВЕДОМЛЕНИЕ */
+.toast-notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    min-width: 320px;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    z-index: 10000;
+    animation: slideIn 0.4s ease-out;
+}
+
+.toast-notification.success {
+    background: linear-gradient(135deg, #28a745, #34ce57);
+}
+
+.toast-notification.error {
+    background: linear-gradient(135deg, #dc3545, #e4606d);
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast-icon {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .3s ease, transform .3s ease;
+}
+
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .registration_athletes {
+        padding-top: 80px;
+    }
+
+    .judo_form-athletes_info {
+        padding: 0 1rem;
+    }
+
+    .athlete-registration {
+        padding: 1.5rem;
+    }
+
+    .form-grid-multi {
+        grid-template-columns: 1fr;
+    }
+
+    .toast-notification {
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        min-width: auto;
+    }
+
+    /* Адаптив для кнопок */
+    .form-section:not(:first-child) .submit-button {
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .registration_athletes {
+        padding-top: 75px;
+    }
+
+    .athlete-registration {
+        padding: 1rem;
+    }
+
+    .athlete-registration h2 {
+        font-size: 1.5rem;
+    }
+
+    .form-section h3 {
+        font-size: 1.1rem;
+    }
+}

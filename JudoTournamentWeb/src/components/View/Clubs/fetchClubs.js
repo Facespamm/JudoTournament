@@ -4,7 +4,8 @@ const API_BASE_URL = 'http://127.0.0.1:5000/api';
 // Создание клуба
 export const createClub = async (clubData) => {
     try {
-        const response = await fetch(`${API_BASE_URL}/clubs/`, {
+        const response = await fetch(`http://127.0.0.1:5001/clubs/
+`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -50,7 +51,8 @@ export const updateClub = async (clubId, clubData) => {
 // Получение списка клубов
 export const getClubs = async () => {
     try {
-        const response = await fetch(`${API_BASE_URL}/clubs/`, {
+        const response = await fetch(`http://127.0.0.1:5001/clubs/
+`, {
             headers: { 'X-API-Key': 'mobile_app_2024' }
         });
 

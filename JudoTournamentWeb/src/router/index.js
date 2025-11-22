@@ -14,6 +14,7 @@ import Scoreboard from "@/components/View/Scoreboard/Scoreboard.vue";
 import AdminDashboard from "@/components/View/AdminDashboard/AdminDashboard.vue";
 import Clubs from "@/components/View/Clubs/Clubs.vue";
 import Users from "@/components/View/Users/Users.vue";
+import AthleteDetail from "@/components/View/AthleteDetail/AthleteDetail.vue";
 const routes = [
     { path: '/', redirect: '/home' },
 
@@ -50,7 +51,7 @@ const routes = [
         component: RegistrationAthletes
     },
     {
-        path: '/tournamentdetails',
+        path: '/tournamentdetails/:id',
         name: 'tournamentdetails',
         component: TournamentDetails,
     },
@@ -83,6 +84,10 @@ const routes = [
         path: '/admin/users',
         name: 'users',
         component: Users,
+    }, {
+        path: '/athlete/:id',
+        name: 'athlete-detail',
+        component: AthleteDetail,
     },
 ]
 

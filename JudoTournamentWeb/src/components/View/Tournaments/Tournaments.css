@@ -9,6 +9,111 @@
     padding: 90px 0 4rem 0;
     box-sizing: border-box;
 }
+/* Стили для индикатора загрузки */
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #c89b3c;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Стили для сообщения об ошибке */
+.error-message {
+    text-align: center;
+    padding: 2rem;
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.error-message p {
+    color: #c53030;
+    margin-bottom: 1rem;
+}
+
+.retry-button {
+    background: #c89b3c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.retry-button:hover {
+    background: #b68a35;
+}
+
+/* Стили для отсутствия турниров */
+.no-tournaments {
+    text-align: center;
+    padding: 3rem;
+    background: #f7fafc;
+    border: 2px dashed #e2e8f0;
+    border-radius: 8px;
+    color: #718096;
+}
+
+/* Дополнительные стили для карточек */
+.judo-tournament-card.live {
+    border-left: 4px solid #e53e3e;
+}
+
+.tournament-description {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* Статусы */
+.status-live {
+    background: #e53e3e;
+    color: white;
+}
+
+.status-planned {
+    background: #3182ce;
+    color: white;
+}
+
+.status-completed {
+    background: #38a169;
+    color: white;
+}
+
+.status-registration {
+    background: #d69e2e;
+    color: white;
+}
+
+.status-weighing {
+    background: #6b46c1;
+    color: white;
+}
+
+.status-brackets {
+    background: #dd6b20;
+    color: white;
+}
 
 /* Фильтры */
 .judo-tournament-setting_search {

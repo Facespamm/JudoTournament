@@ -27,87 +27,109 @@
         <option value="Атырау">Атырау</option>
       </select>
 
-      <input
-          type="search"
-          name="athlete_search"
-          placeholder="Поиск спортсменов"
-          class="search-input"
-      />
-
-      <button
-          type="button"
-          class="register-button"
-          @click="$router.push('/registrationathletes')"
-      >
-        Зарегистрировать участника
-      </button>
+      <input type="search" placeholder="Поиск спортсменов" class="search-input" />
     </div>
 
     <!-- СПИСОК -->
     <div class="judo_form-athletes_info">
       <section class="judo-list">
         <h2>Лучшие дзюдоисты</h2>
-        <div class="cards-container">
-          <article class="judo-card">
-            <div class="rank-badge">#1</div>
+
+        <!-- Лоадер -->
+        <div v-if="isLoading" class="loading">
+          <div class="spinner"></div>
+          <p>Загрузка спортсменов...</p>
+        </div>
+
+        <!-- Ошибка -->
+        <div v-else-if="error" class="error">{{ error }}</div>
+
+        <!-- Карточки -->
+        <div v-else class="cards-container">
+          <article
+              v-for="(athlete, index) in athletes"
+              :key="athlete.id"
+              class="judo-card"
+              @click="goToAthleteDetail(athlete.id)"
+          >
+            <div class="rank-badge">#{{ index + 1 }}</div>
             <div class="judo_card_info">
-              <h3 class="judo_card_name">Азамат Сарсенбеков</h3>
+              <h3 class="judo_card_name">{{ getFullName(athlete) }}</h3>
               <div class="card-details">
-                <p class="judo_card_category">до 66 кг</p>
-                <p class="judo_card_city">Алматы</p>
-                <p class="judo_card_club">Динамо Алматы</p>
+                <div class="detail-row">
+                  <span class="detail-label">Разряд:</span>
+                  <span class="detail-value">{{ athlete.rank || 'Не указан' }}</span>
+                </div>
               </div>
             </div>
           </article>
-          <article class="judo-card">
-            <div class="rank-badge">#2</div>
-            <div class="judo_card_info">
-              <h3 class="judo_card_name">Гульжан Искакова</h3>
-              <div class="card-details">
-                <p class="judo_card_category">до 57 кг</p>
-                <p class="judo_card_city">Астана</p>
-                <p class="judo_card_club">Президентский клуб</p>
-              </div>
-            </div>
-          </article>
-          <article class="judo-card">
-            <div class="rank-badge">#3</div>
-            <div class="judo_card_info">
-              <h3 class="judo_card_name">Ерлан Серикжанов</h3>
-              <div class="card-details">
-                <p class="judo_card_category">до 81 кг</p>
-                <p class="judo_card_city">Шымкент</p>
-                <p class="judo_card_club">Южный ветер</p>
-              </div>
-            </div>
-          </article>
-          <article class="judo-card">
-            <div class="rank-badge">#4</div>
-            <div class="judo_card_info">
-              <h3 class="judo_card_name">Айгерим Абилова</h3>
-              <div class="card-details">
-                <p class="judo_card_category">до 48 кг</p>
-                <p class="judo_card_city">Актобе</p>
-                <p class="judo_card_club">Актобе Дзюдо</p>
-              </div>
-            </div>
-          </article>
+
+          <div v-if="athletes.length === 0" class="no-data">
+            <p>Спортсмены не найдены</p>
+          </div>
         </div>
       </section>
     </div>
 
-    <!-- КНОПКА -->
+    <!-- КНОПКА «Показать ещё» -->
     <div class="judo-tournament_button_pagination">
-      <button type="button" class="judo-tournament_button_pagination_next">
+      <button type="button" class="judo-tournament_button_pagination_next" @click="loadMore">
         Показать ещё
       </button>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import '@/components/View/Athletes/Athletes.css'
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { fetchAthletes } from '@/components/View/Athletes/fetchAthletes'
+import "@/components/View/Athletes/Athletes.css"
+
+const router = useRouter()
+const athletes = ref([])
+const isLoading = ref(true)
+const error = ref('')
+
+// Функция для получения полного имени
+const getFullName = (athlete) => {
+  if (athlete.full_name) return athlete.full_name
+  return `${athlete.last_name || ''} ${athlete.first_name || ''} ${athlete.middle_name || ''}`.trim()
+}
+
+// Функция перехода на детальную страницу атлета
+const goToAthleteDetail = (athleteId) => {
+  router.push(`/athlete/${athleteId}`)
+}
+
+const loadAthletes = async () => {
+  isLoading.value = true
+  const result = await fetchAthletes()
+
+  if (result.success) {
+    athletes.value = result.athletes
+  } else {
+    error.value = result.error || 'Ошибка загрузки'
+  }
+  isLoading.value = false
+}
+
+const loadMore = () => {
+  console.log('loadMore – пока без пагинации')
+}
+
+onMounted(() => {
+  loadAthletes()
+})
 </script>
 
 <style scoped>
+.judo-card {
+  cursor: pointer;
+}
+
+.judo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
 </style>

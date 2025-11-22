@@ -1,5 +1,15 @@
 <template>
-  <div class="judo_athletes">
+  <div class="registration_athletes">
+    <!-- TOAST УВЕДОМЛЕНИЕ -->
+    <transition name="fade">
+      <div v-if="toast.visible" class="toast-notification" :class="toast.type">
+        <div class="toast-content">
+          <span class="toast-icon">{{ toast.type === 'success' ? '✓' : '✕' }}</span>
+          <span class="toast-message">{{ toast.message }}</span>
+        </div>
+      </div>
+    </transition>
+
     <!-- ФОРМЫ РЕГИСТРАЦИИ -->
     <div class="judo_form-athletes_info">
       <section class="athlete-registration">
@@ -8,47 +18,110 @@
         <!-- Форма добавления спортсмена -->
         <div class="form-section">
           <h3>Добавить спортсмена</h3>
-          <form @submit.prevent="createAthlete">
+
+          <!-- Индикатор загрузки -->
+          <div v-if="isLoading" class="loading-overlay">
+            <div class="loading-spinner"></div>
+            <p>Создание спортсмена...</p>
+          </div>
+
+          <form @submit.prevent="createAthleteHandler">
             <div class="form-grid form-grid-multi">
+              <!-- Основные поля -->
               <div class="form-group">
-                <label for="full_name">ФИО</label>
+                <label for="last_name">Фамилия *</label>
                 <input
-                    v-model="athleteForm.full_name"
+                    v-model="athleteForm.last_name"
                     type="text"
-                    id="full_name"
-                    placeholder="Введите ФИО"
+                    id="last_name"
+                    placeholder="Введите фамилию"
+                    :disabled="isLoading"
                     required
                 />
-                <span v-if="errors.full_name" class="error">{{ errors.full_name }}</span>
+                <span v-if="errors.last_name" class="error">{{ errors.last_name }}</span>
               </div>
+
               <div class="form-group">
-                <label for="gender">Пол</label>
-                <select v-model="athleteForm.gender" id="gender" required>
+                <label for="first_name">Имя *</label>
+                <input
+                    v-model="athleteForm.first_name"
+                    type="text"
+                    id="first_name"
+                    placeholder="Введите имя"
+                    :disabled="isLoading"
+                    required
+                />
+                <span v-if="errors.first_name" class="error">{{ errors.first_name }}</span>
+              </div>
+
+              <div class="form-group">
+                <label for="middle_name">Отчество</label>
+                <input
+                    v-model="athleteForm.middle_name"
+                    type="text"
+                    id="middle_name"
+                    placeholder="Введите отчество"
+                    :disabled="isLoading"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="gender">Пол *</label>
+                <select v-model="athleteForm.gender" id="gender" :disabled="isLoading" required>
                   <option value="MALE">Мужской</option>
                   <option value="FEMALE">Женский</option>
                 </select>
               </div>
+
               <div class="form-group">
-                <label for="date_of_birth">Дата рождения</label>
+                <label for="date_of_birth">Дата рождения *</label>
                 <input
                     v-model="athleteForm.date_of_birth"
                     type="date"
                     id="date_of_birth"
+                    :disabled="isLoading"
                     required
                 />
                 <span v-if="errors.date_of_birth" class="error">{{ errors.date_of_birth }}</span>
               </div>
+
               <div class="form-group">
-                <label for="region">Регион</label>
+                <label for="region">Регион *</label>
                 <input
                     v-model="athleteForm.region"
                     type="text"
                     id="region"
                     placeholder="Введите регион"
+                    :disabled="isLoading"
                     required
                 />
                 <span v-if="errors.region" class="error">{{ errors.region }}</span>
               </div>
+
+              <!-- Контактная информация -->
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                    v-model="athleteForm.email"
+                    type="email"
+                    id="email"
+                    placeholder="Введите email"
+                    :disabled="isLoading"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="phone">Телефон</label>
+                <input
+                    v-model="athleteForm.phone"
+                    type="tel"
+                    id="phone"
+                    placeholder="+7 (999) 123-45-67"
+                    :disabled="isLoading"
+                />
+              </div>
+
+              <!-- Спортивная информация -->
               <div class="form-group">
                 <label for="club">Клуб</label>
                 <input
@@ -56,8 +129,10 @@
                     type="text"
                     id="club"
                     placeholder="Введите клуб"
+                    :disabled="isLoading"
                 />
               </div>
+
               <div class="form-group">
                 <label for="coach">Тренер</label>
                 <input
@@ -65,10 +140,61 @@
                     type="text"
                     id="coach"
                     placeholder="Введите тренера"
+                    :disabled="isLoading"
                 />
               </div>
+
+              <div class="form-group">
+                <label for="license_number">Номер лицензии</label>
+                <input
+                    v-model="athleteForm.license_number"
+                    type="text"
+                    id="license_number"
+                    placeholder="Введите номер лицензии"
+                    :disabled="isLoading"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="rank">Разряд</label>
+                <select v-model="athleteForm.rank" id="rank" :disabled="isLoading">
+                  <option value="">Выберите разряд</option>
+                  <option value="Нет разряда">Нет разряда</option>
+                  <option value="3 юношеский">3 юношеский</option>
+                  <option value="2 юношеский">2 юношеский</option>
+                  <option value="1 юношеский">1 юношеский</option>
+                  <option value="3 взрослый">3 взрослый</option>
+                  <option value="2 взрослый">2 взрослый</option>
+                  <option value="1 взрослый">1 взрослый</option>
+                  <option value="КМС">КМС</option>
+                  <option value="МС">МС</option>
+                  <option value="МСМК">МСМК</option>
+                </select>
+              </div>
+
+              <!-- Медицинская справка -->
+              <div class="form-group checkbox-group">
+                <label for="medical_check" class="checkbox-label">
+                  <input
+                      v-model="athleteForm.medical_check"
+                      type="checkbox"
+                      id="medical_check"
+                      :disabled="isLoading"
+                  />
+                  Медицинская справка есть
+                </label>
+              </div>
             </div>
-            <button type="submit" class="submit-button">Добавить спортсмена</button>
+
+            <div class="form-actions">
+              <button
+                  type="submit"
+                  class="submit-button"
+                  :disabled="isLoading"
+              >
+                {{ isLoading ? 'Создание...' : 'Добавить спортсмена' }}
+              </button>
+            </div>
           </form>
         </div>
 
@@ -141,16 +267,34 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import '@/components/View/Athletes/Athletes.css'
+import { createAthlete, fetchAthletes } from '@/components/View/RegistrationAthletes/fetchRegistrationAthletes'
+import "./RegistrationAthletes.css"
+
+// Состояние загрузки
+const isLoading = ref(false)
+
+// Toast состояние
+const toast = ref({
+  visible: false,
+  message: '',
+  type: 'success' // success | error
+})
 
 // Данные для форм
 const athleteForm = ref({
-  full_name: '',
+  last_name: '',
+  first_name: '',
+  middle_name: '',
   gender: 'MALE',
   date_of_birth: '',
   region: '',
+  email: '',
+  phone: '',
   club: '',
-  coach: ''
+  coach: '',
+  license_number: '',
+  rank: '',
+  medical_check: true
 })
 
 const registrationForm = ref({
@@ -168,14 +312,28 @@ const athletes = ref([])
 const tournaments = ref([])
 const registrations = ref([])
 
+// Универсальная функция показа toast
+const showToast = (message, type = 'success', duration = type === 'success' ? 3000 : 4000) => {
+  toast.value = { visible: true, message, type }
+  setTimeout(() => {
+    toast.value.visible = false
+  }, duration)
+}
+
 // Получение данных
-const fetchAthletes = async () => {
+const loadAthletes = async () => {
   try {
-    const response = await fetch('/api/athletes', {
-      headers: { 'X-API-Key': 'mobile_app_2024' }
-    })
-    if (!response.ok) throw new Error('Ошибка загрузки спортсменов')
-    athletes.value = await response.json()
+    const result = await fetchAthletes()
+    if (result.success) {
+      athletes.value = result.data
+      // Добавляем full_name для отображения в выпадающих списках
+      athletes.value = athletes.value.map(athlete => ({
+        ...athlete,
+        full_name: `${athlete.last_name} ${athlete.first_name} ${athlete.middle_name || ''}`.trim()
+      }))
+    } else {
+      console.error('Ошибка загрузки спортсменов:', result.error)
+    }
   } catch (error) {
     console.error('Ошибка:', error)
   }
@@ -245,8 +403,12 @@ const validateAthleteForm = () => {
   errors.value = {}
   let isValid = true
 
-  if (!athleteForm.value.full_name) {
-    errors.value.full_name = 'ФИО обязательно'
+  if (!athleteForm.value.last_name) {
+    errors.value.last_name = 'Фамилия обязательна'
+    isValid = false
+  }
+  if (!athleteForm.value.first_name) {
+    errors.value.first_name = 'Имя обязательно'
     isValid = false
   }
   if (!athleteForm.value.date_of_birth) {
@@ -290,28 +452,44 @@ const validateWeighingForm = () => {
   return isValid
 }
 
-const createAthlete = async () => {
+const createAthleteHandler = async () => {
   if (!validateAthleteForm()) return
 
+  isLoading.value = true
+
   try {
-    // Мок запрос для демонстрации
-    console.log('Создание спортсмена:', athleteForm.value)
+    const result = await createAthlete(athleteForm.value)
 
-    // В реальности будет:
-    // const response = await fetch('/api/athletes', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'X-API-Key': 'mobile_app_2024'
-    //   },
-    //   body: JSON.stringify(athleteForm.value)
-    // })
+    if (result.success) {
+      showToast('Спортсмен успешно добавлен!', 'success')
 
-    alert('Спортсмен добавлен!')
-    athleteForm.value = { full_name: '', gender: 'MALE', date_of_birth: '', region: '', club: '', coach: '' }
-    await fetchAthletes()
+      // Сброс формы
+      athleteForm.value = {
+        last_name: '',
+        first_name: '',
+        middle_name: '',
+        gender: 'MALE',
+        date_of_birth: '',
+        region: '',
+        email: '',
+        phone: '',
+        club: '',
+        coach: '',
+        license_number: '',
+        rank: '',
+        medical_check: true
+      }
+
+      await loadAthletes() // Обновляем список спортсменов
+    } else {
+      showToast(result.error || 'Ошибка при добавлении спортсмена', 'error')
+    }
+
   } catch (error) {
-    alert('Ошибка: ' + error.message)
+    console.error('Ошибка при создании спортсмена:', error)
+    showToast('Ошибка при добавлении спортсмена: ' + error.message, 'error')
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -322,21 +500,11 @@ const registerAthlete = async () => {
     // Мок запрос для демонстрации
     console.log('Регистрация на турнир:', registrationForm.value)
 
-    // В реальности будет:
-    // const response = await fetch(`/api/tournaments/${registrationForm.value.tournament_id}/register`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'X-API-Key': 'mobile_app_2024'
-    //   },
-    //   body: JSON.stringify({ athlete_id: registrationForm.value.athlete_id })
-    // })
-
-    alert('Спортсмен зарегистрирован!')
+    showToast('Спортсмен зарегистрирован на турнир!', 'success')
     registrationForm.value = { tournament_id: null, athlete_id: null }
     await fetchRegistrations()
   } catch (error) {
-    alert('Ошибка: ' + error.message)
+    showToast('Ошибка: ' + error.message, 'error')
   }
 }
 
@@ -356,31 +524,20 @@ const weighAthlete = async () => {
       tournament_id: registration.tournament_id,
       athlete_id: registration.athlete_id,
       weight: weighingForm.value.weight
-      // weight_category определится автоматически в бэкенде
     }
 
     console.log('Отправка взвешивания:', payload)
-
-    // Мок запрос - в реальности будет:
-    // const response = await fetch('/api/weighings', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'X-API-Key': 'mobile_app_2024'
-    //   },
-    //   body: JSON.stringify(payload)
-    // })
 
     // Мок ответ для демонстрации
     const mockResponse = {
       category: determineMockCategory(weighingForm.value.weight, registration.athlete_id)
     }
 
-    alert(`Вес зарегистрирован! Категория: ${mockResponse.category}`)
+    showToast(`Вес зарегистрирован! Категория: ${mockResponse.category}`, 'success')
     weighingForm.value = { registration_id: null, weight: null }
     await fetchRegistrations()
   } catch (error) {
-    alert('Ошибка: ' + error.message)
+    showToast('Ошибка: ' + error.message, 'error')
   }
 }
 
@@ -397,234 +554,11 @@ const determineMockCategory = (weight, athleteId) => {
 }
 
 onMounted(() => {
-  fetchAthletes()
+  loadAthletes()
   fetchTournaments()
   fetchRegistrations()
 })
 </script>
+
 <style scoped>
-.judo_athletes {
-  width: 100%;
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #fefefe, #f8f9fa);
-  font-family: 'Inter', 'Segoe UI', sans-serif;
-  color: #1a1a1a;
-  padding: 4rem 0;
-  margin: 0;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.judo_form-athletes_info {
-  max-width: 1600px; /* Сохранена широкая форма */
-  width: 95%;
-  margin: 0 auto;
-  padding: 0 3rem;
-}
-
-.athlete-registration {
-  background: white;
-  border-radius: 20px;
-  padding: 3rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  margin: 0;
-}
-
-.athlete-registration h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  text-align: center;
-  margin-bottom: 2rem;
-  letter-spacing: -0.02em;
-}
-
-.form-section {
-  margin-bottom: 3rem;
-  border-bottom: 1px solid #e8e8e8;
-  padding-bottom: 2rem;
-}
-
-.form-section:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-}
-
-.form-section h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 1.5rem;
-}
-
-.form-grid {
-  display: grid;
-  gap: 2rem;
-}
-
-.form-grid-multi {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.form-grid-double {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
-.form-group input,
-.form-group select {
-  padding: 0.9rem 1.2rem;
-  border: 2px solid #e8e8e8;
-  border-radius: 10px;
-  font-size: 1rem;
-  color: #333;
-  background: #fafafa;
-  transition: all 0.2s ease;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.form-group select {
-  max-width: 300px; /* Ограничение максимальной ширины для дропдаунов */
-  width: auto; /* Автоматическая ширина на основе содержимого */
-  min-width: 200px; /* Минимальная ширина для читаемости */
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #c89b3c;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(200, 155, 60, 0.1);
-}
-
-.form-group input::placeholder {
-  color: #999;
-}
-
-.form-group .error {
-  color: #d32f2f;
-  font-size: 0.85rem;
-  margin-top: 0.3rem;
-}
-
-.submit-button {
-  background: linear-gradient(135deg, #c89b3c, #e0b456);
-  color: white;
-  padding: 0.9rem 2.5rem;
-  border: none;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: block;
-  width: fit-content;
-  margin: 2rem auto 0;
-}
-
-.submit-button:hover {
-  background: linear-gradient(135deg, #e0b456, #c89b3c);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(200, 155, 60, 0.3);
-}
-
-.submit-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(200, 155, 60, 0.2);
-}
-
-/* Адаптивность */
-@media (max-width: 1400px) {
-  .judo_form-athletes_info {
-    max-width: 1300px;
-  }
-
-  .form-grid-multi {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .form-grid-double {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .judo_athletes {
-    padding: 2rem 0;
-  }
-
-  .judo_form-athletes_info {
-    padding: 0 1rem;
-    width: 95%;
-  }
-
-  .athlete-registration {
-    padding: 1.5rem;
-    border-radius: 16px;
-  }
-
-  .athlete-registration h2 {
-    font-size: 1.6rem;
-  }
-
-  .form-section h3 {
-    font-size: 1.3rem;
-  }
-
-  .form-grid-multi {
-    grid-template-columns: 1fr;
-  }
-
-  .form-group select {
-    max-width: 100%; /* Полная ширина на мобильных */
-    min-width: 0; /* Удаление минимальной ширины на мобильных */
-  }
-
-  .submit-button {
-    width: 100%;
-    padding: 0.85rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .judo_athletes {
-    padding: 1.5rem 0;
-  }
-
-  .athlete-registration {
-    padding: 1rem;
-  }
-
-  .athlete-registration h2 {
-    font-size: 1.4rem;
-  }
-
-  .form-section h3 {
-    font-size: 1.15rem;
-  }
-
-  .form-group input,
-  .form-group select {
-    font-size: 0.95rem;
-    padding: 0.8rem;
-  }
-
-  .submit-button {
-    font-size: 0.95rem;
-  }
-}
 </style>
