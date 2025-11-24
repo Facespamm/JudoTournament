@@ -68,8 +68,8 @@
               <div class="form-group">
                 <label for="gender">Пол *</label>
                 <select v-model="athleteForm.gender" id="gender" :disabled="isLoading" required>
-                  <option value="MALE">Мужской</option>
-                  <option value="FEMALE">Женский</option>
+                  <option value="M">Мужской</option>
+                  <option value="F">Женский</option>
                 </select>
               </div>
 
@@ -285,7 +285,7 @@ const athleteForm = ref({
   last_name: '',
   first_name: '',
   middle_name: '',
-  gender: 'MALE',
+  gender: 'M',
   date_of_birth: '',
   region: '',
   email: '',
@@ -468,7 +468,7 @@ const createAthleteHandler = async () => {
         last_name: '',
         first_name: '',
         middle_name: '',
-        gender: 'MALE',
+        gender: 'M',
         date_of_birth: '',
         region: '',
         email: '',

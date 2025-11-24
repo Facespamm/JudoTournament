@@ -15,6 +15,7 @@ import AdminDashboard from "@/components/View/AdminDashboard/AdminDashboard.vue"
 import Clubs from "@/components/View/Clubs/Clubs.vue";
 import Users from "@/components/View/Users/Users.vue";
 import AthleteDetail from "@/components/View/AthleteDetail/AthleteDetail.vue";
+import TournamentSettings from "@/components/View/AdminDashboard/TournamentSettings.vue";
 const routes = [
     { path: '/', redirect: '/home' },
 
@@ -84,6 +85,10 @@ const routes = [
         path: '/admin/users',
         name: 'users',
         component: Users,
+    },{
+        path: '/admin/tournament-settings',
+        name: 'tournament-settings',
+        component: TournamentSettings,
     }, {
         path: '/athlete/:id',
         name: 'athlete-detail',

@@ -36,3 +36,48 @@ export const createTournament = async (tournamentData) => {
         return { success: false, error: error.message || 'Произошла неизвестная ошибка' }
     }
 }
+
+export const createCategory = async (categoryData) => {
+    try {
+        const response = await fetch(`http://127.0.0.1:5001/categories/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-Key': 'mobile_app_2024'
+            },
+            body: JSON.stringify(categoryData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Ошибка при создании категории');
+        }
+
+        const result = await response.json();
+        return { success: true, data: result };
+    } catch (error) {
+        console.error('Ошибка при создании категории:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+export const fetchCategories = async (tournamentId) => {
+    try {
+        const response = await fetch(`http://127.0.0.1:5001/categories/?tournament_id=${tournamentId}`, {
+            headers: {
+                'X-API-Key': 'mobile_app_2024'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Ошибка при загрузке категорий');
+        }
+
+        const result = await response.json();
+        return { success: true, data: result };
+    } catch (error) {
+        console.error('Ошибка при загрузке категорий:', error);
+        return { success: false, error: error.message };
+    }
+};
+

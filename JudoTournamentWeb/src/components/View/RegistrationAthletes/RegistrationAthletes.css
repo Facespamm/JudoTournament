@@ -107,7 +107,8 @@
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
     padding: 0.75rem;
     border: 2px solid #e8e8e8;
     border-radius: 8px;
@@ -116,13 +117,15 @@
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
     outline: none;
     border-color: #c89b3c;
 }
 
 .form-group input:disabled,
-.form-group select:disabled {
+.form-group select:disabled,
+.form-group textarea:disabled {
     background-color: #f5f5f5;
     cursor: not-allowed;
 }
@@ -151,14 +154,14 @@
     display: block;
 }
 
-/* ОТСТУПЫ ДЛЯ КНОПОК КАК В ПЕРВОМ БЛОКЕ */
+/* ОТСТУПЫ ДЛЯ КНОПОК */
 .form-actions {
     margin-top: 1.5rem;
     text-align: center;
 }
 
-/* Для блоков "Зарегистрировать на турнир" и "Взвешивание" */
-.form-section:not(:first-child) .submit-button {
+/* Для формы взвешивания - кнопка под формой */
+.form-section:last-child .submit-button {
     margin-top: 1.5rem;
     width: 100%;
     max-width: 300px;
@@ -253,6 +256,10 @@
         grid-template-columns: 1fr;
     }
 
+    .form-grid-double {
+        grid-template-columns: 1fr;
+    }
+
     .toast-notification {
         left: 20px;
         right: 20px;
@@ -261,9 +268,14 @@
     }
 
     /* Адаптив для кнопок */
-    .form-section:not(:first-child) .submit-button {
+    .form-section:last-child .submit-button {
         max-width: 100%;
         width: 100%;
+    }
+
+    .form-actions .submit-button {
+        width: 100%;
+        max-width: 100%;
     }
 }
 
@@ -282,5 +294,21 @@
 
     .form-section h3 {
         font-size: 1.1rem;
+    }
+
+    .form-section {
+        padding: 1rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .submit-button {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
     }
 }

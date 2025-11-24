@@ -61,7 +61,7 @@
     <div class="quick-actions-section">
       <h2>Быстрые действия</h2>
       <div class="actions-grid">
-        <button class="action-btn" @click="openCreateModal">
+        <button class="action-btn" @click="navigateToCreateTournament">
           <span class="action-icon">➕</span>
           <span class="action-text">Создать турнир</span>
         </button>
@@ -109,17 +109,10 @@
 
         <div v-if="activeTournaments.length === 0" class="no-tournaments">
           <p>Нет активных турниров</p>
-          <button class="create-btn" @click="openCreateModal">Создать первый турнир</button>
+          <button class="create-btn" @click="navigateToCreateTournament">Создать первый турнир</button>
         </div>
       </div>
     </div>
-
-    <!-- МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ТУРНИРА -->
-    <CreateTournamentModal
-        :is-open="isCreateModalOpen"
-        @close="closeCreateModal"
-        @submit="handleTournamentCreation"
-    />
 
     <!-- TOAST УВЕДОМЛЕНИЕ (встроенное) -->
     <transition name="fade">
@@ -136,16 +129,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import CreateTournamentModal from '@/components/View/AdminDashboard/CreateTournamentModal.vue'
 
 const router = useRouter()
 
 const stats = ref({})
 const activeTournaments = ref([])
 const recentEvents = ref([])
-
-// Модалка создания турнира
-const isCreateModalOpen = ref(false)
 
 // Toast состояние
 const toast = ref({
@@ -154,24 +143,9 @@ const toast = ref({
   type: 'success' // success | error
 })
 
-const openCreateModal = () => {
-  isCreateModalOpen.value = true
-}
-
-const closeCreateModal = () => {
-  isCreateModalOpen.value = false
-}
-
-// Главная функция — обработка создания турнира
-const handleTournamentCreation = async (result) => {
-  closeCreateModal() // закрываем модалку сразу
-
-  if (result.success) {
-    showToast('Турнир успешно создан!', 'success')
-    await loadDashboardData() // обновляем статистику и список турниров
-  } else {
-    showToast(result.error || 'Ошибка при создании турнира', 'error')
-  }
+// Навигация на страницу создания турнира
+const navigateToCreateTournament = () => {
+  router.push('/admin/tournament-settings')
 }
 
 // Универсальная функция показа toast
