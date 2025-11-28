@@ -1,10 +1,3 @@
-// api/athletes.js
-
-/**
- * Создание нового спортсмена
- * @param {Object} athleteData - Данные спортсмена
- * @returns {Promise<Object>} - Результат операции
- */
 export const createAthlete = async (athleteData) => {
     try {
         // Подготавливаем данные в нужном формате
@@ -50,10 +43,6 @@ export const createAthlete = async (athleteData) => {
     }
 }
 
-/**
- * Получение списка спортсменов
- * @returns {Promise<Object>} - Результат операции
- */
 export const fetchAthletes = async () => {
     try {
         const response = await fetch('http://127.0.0.1:5001/athletes/', {
@@ -79,3 +68,28 @@ export const fetchAthletes = async () => {
         };
     }
 }
+
+export const createRecordWeight = async (categoryData) => {
+    try {
+        const response = await fetch(`http://127.0.0.1:5001/weighing/
+`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-Key': 'mobile_app_2024'
+            },
+            body: JSON.stringify(categoryData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Ошибка при создании категории');
+        }
+
+        const result = await response.json();
+        return { success: true, data: result };
+    } catch (error) {
+        console.error('Ошибка при создании категории:', error);
+        return { success: false, error: error.message };
+    }
+};

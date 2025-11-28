@@ -138,7 +138,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { fetchTournaments } from '@/components/View/Tournaments/fetchTournaments.js'
-import { createCategory } from '@/components/View/AdminDashboard/fetchAdmin.js'
+import { createCategory } from '@/components/View/TournamentManagement/fetchTournamentManagement.js'
 
 const props = defineProps({
   newTournamentId: {

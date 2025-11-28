@@ -87,23 +87,32 @@
     gap: 1rem;
 }
 
+/* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ СЕТКИ */
 .form-grid-multi {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .form-grid-double {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
+/* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ ФОРМ-ГРУПП */
 .form-group {
     display: flex;
     flex-direction: column;
+}
+
+/* ОСОБЫЕ СТИЛИ ДЛЯ ПОЛЕЙ ИМЕНИ И ФАМИЛИИ */
+.form-group:has(#last_name),
+.form-group:has(#first_name) {
+    grid-column: span 1;
 }
 
 .form-group label {
     font-weight: 600;
     margin-bottom: 0.5rem;
     color: #333;
+    font-size: 0.9rem;
 }
 
 .form-group input,
@@ -114,6 +123,8 @@
     border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .form-group input:focus,
@@ -260,6 +271,12 @@
         grid-template-columns: 1fr;
     }
 
+    /* Обеспечиваем одинаковую ширину полей на мобильных */
+    .form-group:has(#last_name),
+    .form-group:has(#first_name) {
+        grid-column: span 1;
+    }
+
     .toast-notification {
         left: 20px;
         right: 20px;
@@ -311,4 +328,19 @@
         padding: 0.6rem 1.5rem;
         font-size: 0.9rem;
     }
+}
+
+/* ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ ВЫРАВНИВАНИЯ */
+.form-grid-multi .form-group {
+    min-width: 0; /* Предотвращает растягивание */
+}
+
+/* Гарантируем, что все поля в одной строке имеют одинаковую ширину */
+.form-grid-multi > .form-group {
+    flex: 1;
+}
+
+/* Особые стили для полей, которые должны занимать полную ширину */
+.form-group.full-width {
+    grid-column: 1 / -1;
 }

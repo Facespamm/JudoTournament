@@ -77,35 +77,12 @@
         </div>
       </section>
 
-      <!-- КНОПКА СОЗДАНИЯ СЕТКИ -->
-      <section class="bracket-setup" v-if="!bracketGenerated">
-        <button class="create-bracket-btn" @click="showModal = true">Создать турнирную сетку</button>
-      </section>
-
-      <!-- МОДАЛЬНОЕ ОКНО -->
-      <div class="modal-overlay" v-if="showModal" @click="showModal = false">
-        <div class="modal-content" @click.stop>
-          <button class="modal-close" @click="showModal = false">×</button>
-          <h2>Настройка турнирной сетки</h2>
-          <div class="setup-group">
-            <label>Количество участников:</label>
-            <select v-model.number="participantsCount">
-              <option :value="4">4 участника</option>
-              <option :value="8">8 участников</option>
-              <option :value="16">16 участников</option>
-            </select>
-          </div>
-          <div class="setup-group">
-            <label>Участники (введите имена через Enter):</label>
-            <textarea
-                v-model="participantsInput"
-                placeholder="Введите имена участников (по одному на строку)"
-                rows="8"
-            ></textarea>
-          </div>
-          <button class="action-button" @click="generateBracket">Создать сетку</button>
-        </div>
-      </div>
+      <!-- КОМПОНЕНТ СОЗДАНИЯ СЕТКИ -->
+      <BracketCreation
+          v-if="!bracketGenerated"
+          @bracket-created="handleBracketCreated"
+          ref="bracketCreationRef"
+      />
 
       <!-- СЕТКА ТУРНИРА -->
       <section class="bracket-section" v-if="bracketGenerated">
@@ -135,39 +112,16 @@
                 >
                   <div class="team-slot" :class="{ winner: match.winner === 1 }">
                     <span class="team-name">{{ match.team1 || 'TBD' }}</span>
-                    <input
-                        v-model.number="match.score1"
-                        type="number"
-                        min="0"
-                        class="score-input"
-                        @input="updateMatch(roundIndex, matchIndex)"
-                    />
+                    <span class="score-display">{{ match.score1 }}</span>
                   </div>
                   <div class="vs-divider">VS</div>
                   <div class="team-slot" :class="{ winner: match.winner === 2 }">
                     <span class="team-name">{{ match.team2 || 'TBD' }}</span>
-                    <input
-                        v-model.number="match.score2"
-                        type="number"
-                        min="0"
-                        class="score-input"
-                        @input="updateMatch(roundIndex, matchIndex)"
-                    />
+                    <span class="score-display">{{ match.score2 }}</span>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- СПИСОК УЧАСТНИКОВ -->
-      <section class="participants-list">
-        <h2>Список участников</h2>
-        <div class="participants-grid">
-          <div v-for="participant in participants" :key="participant.id" class="participant-card">
-            <span class="participant-name">{{ participant.name }}</span>
-            <span class="participant-club">{{ participant.club }}</span>
           </div>
         </div>
       </section>
@@ -179,16 +133,16 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchTournamentDetail } from '@/components/View/TournamentDetails/fetchTournamentDetail.js'
+import BracketCreation from '@/components/View/TournamentDetails/BracketCreation.vue'
 import "@/components/View/TournamentDetails/TournamentDetails.css"
 
 const route = useRoute()
 const tournament = ref(null)
 const isLoading = ref(true)
 const error = ref('')
-
-// ДЛЯ ОТЛАДКИ
-console.log('TournamentDetails mounted, route params:', route.params)
-console.log('Tournament ID from URL:', route.params.id)
+const bracketGenerated = ref(false)
+const bracketData = ref([])
+const bracketCreationRef = ref(null)
 
 // Вспомогательные функции
 const formatDate = (startDate, endDate) => {
@@ -237,7 +191,23 @@ const getStatusText = (status) => {
   return statusMap[status] || status
 }
 
-// Загрузка данных турнира - ИСПРАВЛЕННАЯ ВЕРСИЯ
+// Обработчик создания сетки
+const handleBracketCreated = (rounds) => {
+  bracketData.value = rounds
+  bracketGenerated.value = true
+}
+
+// Сброс сетки
+const resetBracket = () => {
+  bracketGenerated.value = false
+  bracketData.value = []
+  // Используем метод resetBracket из дочернего компонента, если он доступен
+  if (bracketCreationRef.value && bracketCreationRef.value.resetBracket) {
+    bracketCreationRef.value.resetBracket()
+  }
+}
+
+// Загрузка данных турнира
 const loadTournamentDetail = async () => {
   isLoading.value = true
   error.value = ''
@@ -253,18 +223,12 @@ const loadTournamentDetail = async () => {
     const response = await fetchTournamentDetail(tournamentId)
     console.log('API Response:', response)
 
-    // ИСПРАВЛЕНИЕ: Проверяем разные возможные структуры ответа
     if (response && response.success !== false) {
-      // Если есть поле tournament (как в athletes)
       if (response.tournament) {
         tournament.value = response.tournament
-      }
-      // Если данные прямо в корне (как в примере из задания)
-      else if (response.id) {
+      } else if (response.id) {
         tournament.value = response
-      }
-      // Если другой формат
-      else {
+      } else {
         tournament.value = response
       }
     } else {
@@ -293,114 +257,13 @@ const loadTournamentDetail = async () => {
   }
 }
 
-// Остальной код для сетки остается без изменений
-const bracketGenerated = ref(false)
-const participantsCount = ref(8)
-const participantsInput = ref('')
-const bracketData = ref([])
-const showModal = ref(false)
-
-const participants = ref([
-  { id: 1, name: 'Азамат Сарсенбеков', club: 'Динамо Алматы' },
-  { id: 2, name: 'Гульжан Искакова', club: 'Президентский клуб' },
-  { id: 3, name: 'Ерлан Касымов', club: 'Жастар' },
-  { id: 4, name: 'Айгуль Нургалиева', club: 'Барыс' }
-])
-
-const generateBracket = () => {
-  const names = participantsInput.value
-      .split('\n')
-      .map(n => n.trim())
-      .filter(n => n.length > 0)
-
-  if (names.length < 2) {
-    alert('Введите минимум 2 участника')
-    return
-  }
-
-  while (names.length < participantsCount.value) {
-    names.push(`Участник ${names.length + 1}`)
-  }
-
-  const teamsList = names.slice(0, participantsCount.value)
-
-  const rounds = []
-  let currentTeams = [...teamsList]
-
-  while (currentTeams.length > 1) {
-    const matches = []
-    const roundName = currentTeams.length === 2 ? 'Финал' :
-        currentTeams.length === 4 ? 'Полуфинал' :
-            `1/${currentTeams.length / 2} финала`
-
-    for (let i = 0; i < currentTeams.length; i += 2) {
-      matches.push({
-        team1: currentTeams[i],
-        team2: currentTeams[i + 1] || 'TBD',
-        score1: 0,
-        score2: 0,
-        winner: null,
-        status: 'SCHEDULED'
-      })
-    }
-
-    rounds.push({ name: roundName, matches })
-    currentTeams = new Array(Math.ceil(currentTeams.length / 2)).fill('TBD')
-  }
-
-  bracketData.value = rounds
-  bracketGenerated.value = true
-  showModal.value = false
-}
-
-const updateMatch = (roundIdx, matchIdx) => {
-  const match = bracketData.value[roundIdx].matches[matchIdx]
-
-  if (match.score1 > 0 || match.score2 > 0) {
-    match.status = 'LIVE'
-  } else {
-    match.status = 'SCHEDULED'
-  }
-
-  if (match.score1 > match.score2) {
-    match.winner = 1
-  } else if (match.score2 > match.score1) {
-    match.winner = 2
-  } else {
-    match.winner = null
-  }
-
-  if (match.winner && roundIdx < bracketData.value.length - 1) {
-    const winnerName = match.winner === 1 ? match.team1 : match.team2
-    const nextRound = bracketData.value[roundIdx + 1]
-    const nextMatchIdx = Math.floor(matchIdx / 2)
-    const slot = matchIdx % 2 === 0 ? 'team1' : 'team2'
-    nextRound.matches[nextMatchIdx][slot] = winnerName
-
-    match.status = 'COMPLETED'
-  }
-
-  if (roundIdx < bracketData.value.length - 1) {
-    const nextMatch = bracketData.value[roundIdx + 1].matches[Math.floor(matchIdx / 2)]
-    if (nextMatch.team1 && nextMatch.team2 && nextMatch.team1 !== 'TBD' && nextMatch.team2 !== 'TBD') {
-      nextMatch.status = 'SCHEDULED'
-    }
-  }
-}
-
-const resetBracket = () => {
-  bracketGenerated.value = false
-  bracketData.value = []
-  participantsInput.value = ''
-  showModal.value = true
-}
-
 onMounted(() => {
   loadTournamentDetail()
 })
 </script>
 
 <style scoped>
+/* Стили остаются такими же как в оригинале */
 .tournament-detail-header {
   display: flex;
   align-items: center;
@@ -522,5 +385,15 @@ onMounted(() => {
 
 .retry-button:hover {
   background: #e0b456;
+}
+
+.score-display {
+  min-width: 30px;
+  text-align: center;
+  font-weight: 600;
+  color: #333;
+  padding: 0.25rem 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
 }
 </style>

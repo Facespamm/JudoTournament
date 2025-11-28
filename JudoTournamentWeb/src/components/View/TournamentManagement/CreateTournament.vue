@@ -143,7 +143,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { createTournament } from '@/components/View/AdminDashboard/fetchAdmin.js'
+import { createTournament } from '@/components/View/TournamentManagement/fetchTournamentManagement.js'
 
 const emit = defineEmits(['tournament-created'])
 
@@ -298,8 +298,16 @@ const submit = async () => {
   flex-direction: column;
 }
 
+/* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ ПОЛНОЙ ШИРИНЫ */
 .form-group.full-width {
   grid-column: 1 / -1;
+  width: 100%;
+}
+
+/* ОСОБЫЕ СТИЛИ ДЛЯ ОПИСАНИЯ И ОРГАНИЗАТОРА */
+.form-group:has(#description),
+.form-group:has(#organizer) {
+  grid-column: span 1;
 }
 
 .form-group label {
@@ -318,6 +326,7 @@ const submit = async () => {
   transition: border-color 0.3s ease;
   font-family: inherit;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group input:focus,
@@ -336,6 +345,15 @@ const submit = async () => {
 .form-group textarea {
   resize: vertical;
   min-height: 80px;
+}
+
+/* Гарантируем одинаковую ширину для всех полей */
+.form-grid > .form-group {
+  min-width: 0; /* Предотвращает растягивание */
+}
+
+.form-grid > .form-group:not(.full-width) {
+  flex: 1;
 }
 
 .error {
@@ -380,6 +398,12 @@ const submit = async () => {
     gap: 0.8rem;
   }
 
+  /* На мобильных все поля занимают полную ширину */
+  .form-group:has(#description),
+  .form-group:has(#organizer) {
+    grid-column: 1 / -1;
+  }
+
   .form-actions {
     justify-content: stretch;
   }
@@ -387,6 +411,18 @@ const submit = async () => {
   .submit-button {
     min-width: auto;
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-group input,
+  .form-group textarea {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .form-group textarea {
+    min-height: 70px;
   }
 }
 </style>

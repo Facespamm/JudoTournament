@@ -104,7 +104,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { fetchTournaments } from '@/components/View/Tournaments/fetchTournaments.js'
 import { fetchAthletes } from '@/components/View/Athletes/fetchAthletes.js'
-import { fetchCategories } from '@/components/View/AdminDashboard/fetchAdmin.js'
+import { fetchCategories } from '@/components/View/TournamentManagement/fetchTournamentManagement.js'
 
 const isLoading = ref(false)
 const tournaments = ref([])

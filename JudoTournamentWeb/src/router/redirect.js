@@ -14,7 +14,14 @@ export function RedirectToAthletes(){
     window.location.href = "/Athletes";
 
 }
-export function RedirectToTournament(){
+export function RedirectToTournament() {
     window.location.href = "/Tournament";
+}
+export function RedirectToReferee() {
+    window.location.href = "/referees";
+}
+export function RedirectToAdmin() {
+    window.location.href = "/admin";
+
 
 }

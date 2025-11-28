@@ -47,9 +47,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import CreateTournament from '@/components/View/AdminDashboard/CreateTournament.vue'
-import ManageCategories from '@/components/View/AdminDashboard/ManageCategories.vue'
-import TournamentRegistration from '@/components/View/AdminDashboard/TournamentRegistration.vue'
+import CreateTournament from '@/components/View/TournamentManagement/CreateTournament.vue'
+import ManageCategories from '@/components/View/TournamentManagement/ManageCategories.vue'
+import TournamentRegistration from '@/components/View/TournamentManagement/TournamentRegistration.vue'
 
 const activeTab = ref('create')
 const newTournamentId = ref(null)

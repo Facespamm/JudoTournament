@@ -1,21 +1,13 @@
 <template>
-  <div class="admin-dashboard">
+  <div class="referee-dashboard">
     <!-- ЗАГОЛОВОК -->
     <div class="dashboard-header">
-      <h1>Панель администратора</h1>
-      <p>Обзор системы управления турнирами по дзюдо</p>
+      <h1>Панель судьи</h1>
+      <p>Управление схватками и турнирами</p>
     </div>
 
     <!-- СТАТИСТИКА -->
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">🏆</div>
-        <div class="stat-info">
-          <div class="stat-number">{{ stats.total_tournaments || 0 }}</div>
-          <div class="stat-label">Всего турниров</div>
-        </div>
-      </div>
-
       <div class="stat-card">
         <div class="stat-icon">⚡</div>
         <div class="stat-info">
@@ -33,22 +25,6 @@
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon">🏢</div>
-        <div class="stat-info">
-          <div class="stat-number">{{ stats.total_clubs || 0 }}</div>
-          <div class="stat-label">Клубов</div>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">👤</div>
-        <div class="stat-info">
-          <div class="stat-number">{{ stats.total_users || 0 }}</div>
-          <div class="stat-label">Пользователей</div>
-        </div>
-      </div>
-
-      <div class="stat-card">
         <div class="stat-icon">🥋</div>
         <div class="stat-info">
           <div class="stat-number">{{ stats.live_fights || 0 }}</div>
@@ -61,29 +37,19 @@
     <div class="quick-actions-section">
       <h2>Быстрые действия</h2>
       <div class="actions-grid">
-        <button class="action-btn" @click="navigateToCreateTournament">
-          <span class="action-icon">➕</span>
-          <span class="action-text">Создать турнир</span>
-        </button>
-
         <button class="action-btn" @click="navigateToBrackets">
           <span class="action-icon">📊</span>
           <span class="action-text">Сетки</span>
         </button>
 
-        <button class="action-btn" @click="navigateToUsers">
-          <span class="action-icon">👥</span>
-          <span class="action-text">Управление пользователями</span>
+        <button class="action-btn" @click="navigateToTatami">
+          <span class="action-icon">🎯</span>
+          <span class="action-text">Татами</span>
         </button>
 
-        <button class="action-btn" @click="navigateToClubs">
-          <span class="action-icon">🏢</span>
-          <span class="action-text">Управление клубами</span>
-        </button>
-
-        <button class="action-btn" @click="navigateToAthletes">
-          <span class="action-icon">🥋</span>
-          <span class="action-text">Управление дзюдоистами</span>
+        <button class="action-btn" @click="navigateToTournaments">
+          <span class="action-icon">🏆</span>
+          <span class="action-text">Турниры</span>
         </button>
       </div>
     </div>
@@ -114,7 +80,6 @@
 
         <div v-if="activeTournaments.length === 0" class="no-tournaments">
           <p>Нет активных турниров</p>
-          <button class="create-btn" @click="navigateToCreateTournament">Создать первый турнир</button>
         </div>
       </div>
     </div>
@@ -139,7 +104,6 @@ const router = useRouter()
 
 const stats = ref({})
 const activeTournaments = ref([])
-const recentEvents = ref([])
 
 // Toast состояние
 const toast = ref({
@@ -148,14 +112,19 @@ const toast = ref({
   type: 'success' // success | error
 })
 
-// Навигация на страницу создания турнира
-const navigateToCreateTournament = () => {
-  router.push('/admin/tournament-settings')
-}
-
 // Навигация к сеткам
 const navigateToBrackets = () => {
   router.push('/brackets')
+}
+
+// Навигация к татами
+const navigateToTatami = () => {
+  router.push('/tatami')
+}
+
+// Навигация к турнирам
+const navigateToTournaments = () => {
+  router.push('/tournament')
 }
 
 // Универсальная функция показа toast
@@ -173,7 +142,13 @@ const loadDashboardData = async () => {
       headers: { 'X-API-Key': 'mobile_app_2024' }
     })
     if (statsResponse.ok) {
-      stats.value = await statsResponse.json()
+      const data = await statsResponse.json()
+      // Берем только нужные поля для судьи
+      stats.value = {
+        active_tournaments: data.active_tournaments || 0,
+        total_athletes: data.total_athletes || 0,
+        live_fights: data.live_fights || 0
+      }
     }
 
     // Загрузка активных турниров
@@ -185,23 +160,13 @@ const loadDashboardData = async () => {
       activeTournaments.value = data.tournaments || []
     }
 
-    // Мок данные для событий
-    recentEvents.value = [
-      { id: 1, time: '10:30', text: 'Создан новый турнир "Кубок Астаны 2024"' },
-      { id: 2, time: '09:15', text: 'Зарегистрирован новый участник: Азамат Сарсенбеков' },
-      { id: 3, time: '08:45', text: 'Завершена схватка #24 в турнире "Чемпионат Казахстана"' }
-    ]
-
   } catch (error) {
     console.error('Ошибка загрузки данных:', error)
 
     // Мок данные для демонстрации
     stats.value = {
-      total_tournaments: 12,
       active_tournaments: 3,
       total_athletes: 245,
-      total_clubs: 18,
-      total_users: 8,
       live_fights: 2
     }
 
@@ -257,23 +222,7 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString('ru-RU')
 }
 
-// Навигация
-const navigateToTournaments = () => {
-  router.push('/tournament')
-}
-
-const navigateToUsers = () => {
-  router.push('/admin/users')
-}
-
-const navigateToClubs = () => {
-  router.push('/admin/clubs')
-}
-
-const navigateToAthletes = () => {
-  router.push('/registrationathletes')
-}
-
+// Навигация к конкретному турниру
 const navigateToTournament = (tournamentId) => {
   router.push(`/tournament/${tournamentId}`)
 }
@@ -284,7 +233,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.admin-dashboard {
+.referee-dashboard {
   padding: 90px 2rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
@@ -536,19 +485,8 @@ onMounted(() => {
   border: 2px dashed #e8e8e8;
 }
 
-.create-btn {
-  background: linear-gradient(135deg, #c89b3c, #e0b456);
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 1rem;
-}
-
 @media (max-width: 768px) {
-  .admin-dashboard {
+  .referee-dashboard {
     padding: 80px 1rem 1rem;
   }
 

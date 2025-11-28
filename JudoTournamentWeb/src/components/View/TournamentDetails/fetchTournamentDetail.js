@@ -1,7 +1,7 @@
 // @/components/View/Tournaments/fetchTournamentDetail.js
 export const fetchTournamentDetail = async (id) => {
     try {
-        const response = await fetch(`http://192.168.0.104:5001/tournaments/${id}`);
+        const response = await fetch(`http://127.0.0.1:5001/tournaments/${id}`);
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -18,3 +18,4 @@ export const fetchTournamentDetail = async (id) => {
         throw error;
     }
 };
+

@@ -9,13 +9,18 @@ import Tournament from "@/components/View/Tournaments/Tournament.vue"
 import RegistrationAthletes from "@/components/View/RegistrationAthletes/RegistrationAthletes.vue";
 import TournamentDetails from "@/components/View/TournamentDetails/TournamentDetails.vue";
 import Referees from"@/components/View/Referee/Referee.vue"
-import Tatami from "@/components/View/Tatami/Tatami.vue";
+import Fight from "@/components/View/Fight/Fight.vue";
 import Scoreboard from "@/components/View/Scoreboard/Scoreboard.vue";
 import AdminDashboard from "@/components/View/AdminDashboard/AdminDashboard.vue";
 import Clubs from "@/components/View/Clubs/Clubs.vue";
 import Users from "@/components/View/Users/Users.vue";
 import AthleteDetail from "@/components/View/AthleteDetail/AthleteDetail.vue";
-import TournamentSettings from "@/components/View/AdminDashboard/TournamentSettings.vue";
+import TournamentSettings from "@/components/View/TournamentManagement/TournamentSettings.vue";
+import FightDetail from "@/components/View/FightDetail/FightDetail.vue";
+import Bracket from "@/components/View/Brackets/Bracket.vue";
+import BracketViewDetail from "@/components/View/Brackets/BracketViewDetail.vue";
+import RefereeDashboard from "@/components/View/RefereeDashboard/RefereeDashboard.vue";
+import ManageRole from "@/components/View/Authentication/SelectRoleView/ManageRole.vue";
 const routes = [
     { path: '/', redirect: '/home' },
 
@@ -47,6 +52,16 @@ const routes = [
         component: Tournament
     },
     {
+        path: '/referees',
+        name: 'referees',
+        component: RefereeDashboard
+    },
+    {
+        path: '/roles',
+        name: 'roles',
+        component: ManageRole
+    },
+    {
         path: '/registrationathletes',
         name: 'registrationathletes',
         component: RegistrationAthletes
@@ -64,7 +79,7 @@ const routes = [
     {
         path: '/tatami',
         name: 'tatami',
-        component: Tatami,
+        component: Fight,
     },
     {
         path: '/scoreboard',
@@ -75,6 +90,10 @@ const routes = [
         path: '/admin',
         name: 'admin',
         component: AdminDashboard,
+    },{
+        path: '/brackets',
+        name: 'bracket',
+        component: Bracket,
     },
     {
         path: '/admin/clubs',
@@ -89,10 +108,24 @@ const routes = [
         path: '/admin/tournament-settings',
         name: 'tournament-settings',
         component: TournamentSettings,
-    }, {
+    },
+    {
         path: '/athlete/:id',
         name: 'athlete-detail',
         component: AthleteDetail,
+    },{
+        path: '/brackets/:id',
+        name: 'bracket-detail',
+        component: BracketViewDetail,
+    },
+    {
+        path: '/athlete/:id',
+        name: 'athlete-detail',
+        component: AthleteDetail,
+    },{
+        path: '/fights/:id',
+        name: 'fight-detail',
+        component: FightDetail,
     },
 ]
 

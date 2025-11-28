@@ -20,6 +20,13 @@
       <button type="button" name="tournament_page" @click="RedirectToTournament">
         <img :src="TrophyIcon" class="nav-icon" alt="Trophy" /> Турниры
       </button>
+      <!-- Добавленные кнопки -->
+      <button type="button" name="referee_page" @click="RedirectToReferee">
+        <img :src="RefereeIcon" class="nav-icon" alt="Referee" /> Рефери
+      </button>
+      <button type="button" name="admin_page" @click="RedirectToAdmin">
+        <img :src="AdminIcon" class="nav-icon" alt="Admin" /> Админ
+      </button>
     </nav>
 
     <!-- Язык внизу с выпадающим меню -->
@@ -53,13 +60,17 @@ import { ref } from 'vue'
 import HomeIcon from '@/components/icons/Home.png';
 import UserIcon from '@/components/icons/Athletes.png';
 import TrophyIcon from '@/components/icons/CupIcon.png';
-import BetIcon from '@/components/icons/Bet.png';
 import GlobeIcon from '@/components/icons/LanguageSwitch.png';
+// Добавленные иконки
+import RefereeIcon from '@/components/icons/Referee.png';
+import AdminIcon from '@/components/icons/Admin.png';
 
 import {
   RedirectToHome,
   RedirectToAthletes,
   RedirectToTournament,
+  RedirectToReferee,
+  RedirectToAdmin,
 } from "@/router/redirect.js";
 
 // Языки
