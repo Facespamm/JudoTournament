@@ -2,10 +2,13 @@
 export const createBracket = async (bracketData, tournament_id, categoryId, tatami_number = null) => {
     try {
         // Формируем URL динамически — добавляем tatami_number только если он указан и валиден
-        let url = `/api/brackets/${tournament_id}?category_id=${categoryId}`
+        let url = `/api/brackets/${tournament_id}/olympic?category_id=${categoryId}`
 
-        if (tatami_number !== null && tatami_number !== undefined && Number.isInteger(tatami_number) && tatami_number >= 1) {
-            url += `&tatami_number=${tatami_number}`
+        if (tatami_number !== null
+            && tatami_number !== undefined
+            && Number.isInteger(Number(tatami_number))
+            && Number(tatami_number) >= 1) {
+            url += `&tatami_number=${Number(tatami_number)}`
         }
 
         const response = await fetch(url, {
@@ -32,7 +35,7 @@ export const createBracket = async (bracketData, tournament_id, categoryId, tata
 export const createBasketSemiFinals = async (bracketData, tournament_id, categoryId, tatami_number = null) => {
     try {
         // Базовый URL — только обязательный параметр category
-        let url = `/api/brackets/${tournament_id}/semifinals-consolation?category=${categoryId}`;
+        let url = `/api/brackets/${tournament_id}/olympic/semifinals-consolation?category_id=${categoryId}`;
 
         // Добавляем tatami_number ТОЛЬКО если он валиден
         if (tatami_number !== null
@@ -40,7 +43,7 @@ export const createBasketSemiFinals = async (bracketData, tournament_id, categor
             && Number.isInteger(Number(tatami_number))
             && Number(tatami_number) >= 1) {
 
-            url += `&tatami_number=${tatami_number}`;
+            url += `&tatami_number=${Number(tatami_number)}`;
         }
 
         const response = await fetch(url, {
@@ -92,10 +95,13 @@ export const fetchGetDocument = async (tournamentId, categoryId = null) => {
 export const createBasketFinals = async (bracketData, tournament_id, categoryId, tatami_number = null) => {
     try {
         // Формируем URL динамически — добавляем tatami_number только если он указан и валиден
-        let url = `/api/brackets/${tournament_id}/finals-consolation?category=${categoryId}&tatami_number=${tatami_number}`
+        let url = `/api/brackets/${tournament_id}/olympic/finals-consolation?category_id=${categoryId}`
 
-        if (tatami_number !== null && tatami_number !== undefined && Number.isInteger(tatami_number) && tatami_number >= 1) {
-            url += `&tatami_number=${tatami_number}`
+        if (tatami_number !== null
+            && tatami_number !== undefined
+            && Number.isInteger(Number(tatami_number))
+            && Number(tatami_number) >= 1) {
+            url += `&tatami_number=${Number(tatami_number)}`
         }
 
         const response = await fetch(url, {
@@ -217,7 +223,7 @@ export const fetchBracketDetail = async (id) => {
 
 export const createFight = async (bracketFightData, id) => {
     try {
-        const response = await fetch(`/api/brackets/${id}/generate`, {
+        const response = await fetch(`/api/brackets/${id}/olympic`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

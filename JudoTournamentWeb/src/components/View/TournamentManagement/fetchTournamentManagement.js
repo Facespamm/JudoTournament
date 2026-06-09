@@ -57,12 +57,13 @@ export const createCategory = async (categoryData) => {
     }
 };
 
-export const fetchCategories = async () => {
+export const fetchCategories = async (tournament_id) => {
     try {
-        const response = await fetch(`/api/categories/?tournament_id`, {
+        const response = await fetch(`/api/categories/?tournamentId=${tournament_id}`, {
             headers: {
                 'X-API-Key': 'mobile_app_2024'
-            }
+            },
+            method: "GET"
         });
 
         if (!response.ok) {
