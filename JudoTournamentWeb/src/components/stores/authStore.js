@@ -12,8 +12,8 @@ export const useAuthStore = defineStore("auth", () => {
 
   const setToken = (newToken) => {
     token.value = newToken;
-    // Сохраняем токен в cookies на 7 дней
-    cookies.set("jwt_token", newToken, "7d");
+    // Сохраняем токен в cookies на 1 дней
+    cookies.set("jwt_token", newToken, "1d");
   };
 
   const setUser = (userData) => {

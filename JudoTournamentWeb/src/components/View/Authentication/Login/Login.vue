@@ -139,7 +139,7 @@ const handleLogin = async () => {
 
         const response = await fetchLogin(payload);
 
-        console.log("Ответ сервера:", response);
+        // console.log("Ответ сервера:", response);
 
         if (response?.success === true && response?.token) {
             const token = response.token;
@@ -155,8 +155,8 @@ const handleLogin = async () => {
             });
 
             // Можно сохранить в localStorage / cookies как fallback
-            localStorage.setItem("jwt_token", token);
-            localStorage.setItem("user_data", JSON.stringify(user));
+            // localStorage.setItem("jwt_token", token);
+            // localStorage.setItem("user_data", JSON.stringify(user));
 
             // Успешный вход — перенаправление на главную страницу
             router.push("/Home");
