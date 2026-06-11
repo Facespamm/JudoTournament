@@ -16,14 +16,14 @@
         <!-- Модальное окно выбора -->
         <div v-if="showModal" class="modal-overlay" @click="closeModalIfOverlay">
           <div class="modal-content" @click.stop>
-            <h3 class="modal-title">Выберите действие</h3>
-            <p class="modal-text">Вы хотите зарегистрироваться как участник или войти как зритель?</p>
+            <h3 class="modal-title">{{ t('selectRole.chooseAction') }}</h3>
+            <p class="modal-text">{{ t('selectRole.actionText') }}</p>
             <div class="modal-actions">
               <button @click="goToLogin" class="modal-button secondary">
-                Войти как зритель
+                {{ t('selectRole.loginAsViewer') }}
               </button>
               <button @click="registerAsAthlete" class="modal-button primary">
-                Зарегистрироваться как участник
+                {{ t('selectRole.registerAsAthlete') }}
               </button>
             </div>
           </div>
@@ -40,9 +40,11 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'  // Добавлен роутер
 import AthleteRole from './AthleteRole.vue'
+import { useI18n } from '@/i18n'
 import './Roles.css'
 
 const router = useRouter()
+const { t } = useI18n()
 
 // Состояние уведомления
 const toast = ref({

@@ -4,8 +4,8 @@
     <!-- ШАПКА -->
     <div class="weighing-header">
       <div>
-        <h2 class="weighing-title">Взвешивание атлета</h2>
-        <p class="weighing-subtitle">Заполните форму для регистрации веса</p>
+        <h2 class="weighing-title">{{ t('weighings.createTitle') }}</h2>
+        <p class="weighing-subtitle">{{ t('weighings.subtitle') }}</p>
       </div>
     </div>
 
@@ -40,13 +40,13 @@
       <div class="form-step step-visible">
         <div class="step-heading">
           <span class="step-badge">1</span>
-          Выберите турнир и категорию
+          {{ t('tournamentDetails.selectTournamentAndCategory') }}
         </div>
 
         <div class="form-row-two">
           <!-- Турнир -->
           <div class="form-group" :class="{ 'has-error': errors.tournament_id, 'is-filled': weighingForm.tournament_id }">
-            <label for="tournament_id">Турнир <span class="req">*</span></label>
+            <label for="tournament_id">{{ t('weighings.tournament') }} <span class="req">*</span></label>
             <div class="select-wrapper">
               <select
                   v-model="weighingForm.tournament_id"
@@ -54,7 +54,7 @@
                   @change="onTournamentChange"
                   :disabled="isLoading"
               >
-                <option value="">— Выберите турнир —</option>
+                <option value="">{{ t('weighings.selectTournament') }}</option>
                 <option v-for="t in tournaments" :key="t.id" :value="t.id">{{ t.name }}</option>
               </select>
               <span class="select-arrow">▾</span>
@@ -64,7 +64,7 @@
 
           <!-- Категория -->
           <div class="form-group" :class="{ 'has-error': errors.category_id, 'is-filled': weighingForm.category_id }">
-            <label for="category_id">Категория веса <span class="req">*</span></label>
+            <label for="category_id">{{ t('weighings.weightCategory') }} <span class="req">*</span></label>
             <div class="select-wrapper">
               <select
                   v-model="weighingForm.category_id"
@@ -72,7 +72,7 @@
                   :disabled="!weighingForm.tournament_id || isLoadingCategories"
                   @change="onCategoryChange"
               >
-                <option value="">— Выберите категорию —</option>
+                <option value="">{{ t('weighings.selectCategory') }}</option>
                 <option v-for="cat in tournamentCategories" :key="cat.id" :value="cat.id">
                   {{ formatCategoryLabel(cat) }}
                 </option>
@@ -80,9 +80,9 @@
               <span class="select-arrow">▾</span>
             </div>
             <div class="field-hint">
-              <span v-if="isLoadingCategories" class="hint-loading">⟳ Загрузка...</span>
+              <span v-if="isLoadingCategories" class="hint-loading">⟳ {{ t('weighings.loadingCategories') }}</span>
               <span v-else-if="weighingForm.tournament_id && tournamentCategories.length === 0" class="hint-warn">
-                Нет категорий для этого турнира
+                {{ t('weighings.noCategories') }}
               </span>
             </div>
             <span v-if="errors.category_id" class="field-error">{{ errors.category_id }}</span>
@@ -94,7 +94,7 @@
       <div class="form-step" :class="currentStep >= 2 ? 'step-visible' : 'step-locked'">
         <div class="step-heading">
           <span class="step-badge" :class="{ 'badge-inactive': currentStep < 2 }">2</span>
-          Выберите спортсмена
+          {{ t('weighings.select') }} {{ t('weighings.athlete').toLowerCase() }}
         </div>
 
         <div class="athlete-search-row">
@@ -102,7 +102,7 @@
           <input
               v-model="searchAthleteQuery"
               type="text"
-              placeholder="Поиск по имени атлета..."
+              :placeholder="t('weighings.athleteSearchPlaceholder')"
               class="athlete-search"
               :disabled="!weighingForm.category_id || isLoadingAthletes"
           />
@@ -111,24 +111,24 @@
         <div class="athletes-table-box">
           <div v-if="!weighingForm.category_id" class="table-placeholder">
             <div class="placeholder-icon">👤</div>
-            <p>Сначала выберите категорию</p>
+            <p>{{ t('tournamentDetails.selectCategoryFirst') }}</p>
           </div>
 
           <div v-else-if="isLoadingAthletes" class="table-placeholder">
             <div class="spinner"></div>
-            <p>Загружаем список атлетов...</p>
+            <p>{{ t('weighings.loadingAthletes') }}</p>
           </div>
 
           <div v-else-if="categoryAthletes.length === 0" class="table-placeholder">
             <div class="placeholder-icon">😕</div>
-            <p>Нет зарегистрированных атлетов в этой категории</p>
+            <p>{{ t('weighings.noRegisteredAthletes') }}</p>
           </div>
 
           <template v-else>
             <div class="athletes-count">
-              Найдено: <strong>{{ filteredCategoryAthletes.length }}</strong>
-              <span v-if="searchAthleteQuery"> из {{ categoryAthletes.length }}</span>
-              атлетов
+              {{ t('tournamentDetails.found') }} <strong>{{ filteredCategoryAthletes.length }}</strong>
+              <span v-if="searchAthleteQuery"> {{ t('tournamentDetails.of') }} {{ categoryAthletes.length }}</span>
+              {{ t('tournamentDetails.athletesLower') }}
             </div>
 
             <div class="athletes-scroll">
@@ -136,11 +136,11 @@
                 <thead>
                 <tr>
                   <th class="col-select"></th>
-                  <th>ФИО</th>
-                  <th>Дата рождения</th>
-                  <th>Возраст</th>
-                  <th>Клуб</th>
-                  <th>Пол</th>
+                  <th>{{ t('weighings.fullName') }}</th>
+                  <th>{{ t('weighings.birthDate') }}</th>
+                  <th>{{ t('weighings.age') }}</th>
+                  <th>{{ t('weighings.club') }}</th>
+                  <th>{{ t('weighings.gender') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -170,7 +170,7 @@
               </table>
 
               <div v-if="filteredCategoryAthletes.length === 0 && searchAthleteQuery" class="table-placeholder small">
-                <p>Ничего не найдено по запросу «{{ searchAthleteQuery }}»</p>
+                <p>{{ t('tournamentDetails.nothingFoundForQuery', { query: searchAthleteQuery }) }}</p>
               </div>
             </div>
           </template>
@@ -181,9 +181,9 @@
           <div class="selected-avatar">{{ selectedAthleteInitials }}</div>
           <div class="selected-info">
             <div class="selected-name">{{ selectedAthleteInfo }}</div>
-            <div class="selected-label">Выбранный спортсмен</div>
+            <div class="selected-label">{{ t('tournamentDetails.selectedAthlete') }}</div>
           </div>
-          <button type="button" class="deselect-btn" @click="weighingForm.athlete_id = null" title="Отменить выбор">✕</button>
+          <button type="button" class="deselect-btn" @click="weighingForm.athlete_id = null" :title="t('tournamentDetails.cancelSelection')">✕</button>
         </div>
 
         <span v-if="errors.athlete_id" class="field-error">{{ errors.athlete_id }}</span>
@@ -193,12 +193,12 @@
       <div class="form-step" :class="currentStep >= 3 ? 'step-visible' : 'step-locked'">
         <div class="step-heading">
           <span class="step-badge" :class="{ 'badge-inactive': currentStep < 3 }">3</span>
-          Укажите вес и примечания
+          {{ t('tournamentDetails.enterWeightAndNotes') }}
         </div>
 
         <div class="form-row-two">
           <div class="form-group" :class="{ 'has-error': errors.weight }">
-            <label for="weight">Вес (кг) <span class="req">*</span></label>
+            <label for="weight">{{ t('weighings.weightKg') }} <span class="req">*</span></label>
             <div class="weight-input-wrap">
               <input
                   v-model.number="weighingForm.weight"
@@ -210,17 +210,17 @@
                   :disabled="isLoading"
                   class="weight-input"
               />
-              <span class="weight-unit">кг</span>
+              <span class="weight-unit">{{ t('weighings.kg') }}</span>
             </div>
             <span v-if="errors.weight" class="field-error">{{ errors.weight }}</span>
           </div>
 
           <div class="form-group">
-            <label for="notes">Примечания</label>
+            <label for="notes">{{ t('weighings.notes') }}</label>
             <textarea
                 v-model="weighingForm.notes"
                 id="notes"
-                placeholder="Дополнительная информация (необязательно)"
+                :placeholder="t('weighings.notesPlaceholder')"
                 rows="3"
                 :disabled="isLoading"
                 class="notes-input"
@@ -233,20 +233,20 @@
       <div class="form-footer">
         <div v-if="currentStep === 4" class="summary-row">
           <div class="summary-chip">
-            <span class="chip-label">Турнир</span>
+            <span class="chip-label">{{ t('weighings.tournament') }}</span>
             <span class="chip-val">{{ currentTournamentName }}</span>
           </div>
           <div class="summary-chip">
-            <span class="chip-label">Категория</span>
+            <span class="chip-label">{{ t('fight.category') }}</span>
             <span class="chip-val">{{ currentCategoryName }}</span>
           </div>
           <div class="summary-chip">
-            <span class="chip-label">Атлет</span>
+            <span class="chip-label">{{ t('weighings.athlete') }}</span>
             <span class="chip-val">{{ selectedAthleteInfo }}</span>
           </div>
           <div class="summary-chip chip-weight">
-            <span class="chip-label">Вес</span>
-            <span class="chip-val">{{ weighingForm.weight }} кг</span>
+            <span class="chip-label">{{ t('weighings.weightKg') }}</span>
+            <span class="chip-val">{{ weighingForm.weight }} {{ t('weighings.kg') }}</span>
           </div>
         </div>
 
@@ -257,7 +257,7 @@
             :class="{ 'btn-ready': !submitDisabled && !isLoading }"
         >
           <span v-if="isLoading" class="btn-spinner">⟳</span>
-          {{ isLoading ? 'Регистрация...' : 'Зарегистрировать вес' }}
+          {{ isLoading ? t('weighings.registering') : t('weighings.registerWeight') }}
         </button>
       </div>
 
@@ -270,8 +270,10 @@ import { ref, computed, onMounted } from 'vue'
 import { fetchTournaments } from '@/components/View/Tournaments/fetchTournaments.js'
 import { fetchCreateWeight, fetchRegister } from '@/components/View/Weighings/fetchWeighings.js'
 import { fetchCategoriesById } from '@/components/View/TournamentDetails/fetchTournamentDetail.js'
+import { useI18n } from '@/i18n'
 
 const emit = defineEmits(['show-toast'])
+const { locale, t } = useI18n()
 
 const isLoading = ref(false)
 
@@ -291,7 +293,11 @@ const isLoadingCategories = ref(false)
 const isLoadingAthletes = ref(false)
 const searchAthleteQuery = ref('')
 
-const steps = ['Турнир и категория', 'Спортсмен', 'Вес']
+const steps = computed(() => [
+  t('tournamentDetails.tournamentAndCategory'),
+  t('tournamentDetails.athleteStep'),
+  t('tournamentDetails.weightStep')
+])
 
 // Шаг прогресса
 const currentStep = computed(() => {
@@ -352,8 +358,8 @@ const selectedAthleteInitials = computed(() => {
 const formatCategoryLabel = cat => {
   let label = cat.name || ''
   if (cat.gender) label += ` (${cat.gender})`
-  if (cat.weight_range) label += `, ${cat.weight_range} кг`
-  if (cat.age_range) label += `, ${cat.age_range} лет`
+  if (cat.weight_range) label += `, ${cat.weight_range} ${t('weighings.kg')}`
+  if (cat.age_range) label += `, ${cat.age_range} ${t('weighings.years')}`
   return label
 }
 
@@ -362,17 +368,17 @@ const getFullName = (ath) => {
   const parts = []
   if (ath.last_name) parts.push(ath.last_name)
   if (ath.first_name) parts.push(ath.first_name)
-  return parts.join(' ') || `Атлет #${ath.athlete_id || ath.id}`
+  return parts.join(' ') || t('weighings.athleteFallback', { id: ath.athlete_id || ath.id })
 }
 
 const formatBirthDate = (date) => {
   if (!date) return '—'
-  return new Date(date).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  return new Date(date).toLocaleDateString(locale.value === 'en' ? 'en-US' : locale.value === 'kk' ? 'kk-KZ' : 'ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
 const formatGender = (gender) => {
-  if (gender === 'male') return 'М'
-  if (gender === 'female') return 'Ж'
+  if (gender === 'male') return t('registrationTournament.maleShort')
+  if (gender === 'female') return t('registrationTournament.femaleShort')
   return '—'
 }
 
@@ -382,7 +388,7 @@ const loadTournaments = async () => {
   if (res.success) {
     tournaments.value = res.data?.tournaments || res.data || []
   } else {
-    emit('show-toast', 'Ошибка загрузки турниров', 'error')
+    emit('show-toast', t('weighings.loadTournamentsError'), 'error')
   }
 }
 
@@ -398,11 +404,11 @@ const loadCategories = async () => {
       })
     } else {
       tournamentCategories.value = []
-      emit('show-toast', 'Не удалось загрузить категории', 'error')
+      emit('show-toast', t('weighings.loadCategoriesFailed'), 'error')
     }
   } catch (err) {
     tournamentCategories.value = []
-    emit('show-toast', 'Ошибка загрузки категорий', 'error')
+    emit('show-toast', t('weighings.loadCategoriesError'), 'error')
   } finally {
     isLoadingCategories.value = false
   }
@@ -420,11 +426,11 @@ const loadCategoryAthletes = async () => {
       categoryAthletes.value = res.data?.athletes || res.data || []
     } else {
       categoryAthletes.value = []
-      emit('show-toast', 'Не удалось загрузить список атлетов', 'error')
+      emit('show-toast', t('weighings.loadAthletesFailed'), 'error')
     }
   } catch (err) {
     categoryAthletes.value = []
-    emit('show-toast', 'Ошибка загрузки списка атлетов', 'error')
+    emit('show-toast', t('weighings.loadAthletesError'), 'error')
   } finally {
     isLoadingAthletes.value = false
   }
@@ -455,10 +461,10 @@ const onCategoryChange = () => {
 const validateWeighingForm = () => {
   errors.value = {}
   let valid = true
-  if (!weighingForm.value.tournament_id) { errors.value.tournament_id = 'Выберите турнир'; valid = false }
-  if (!weighingForm.value.category_id) { errors.value.category_id = 'Выберите категорию'; valid = false }
-  if (!weighingForm.value.athlete_id) { errors.value.athlete_id = 'Выберите спортсмена'; valid = false }
-  if (weighingForm.value.weight == null || weighingForm.value.weight <= 0) { errors.value.weight = 'Вес должен быть больше 0'; valid = false }
+  if (!weighingForm.value.tournament_id) { errors.value.tournament_id = t('weighings.selectTournament'); valid = false }
+  if (!weighingForm.value.category_id) { errors.value.category_id = t('weighings.selectCategory'); valid = false }
+  if (!weighingForm.value.athlete_id) { errors.value.athlete_id = t('weighings.selectAthleteRequired'); valid = false }
+  if (weighingForm.value.weight == null || weighingForm.value.weight <= 0) { errors.value.weight = t('weighings.weightGreaterThanZero'); valid = false }
   return valid
 }
 
@@ -476,7 +482,7 @@ const weighAthlete = async () => {
     }
     const res = await fetchCreateWeight(payload)
     if (res.success) {
-      emit('show-toast', 'Взвешивание успешно создано', 'success')
+      emit('show-toast', t('weighings.weighingCreated'), 'success')
       weighingForm.value.category_id = null
       weighingForm.value.athlete_id = null
       weighingForm.value.weight = null
@@ -487,10 +493,10 @@ const weighAthlete = async () => {
       loadCategories()
       alert(res.data.message)
     } else {
-      emit('show-toast', res.message || 'Ошибка при создании взвешивания', 'error')
+      emit('show-toast', res.message || t('weighings.createError'), 'error')
     }
   } catch (err) {
-    emit('show-toast', 'Ошибка при создании взвешивания', 'error')
+    emit('show-toast', t('weighings.createError'), 'error')
   } finally {
     isLoading.value = false
   }

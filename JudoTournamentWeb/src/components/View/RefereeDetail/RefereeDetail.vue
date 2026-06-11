@@ -4,21 +4,21 @@
       <!-- Заголовок и кнопка назад -->
       <div class="detail-header">
         <button class="back-button" @click="$router.back()">
-          ← Назад
+          {{ t('refereeDetail.back') }}
         </button>
-        <h1>Профиль Судьи</h1>
+        <h1>{{ t('refereeDetail.title') }}</h1>
       </div>
 
       <!-- Лоадер -->
       <div v-if="isLoading" class="loading">
         <div class="spinner"></div>
-        <p>Загрузка данных судьи...</p>
+        <p>{{ t('refereeDetail.loading') }}</p>
       </div>
 
       <!-- Ошибка -->
       <div v-else-if="error" class="error">
         <p>{{ error }}</p>
-        <button class="retry-button" @click="loadRefereeDetail">Попробовать снова</button>
+        <button class="retry-button" @click="loadRefereeDetail">{{ t('refereeDetail.retry') }}</button>
       </div>
 
       <!-- Детальная информация -->
@@ -30,25 +30,25 @@
 
         <div class="details-grid">
           <div class="detail-section">
-            <h3>Основная информация</h3>
+            <h3>{{ t('refereeDetail.mainInfo') }}</h3>
             <div class="detail-item">
-              <span class="detail-label">Фамилия:</span>
+              <span class="detail-label">{{ t('refereeDetail.lastName') }}</span>
               <span class="detail-value">{{ referee.last_name }}</span>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Имя:</span>
+              <span class="detail-label">{{ t('refereeDetail.firstName') }}</span>
               <span class="detail-value">{{ referee.first_name }}</span>
             </div>
             <div v-if="referee.middle_name" class="detail-item">
-              <span class="detail-label">Отчество:</span>
+              <span class="detail-label">{{ t('refereeDetail.middleName') }}</span>
               <span class="detail-value">{{ referee.middle_name }}</span>
             </div>
           </div>
 
           <div class="detail-section">
-            <h3>Контактная информация</h3>
+            <h3>{{ t('refereeDetail.contactInfo') }}</h3>
             <div v-if="referee.phone" class="detail-item">
-              <span class="detail-label">Телефон:</span>
+              <span class="detail-label">{{ t('refereeDetail.phone') }}</span>
               <span class="detail-value">{{ referee.phone }}</span>
             </div>
             <div v-if="referee.email" class="detail-item">
@@ -66,8 +66,10 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchRefereeDetail } from './fetchRefereeDetail.js'
+import { useI18n } from '@/i18n'
 
 const route = useRoute()
+const { t } = useI18n()
 const referee = ref(null)
 const isLoading = ref(true)
 const error = ref('')
@@ -84,13 +86,13 @@ const loadRefereeDetail = async () => {
   try {
     const refereeId = Number(route.params.id)
     if (isNaN(refereeId)) {
-      throw new Error('Неверный ID судьи')
+      throw new Error(t('refereeDetail.invalidId'))
     }
 
     const data = await fetchRefereeDetail(refereeId)
     referee.value = data.referee
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Произошла ошибка при загрузке данных'
+    error.value = err instanceof Error ? err.message : t('refereeDetail.loadError')
   } finally {
     isLoading.value = false
   }

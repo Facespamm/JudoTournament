@@ -7,47 +7,47 @@
         <h3>{{ clubInitials }} — {{ clubData.name }}</h3>
         <div style="font-size:0.95rem; color:#666; margin-top:0.3rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap">
           <span>{{ clubData.city }}, {{ clubData.country }}</span>
-          <span v-if="clubData.coach_name"> · Тренер: {{ clubData.coach_name }}</span>
-          <span class="admin-athletes-count" style="margin-left:0.4rem">{{ clubData.athletes_count }} атлетов</span>
+          <span v-if="clubData.coach_name"> · {{ t('clubsAdmin.coach') }}: {{ clubData.coach_name }}</span>
+          <span class="admin-athletes-count" style="margin-left:0.4rem">{{ t('clubsAdmin.athletesCount', { count: clubData.athletes_count }) }}</span>
         </div>
       </div>
 
       <!-- Поиск и счётчик -->
       <div class="admin-management-filters" style="margin-top:1rem">
         <div class="search-group">
-          <h3 class="search-title">Поиск по ФИО</h3>
+          <h3 class="search-title">{{ t('clubsAdmin.searchByFullName') }}</h3>
           <div class="search-inputs">
-            <input v-model="searchLastName" type="text" placeholder="Фамилия" class="text-input" />
-            <input v-model="searchFirstName" type="text" placeholder="Имя" class="text-input" />
-            <input v-model="searchMiddleName" type="text" placeholder="Отчество" class="text-input" />
+            <input v-model="searchLastName" type="text" :placeholder="t('clubsAdmin.lastName')" class="text-input" />
+            <input v-model="searchFirstName" type="text" :placeholder="t('clubsAdmin.firstName')" class="text-input" />
+            <input v-model="searchMiddleName" type="text" :placeholder="t('clubsAdmin.middleName')" class="text-input" />
             <div class="search-actions">
               <button @click="handleSearch" :disabled="loadingAthletes" class="btn btn-primary">
-                {{ loadingAthletes ? 'Поиск...' : 'Найти' }}
+                {{ loadingAthletes ? t('clubsAdmin.searching') : t('clubsAdmin.find') }}
               </button>
-              <button @click="handleClearSearch" class="btn btn-secondary">Сбросить</button>
+              <button @click="handleClearSearch" class="btn btn-secondary">{{ t('clubsAdmin.reset') }}</button>
             </div>
           </div>
         </div>
         <span style="color:#666; font-size:0.95rem">
-          Найдено: <strong>{{ filteredAthletes.length }}</strong>
-          <span v-if="searchQuery"> из {{ athletes.length }}</span>
-          атлетов
+          {{ t('clubsAdmin.found') }} <strong>{{ filteredAthletes.length }}</strong>
+          <span v-if="searchQuery"> {{ t('clubsAdmin.of') }} {{ athletes.length }}</span>
+          {{ t('clubsAdmin.athletesLower') }}
         </span>
       </div>
 
       <!-- Панель действий -->
       <div class="admin-table-actions" style="margin-bottom:0.8rem">
         <span style="color:#666; font-size:0.95rem">
-          Выбрано: <strong>{{ selectedIds.length }}</strong>
+          {{ t('clubsAdmin.selected') }} <strong>{{ selectedIds.length }}</strong>
         </span>
         <button v-if="selectedIds.length" class="admin-btn-delete" @click="clearAll">
-          Снять всё
+          {{ t('clubsAdmin.clearAll') }}
         </button>
         <button v-if="selectedIds.length" class="admin-add-button" @click="saveSelected">
-          Сохранить выбранных
+          {{ t('clubsAdmin.saveSelected') }}
         </button>
         <button v-if="selectedIds.length" class="admin-add-button" @click="unassignSelected">
-          Отменить выбранных
+          {{ t('clubsAdmin.unassignSelected') }}
         </button>
       </div>
 
@@ -60,11 +60,11 @@
               <th class="admin-col-select">
                 <input type="checkbox" :checked="isAllSelected" @change="toggleAll" />
               </th>
-              <th>ФИО</th>
-              <th>Дата рождения</th>
-              <th>Возраст</th>
-              <th>Клуб</th>
-              <th>Пол</th>
+              <th>{{ t('clubsAdmin.fullName') }}</th>
+              <th>{{ t('clubsAdmin.birthDate') }}</th>
+              <th>{{ t('clubsAdmin.age') }}</th>
+              <th>{{ t('clubsAdmin.club') }}</th>
+              <th>{{ t('clubsAdmin.gender') }}</th>
             </tr>
             </thead>
             <tbody>
@@ -82,22 +82,22 @@
                     @click.stop="toggleSelect(ath.id)"
                 />
               </td>
-              <td data-label="ФИО">
+              <td :data-label="t('clubsAdmin.fullName')">
                 <div class="admin-club-name">{{ getFullName(ath) }}</div>
               </td>
-              <td data-label="Дата рождения">{{ formatBirthDate(ath.birth_date) }}</td>
-              <td data-label="Возраст">
+              <td :data-label="t('clubsAdmin.birthDate')">{{ formatBirthDate(ath.birth_date) }}</td>
+              <td :data-label="t('clubsAdmin.age')">
                 <span class="admin-athletes-count">{{ ath.age ?? '—' }}</span>
               </td>
-              <td data-label="Клуб" class="admin-short-name">{{ ath.club_name || '—' }}</td>
-              <td data-label="Пол">
+              <td :data-label="t('clubsAdmin.club')" class="admin-short-name">{{ ath.club_name || '—' }}</td>
+              <td :data-label="t('clubsAdmin.gender')">
                   <span
                       class="admin-athletes-count"
                       :style="ath.gender === 'male'
                       ? 'background: linear-gradient(135deg,#1e88e5,#42a5f5)'
                       : 'background: linear-gradient(135deg,#d81b60,#f06292)'"
                   >
-                    {{ ath.gender === 'male' ? 'Муж' : 'Жен' }}
+                    {{ ath.gender === 'male' ? t('clubsAdmin.maleShort') : t('clubsAdmin.femaleShort') }}
                   </span>
               </td>
             </tr>
@@ -106,9 +106,9 @@
 
           <div v-if="filteredAthletes.length === 0" class="admin-empty-state">
             <div class="admin-empty-icon">🔍</div>
-            <h3>Ничего не найдено</h3>
-            <p v-if="searchQuery">По запросу «{{ searchQuery }}» атлетов не найдено</p>
-            <p v-else>В этом клубе пока нет атлетов</p>
+            <h3>{{ t('clubsAdmin.nothingFound') }}</h3>
+            <p v-if="searchQuery">{{ t('clubsAdmin.noAthletesForQuery', { query: searchQuery }) }}</p>
+            <p v-else>{{ t('clubsAdmin.noClubAthletes') }}</p>
           </div>
         </div>
       </div>
@@ -121,6 +121,7 @@
 import {ref, computed, watch} from 'vue'
 import './ClubsAdmin.css'
 import {searchAthletes} from "@/components/View/RegistrationAthletesTournament/fetchRegistrationAthletesTornament.js";
+import { useI18n } from '@/i18n'
 import {
   getAthleteForRegistratedClub,
   registraitAthleteToClub,
@@ -131,6 +132,7 @@ const props = defineProps({
   club: { type: Object, default: null },
   isOpen: { type: Boolean, default: false }
 })
+const { t } = useI18n()
 
 watch(
     () => props.isOpen,
@@ -275,11 +277,11 @@ const handleSearch = async () => {
       athletes.value = (Array.isArray(result.athletes) ? result.athletes : []).map(a => mapAthlete(a))
     } else {
       athletes.value = []
-      athletesError.value = result.error || 'Ничего не найдено'
+      athletesError.value = result.error || t('clubsAdmin.nothingFound')
     }
   } catch {
     athletes.value = []
-    athletesError.value = 'Ошибка поиска'
+    athletesError.value = t('clubsAdmin.searchError')
   } finally {
     loadingAthletes.value = false
   }

@@ -2,49 +2,49 @@
   <div class="modal-overlay" @click="$emit('close')">
     <div class="modal-content" @click.stop>
       <div class="modal-header">
-        <h2>Редактировать пользователя</h2>
+        <h2>{{ t('users.editTitle') }}</h2>
         <button class="modal-close" @click="$emit('close')">×</button>
       </div>
 
       <form @submit.prevent="handleSave" class="user-form">
         <div class="form-grid">
           <div class="form-group">
-            <label class="form-label">Фамилия *</label>
+            <label class="form-label">{{ t('users.lastName') }}</label>
             <input v-model="localForm.last_name" type="text" class="form-input" required />
           </div>
           <div class="form-group">
-            <label class="form-label">Имя *</label>
+            <label class="form-label">{{ t('users.firstName') }}</label>
             <input v-model="localForm.first_name" type="text" class="form-input" required />
           </div>
           <div class="form-group">
-            <label class="form-label">Отчество</label>
+            <label class="form-label">{{ t('users.middleName') }}</label>
             <input v-model="localForm.middle_name" type="text" class="form-input" />
           </div>
           <div class="form-group">
-            <label class="form-label">Логин *</label>
+            <label class="form-label">{{ t('users.username') }}</label>
             <input v-model="localForm.username" type="text" class="form-input" required readonly />
           </div>
           <div class="form-group">
-            <label class="form-label">Email</label>
+            <label class="form-label">{{ t('users.email') }}</label>
             <input v-model="localForm.email" type="email" class="form-input" />
           </div>
           <div class="form-group">
-            <label class="form-label">Телефон</label>
+            <label class="form-label">{{ t('users.phone') }}</label>
             <input v-model="localForm.phone" type="tel" class="form-input" />
           </div>
           <div class="form-group">
-            <label class="form-label">Статус</label>
+            <label class="form-label">{{ t('users.status') }}</label>
             <select v-model="localForm.is_active" class="form-select">
-              <option :value="true">Активен</option>
-              <option :value="false">Неактивен</option>
+              <option :value="true">{{ t('users.active') }}</option>
+              <option :value="false">{{ t('users.inactive') }}</option>
             </select>
           </div>
         </div>
 
         <div class="form-actions">
-          <button type="button" class="btn-cancel" @click="$emit('close')">Отмена</button>
+          <button type="button" class="btn-cancel" @click="$emit('close')">{{ t('users.cancel') }}</button>
           <button type="submit" class="btn-save" :disabled="saving">
-            {{ saving ? 'Сохранение...' : 'Сохранить' }}
+            {{ saving ? t('users.saving') : t('users.save') }}
           </button>
         </div>
       </form>
@@ -55,11 +55,11 @@
   <div v-if="showSuccessModal" class="admin-modal-overlay" @click.self="closeSuccessModal">
     <div class="admin-modal-content success-modal">
       <div class="success-icon">✅</div>
-      <h2>Успешно!</h2>
+      <h2>{{ t('users.successTitle') }}</h2>
       <p class="success-text">{{ successMessage }}</p>
       <div class="admin-modal-actions">
         <button class="admin-modal-button admin-modal-button-submit" @click="closeSuccessModal">
-          Отлично, продолжить
+          {{ t('users.continue') }}
         </button>
       </div>
     </div>
@@ -69,11 +69,11 @@
   <div v-if="showErrorModal" class="admin-modal-overlay" @click.self="closeErrorModal">
     <div class="admin-modal-content error-modal">
       <div class="error-icon">❌</div>
-      <h2>Ошибка</h2>
+      <h2>{{ t('users.errorTitle') }}</h2>
       <p class="error-text">{{ errorMessage }}</p>
       <div class="admin-modal-actions">
         <button class="admin-modal-button admin-modal-button-cancel" @click="closeErrorModal">
-          Закрыть
+          {{ t('users.close') }}
         </button>
       </div>
     </div>
@@ -82,9 +82,14 @@
 
 <script>
 import { UpdateUser } from "@/components/View/Users/fetchUsers.js"
+import { useI18n } from '@/i18n'
 
 export default {
   name: 'UserEditModal',
+  setup() {
+    const { t } = useI18n()
+    return { t }
+  },
   props: {
     user: {
       type: Object,
@@ -136,7 +141,7 @@ export default {
   methods: {
     async handleSave() {
       if (!this.localForm?.id) {
-        this.errorMessage = 'Ошибка: идентификатор пользователя не найден'
+        this.errorMessage = this.t('users.userIdNotFound')
         this.showErrorModal = true
         return
       }
@@ -161,15 +166,15 @@ export default {
         const response = await UpdateUser(this.localForm.id, payload)
 
         if (response?.success) {
-          this.successMessage = 'Пользователь успешно обновлён!'
+          this.successMessage = this.t('users.updateSuccess')
           this.showSuccessModal = true
         } else {
-          this.errorMessage = response?.message || 'Не удалось сохранить изменения'
+          this.errorMessage = response?.message || this.t('users.updateFailed')
           this.showErrorModal = true
         }
       } catch (err) {
         console.error('Ошибка при обновлении:', err)
-        this.errorMessage = 'Произошла ошибка при сохранении данных'
+        this.errorMessage = this.t('users.saveError')
         this.showErrorModal = true
       } finally {
         this.saving = false

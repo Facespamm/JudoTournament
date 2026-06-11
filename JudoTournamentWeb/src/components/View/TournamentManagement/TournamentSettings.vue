@@ -1,21 +1,21 @@
 <template>
   <div class="tournament-settings-page">
     <section class="settings-navigation">
-      <h2>Настройки турниров</h2>
+      <h2>{{ t('tournamentManagement.settingsTitle') }}</h2>
       <nav class="nav-tabs">
         <button
             class="nav-tab"
             :class="{ active: activeTab === 'create' }"
             @click="activeTab = 'create'"
         >
-          Создать турнир
+          {{ t('tournamentManagement.createTournamentTab') }}
         </button>
         <button
             class="nav-tab"
             :class="{ active: activeTab === 'categories' }"
             @click="activeTab = 'categories'"
         >
-          Создать категорию
+          {{ t('tournamentManagement.createCategoryTab') }}
         </button>
       </nav>
     </section>
@@ -36,8 +36,10 @@
 import { ref } from 'vue'
 import CreateTournament from '@/components/View/TournamentManagement/CreateTournament.vue'
 import ManageCategories from '@/components/View/TournamentManagement/ManageCategories.vue'
+import { useI18n } from '@/i18n'
 
 const activeTab = ref('create')
+const { t } = useI18n()
 
 const handleTournamentCreated = (tournamentId) => {
   console.log('Турнир успешно создан (ID:', tournamentId, ')')

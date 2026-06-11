@@ -6,7 +6,7 @@
 
     <div class="tournament-selector">
 
-      <label for="tournament_filter">Турнир:</label>
+      <label for="tournament_filter">{{ t('brackets.tournamentLabel') }}</label>
 
       <select
 
@@ -20,7 +20,7 @@
 
       >
 
-        <option :value="null">Выберите турнир</option>
+        <option :value="null">{{ t('brackets.selectTournament') }}</option>
 
         <option v-for="t in tournaments" :key="t.id" :value="t.id">
 
@@ -38,7 +38,7 @@
 
       <div class="spinner"></div>
 
-      <p>Загрузка весовых категорий...</p>
+      <p>{{ t('brackets.loadingWeightCategories') }}</p>
 
     </div>
 
@@ -46,7 +46,7 @@
 
     <div v-else-if="selectedTournamentId && !categories.length" class="no-categories">
 
-      <p>В этом турнире пока нет весовых категорий</p>
+      <p>{{ t('brackets.noCategories') }}</p>
 
     </div>
 
@@ -68,7 +68,7 @@
 
         >
 
-          Турнирная сетка
+          {{ t('brackets.tournamentBracket') }}
 
         </button>
 
@@ -82,7 +82,7 @@
 
         >
 
-          Утешительные бои
+          {{ t('brackets.consolationFights') }}
 
         </button>
 
@@ -128,7 +128,7 @@
 
         <div v-else class="placeholder">
 
-          <p>Выберите весовую категорию выше</p>
+          <p>{{ t('brackets.selectWeightCategoryAbove') }}</p>
 
         </div>
 
@@ -142,7 +142,7 @@
 
           <div class="group-section">
 
-            <span class="group-label">ВЕСОВАЯ КАТЕГОРИЯ</span>
+            <span class="group-label">{{ t('brackets.weightCategory') }}</span>
 
             <span class="group-weight">{{ selectedCategory.name }}</span>
 
@@ -152,13 +152,13 @@
 
             <div class="spinner"></div>
 
-            <p>Загрузка турнирной сетки...</p>
+            <p>{{ t('brackets.loadingBracket') }}</p>
 
           </div>
 
           <div v-else-if="!rounds.length" class="no-fights">
 
-            <p>В этой категории пока нет схваток</p>
+            <p>{{ t('brackets.noFightsCategory') }}</p>
 
           </div>
 
@@ -216,7 +216,7 @@
 
               <div class="round-col champion-col">
 
-                <div class="round-header">Чемпион</div>
+                <div class="round-header">{{ t('brackets.champion') }}</div>
 
                 <div class="champion-body">
 
@@ -260,7 +260,7 @@
 
         <div v-else class="placeholder">
 
-          <p>Выберите весовую категорию выше</p>
+          <p>{{ t('brackets.selectWeightCategoryAbove') }}</p>
 
         </div>
 
@@ -272,7 +272,7 @@
 
     <div v-else class="empty-state">
 
-      <p>Выберите турнир выше</p>
+      <p>{{ t('brackets.selectTournamentAbove') }}</p>
 
     </div>
 
@@ -287,6 +287,9 @@ import { ref, onMounted, nextTick, computed, watch } from 'vue'
 import { fetchGetCategoryByTournament, fetchBrackets, getResultTournament } from '@/components/View/Brackets/fetchBrackets.js'
 
 import ConsolationBracket from '@/components/View/TournamentDetails/ConsolationBracket.vue'
+import { useI18n } from '@/i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
 
@@ -472,7 +475,7 @@ const processBracketData = (fights, resultsMap = new Map()) => {
 
   if (maxRound === 0) return
 
-  const stageLabels = ['1/32 финала', '1/16 финала', '1/4 финала', 'Полуфинал']
+  const stageLabels = ['1/32', '1/16', '1/4', t('brackets.semifinal')]
 
   let labelIndex = stageLabels.length - (maxRound - 1)
 
@@ -504,7 +507,7 @@ const processBracketData = (fights, resultsMap = new Map()) => {
 
     })
 
-    const label = r === maxRound ? 'Финал' : (stageLabels[labelIndex++] || `Раунд ${r}`)
+    const label = r === maxRound ? t('brackets.final') : (stageLabels[labelIndex++] || t('brackets.round', { number: r }))
 
     bracketRounds.push({ label, matches })
 

@@ -1,24 +1,24 @@
 <template>
   <div class="create-tournament">
-    <h3>Создать новый турнир</h3>
+    <h3>{{ t('tournamentManagement.createTournamentTitle') }}</h3>
 
     <!-- Индикатор загрузки -->
     <div v-if="isLoading" class="loading-overlay">
       <div class="loading-spinner"></div>
-      <p>Создание турнира...</p>
+      <p>{{ t('tournamentManagement.creatingTournament') }}</p>
     </div>
 
     <!-- Модалка УСПЕХА -->
     <div v-if="showSuccessModal" class="admin-modal-overlay" @click.self="closeSuccessModal">
       <div class="admin-modal-content success-modal">
         <div class="success-icon">✅</div>
-        <h2>Турнир успешно создан!</h2>
+        <h2>{{ t('tournamentManagement.tournamentCreatedTitle') }}</h2>
         <p class="success-text">
-          Турнир «<strong>{{ successTournamentName }}</strong>» успешно создан!
+          {{ t('tournamentManagement.tournamentCreatedPrefix') }} «<strong>{{ successTournamentName }}</strong>» {{ t('tournamentManagement.tournamentCreatedSuffix') }}
         </p>
         <div class="admin-modal-actions">
           <button class="admin-modal-button admin-modal-button-submit" @click="closeSuccessModal">
-            Отлично, продолжить
+            {{ t('tournamentManagement.continue') }}
           </button>
         </div>
       </div>
@@ -28,11 +28,11 @@
     <div v-if="showErrorModal" class="admin-modal-overlay" @click.self="closeErrorModal">
       <div class="admin-modal-content error-modal">
         <div class="error-icon">❌</div>
-        <h2>Ошибка создания</h2>
+        <h2>{{ t('tournamentManagement.createErrorTitle') }}</h2>
         <p class="error-text">{{ errorMessage }}</p>
         <div class="admin-modal-actions">
           <button class="admin-modal-button admin-modal-button-cancel" @click="closeErrorModal">
-            Закрыть
+            {{ t('tournamentManagement.close') }}
           </button>
         </div>
       </div>
@@ -42,51 +42,51 @@
       <div class="form-grid">
         <!-- Основные поля -->
         <div class="form-group">
-          <label>Название турнира *</label>
+          <label>{{ t('tournamentManagement.tournamentName') }}</label>
           <input v-model="formData.name" required />
           <span v-if="errors.name" class="error">{{ errors.name }}</span>
         </div>
 
         <!-- Даты рядом и компактно -->
         <div class="form-group date-group">
-          <label>Дата начала *</label>
+          <label>{{ t('tournamentManagement.startDate') }}</label>
           <input type="date" v-model="formData.start_date" />
           <span v-if="errors.start_date" class="error">{{ errors.start_date }}</span>
         </div>
 
         <div class="form-group date-group">
-          <label>Дата окончания *</label>
+          <label>{{ t('tournamentManagement.endDate') }}</label>
           <input type="date" v-model="formData.end_date" />
           <span v-if="errors.end_date" class="error">{{ errors.end_date }}</span>
         </div>
 
         <div class="form-group">
-          <label>Место проведения *</label>
+          <label>{{ t('tournamentManagement.venue') }}</label>
           <input v-model="formData.venue" />
           <span v-if="errors.venue" class="error">{{ errors.venue }}</span>
         </div>
 
         <div class="form-group">
-          <label>Город</label>
+          <label>{{ t('tournamentManagement.city') }}</label>
           <input v-model="formData.city" />
         </div>
 
         <div class="form-group">
-          <label>Страна</label>
-          <input v-model="formData.country" placeholder="Казахстан" />
+          <label>{{ t('tournamentManagement.country') }}</label>
+          <input v-model="formData.country" :placeholder="t('tournamentManagement.defaultCountry')" />
         </div>
 
         <div class="form-group">
-          <label>Количество татами</label>
+          <label>{{ t('tournamentManagement.tatamiCount') }}</label>
           <input type="number" v-model.number="formData.tatami_count" min="0" />
         </div>
 
         <!-- Выбор категорий -->
         <div class="form-group full-width">
-          <label>Категории турнира *</label>
+          <label>{{ t('tournamentManagement.tournamentCategories') }}</label>
 
-          <div v-if="isCategoriesLoading">Загрузка категорий...</div>
-          <div v-else-if="categories.length === 0">Категории не найдены</div>
+          <div v-if="isCategoriesLoading">{{ t('tournamentManagement.loadingCategories') }}</div>
+          <div v-else-if="categories.length === 0">{{ t('tournamentManagement.categoriesNotFound') }}</div>
           <select
               v-else
               v-model="formData.list_category"
@@ -104,20 +104,20 @@
             </option>
           </select>
 
-          <small>Выберите одну или несколько категорий (Ctrl/Cmd + клик)</small>
+          <small>{{ t('tournamentManagement.selectCategoriesHint') }}</small>
           <span v-if="errors.list_category" class="error">{{ errors.list_category }}</span>
         </div>
 
         <!-- Таблица выбранных категорий -->
         <div class="form-group full-width" v-if="formData.list_category.length > 0">
-          <label>Выбранные категории</label>
+          <label>{{ t('tournamentManagement.selectedCategories') }}</label>
           <div class="table-wrapper">
             <table class="selected-categories-table">
               <thead>
               <tr>
                 <th>#</th>
-                <th>Название категории</th>
-                <th class="action-header">Действие</th>
+                <th>{{ t('tournamentManagement.categoryName') }}</th>
+                <th class="action-header">{{ t('tournamentManagement.action') }}</th>
               </tr>
               </thead>
               <tbody>
@@ -132,19 +132,19 @@
                       type="button"
                       class="remove-btn"
                       @click="removeCategory(catId)"
-                      title="Удалить"
+                      :title="t('tournamentManagement.delete')"
                   >×</button>
                 </td>
               </tr>
               </tbody>
             </table>
           </div>
-          <small>Всего выбрано: {{ formData.list_category.length }}</small>
+          <small>{{ t('tournamentManagement.selectedTotal', { count: formData.list_category.length }) }}</small>
         </div>
 
         <!-- Описание -->
         <div class="form-group full-width">
-          <label for="description">Описание турнира</label>
+          <label for="description">{{ t('tournamentManagement.description') }}</label>
           <textarea v-model="formData.description" rows="3"></textarea>
         </div>
       </div>
@@ -154,7 +154,7 @@
             type="submit"
             :disabled="isLoading || isCategoriesLoading || formData.list_category.length === 0"
         >
-          {{ isLoading ? 'Создание...' : 'Создать турнир' }}
+          {{ isLoading ? t('tournamentManagement.creating') : t('tournamentManagement.createTournament') }}
         </button>
       </div>
     </form>
@@ -164,8 +164,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { createTournament, fetchCategories } from '@/components/View/TournamentManagement/fetchTournamentManagement.js'
+import { useI18n } from '@/i18n'
 
 const emit = defineEmits(['tournament-created'])
+const { t } = useI18n()
 
 const isLoading = ref(false)
 const isCategoriesLoading = ref(false)
@@ -182,7 +184,7 @@ const formData = ref({
   end_date: '',
   venue: '',
   city: '',
-  country: 'Казахстан',
+  country: t('tournamentManagement.defaultCountry'),
   tatami_count: 0,
   list_category: []
 })
@@ -211,7 +213,7 @@ onMounted(loadCategories)
 
 const getCategoryName = (id) => {
   const cat = categories.value.find(c => c.id === id)
-  return cat ? cat.name : `Категория #${id}`
+  return cat ? cat.name : t('tournamentManagement.categoryFallback', { id })
 }
 
 const removeCategory = (id) => {
@@ -224,33 +226,33 @@ const validateForm = () => {
 
   const nameTrimmed = formData.value.name?.trim() ?? ''
   if (!nameTrimmed) {
-    errors.value.name = 'Название обязательно'
+    errors.value.name = t('tournamentManagement.nameRequired')
     isValid = false
   }
 
   if (!formData.value.start_date) {
-    errors.value.start_date = 'Дата начала обязательна'
+    errors.value.start_date = t('tournamentManagement.startRequired')
     isValid = false
   }
 
   if (!formData.value.end_date) {
-    errors.value.end_date = 'Дата окончания обязательна'
+    errors.value.end_date = t('tournamentManagement.endRequired')
     isValid = false
   }
 
   if (formData.value.start_date && formData.value.end_date && formData.value.start_date > formData.value.end_date) {
-    errors.value.end_date = 'Дата окончания не может быть раньше начала'
+    errors.value.end_date = t('tournamentManagement.endBeforeStart')
     isValid = false
   }
 
   const venueTrimmed = formData.value.venue?.trim() ?? ''
   if (!venueTrimmed) {
-    errors.value.venue = 'Место проведения обязательно'
+    errors.value.venue = t('tournamentManagement.venueRequired')
     isValid = false
   }
 
   if (formData.value.list_category.length === 0) {
-    errors.value.list_category = 'Выберите хотя бы одну категорию'
+    errors.value.list_category = t('tournamentManagement.categoriesRequired')
     isValid = false
   }
 
@@ -280,7 +282,7 @@ const submit = async () => {
       end_date: formData.value.end_date,
       venue: formData.value.venue.trim(),
       city: formData.value.city.trim() || '',
-      country: formData.value.country.trim() || 'Казахстан',
+      country: formData.value.country.trim() || t('tournamentManagement.defaultCountry'),
       tatami_count: Number(formData.value.tatami_count) || 0,
       status: 'PLANNED',
       list_category: formData.value.list_category
@@ -301,18 +303,18 @@ const submit = async () => {
         end_date: '',
         venue: '',
         city: '',
-        country: 'Казахстан',
+        country: t('tournamentManagement.defaultCountry'),
         tatami_count: 0,
         list_category: []
       }
 
       showSuccessModal.value = true
     } else {
-      throw new Error(result.error || 'Ошибка создания')
+      throw new Error(result.error || t('tournamentManagement.createError'))
     }
   } catch (error) {
     console.error('Ошибка создания турнира:', error)
-    errorMessage.value = error.message || 'Не удалось создать турнир: неизвестная ошибка'
+    errorMessage.value = error.message || t('tournamentManagement.createUnknownError')
     showErrorModal.value = true
   } finally {
     isLoading.value = false

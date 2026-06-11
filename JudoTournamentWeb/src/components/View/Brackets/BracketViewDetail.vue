@@ -2,12 +2,12 @@
   <div class="bracket-detail">
     <div class="bracket-detail-container">
       <div class="bracket-detail-header">
-        <button class="back-button" @click="$router.back()">← Назад</button>
-        <h1>Сетка соревнований</h1>
+        <button class="back-button" @click="$router.back()">{{ t('brackets.detailBack') }}</button>
+        <h1>{{ t('brackets.competitionBracket') }}</h1>
       </div>
 
-      <div v-if="isLoading" class="loading"><div class="spinner"></div><p>Загрузка...</p></div>
-      <div v-else-if="error" class="error"><p>{{ error }}</p><button @click="loadBracketDetail">Повторить</button></div>
+      <div v-if="isLoading" class="loading"><div class="spinner"></div><p>{{ t('brackets.loading') }}</p></div>
+      <div v-else-if="error" class="error"><p>{{ error }}</p><button @click="loadBracketDetail">{{ t('brackets.retry') }}</button></div>
 
       <div v-else-if="bracket" class="bracket-info">
         <div class="bracket-main-info">
@@ -19,22 +19,22 @@
 
         <div class="bracket-details-grid">
           <div class="detail-section">
-            <h3>Информация</h3>
-            <div class="detail-item"><span>Статус:</span><span :class="getStatusClass(bracket.status)">{{ getStatusText(bracket.status) }}</span></div>
-            <div class="detail-item"><span>Тип:</span><span>{{ getBracketTypeName(bracket.bracket_type) }}</span></div>
-            <div class="detail-item"><span>Участников:</span><span>{{ getTotalAthletes() }}</span></div>
-            <div class="detail-item"><span>Матчей:</span><span>{{ totalMatches }}</span></div>
+            <h3>{{ t('brackets.information') }}</h3>
+            <div class="detail-item"><span>{{ t('brackets.status') }}</span><span :class="getStatusClass(bracket.status)">{{ getStatusText(bracket.status) }}</span></div>
+            <div class="detail-item"><span>{{ t('brackets.type') }}</span><span>{{ getBracketTypeName(bracket.bracket_type) }}</span></div>
+            <div class="detail-item"><span>{{ t('brackets.participants') }}</span><span>{{ getTotalAthletes() }}</span></div>
+            <div class="detail-item"><span>{{ t('brackets.matches') }}</span><span>{{ totalMatches }}</span></div>
           </div>
         </div>
 
         <!-- ТУРНИРНАЯ СЕТКА -->
         <div class="tournament-bracket-final">
-          <h2 class="section-title">Турнирная сетка</h2>
+          <h2 class="section-title">{{ t('brackets.tournamentBracket') }}</h2>
 
           <!-- Сообщение если нет матчей -->
           <div v-if="!hasMatches" class="no-matches">
-            <p>Нет данных о матчах</p>
-            <button class="reseed-btn" @click="generateBracket">Сгенерировать сетку</button>
+            <p>{{ t('brackets.noMatches') }}</p>
+            <button class="reseed-btn" @click="generateBracket">{{ t('brackets.generateBracket') }}</button>
           </div>
 
           <!-- Динамическая сетка на основе реальных данных -->
@@ -82,7 +82,7 @@
 
             <!-- Гранд-финал если это одиночная сетка -->
             <div v-if="isSingleElimination && sortedRounds.length > 1" class="round grand-final">
-              <div class="round-label">Финал</div>
+              <div class="round-label">{{ t('brackets.final') }}</div>
               <div class="matches">
                 <div class="match tbd-match">
                   <div class="slot top">
@@ -97,7 +97,7 @@
             </div>
           </div>
 
-          <button v-if="hasMatches" class="reseed-btn" @click="generateBracket">Пересоздать</button>
+          <button v-if="hasMatches" class="reseed-btn" @click="generateBracket">{{ t('brackets.recreate') }}</button>
         </div>
       </div>
     </div>
@@ -108,8 +108,10 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchBracketDetail } from "@/components/View/Brackets/fetchBrackets.js"
+import { useI18n } from '@/i18n'
 
 const route = useRoute()
+const { t } = useI18n()
 const bracket = ref(null)
 const isLoading = ref(true)
 const error = ref('')
@@ -182,19 +184,19 @@ const getRoundClass = (index, totalRounds) => {
 
 const getRoundName = (roundNumber, totalRounds) => {
   // Простые названия раундов без дробей
-  if (totalRounds === 1) return 'Матчи'
-  if (roundNumber === 1) return 'Первый раунд'
-  if (roundNumber === 2) return 'Второй раунд'
-  if (roundNumber === 3) return 'Третий раунд'
-  if (roundNumber === totalRounds) return 'Финал'
-  return `Раунд ${roundNumber}`
+  if (totalRounds === 1) return t('brackets.matchesRound')
+  if (roundNumber === 1) return t('brackets.firstRound')
+  if (roundNumber === 2) return t('brackets.secondRound')
+  if (roundNumber === 3) return t('brackets.thirdRound')
+  if (roundNumber === totalRounds) return t('brackets.final')
+  return t('brackets.round', { number: roundNumber })
 }
 
 const getNextRoundName = (currentRoundsCount) => {
   const nextRound = currentRoundsCount + 1
-  if (nextRound === 2) return 'Следующий раунд'
-  if (nextRound === 3) return 'Финал'
-  return `Раунд ${nextRound}`
+  if (nextRound === 2) return t('brackets.nextRound')
+  if (nextRound === 3) return t('brackets.final')
+  return t('brackets.round', { number: nextRound })
 }
 
 const shouldConnect = (roundIndex, totalRounds) => {
@@ -204,7 +206,7 @@ const shouldConnect = (roundIndex, totalRounds) => {
 // Функция для генерации сетки (заглушка)
 const generateBracket = () => {
   console.log('Генерация сетки...')
-  alert('Функция генерации сетки будет реализована позже')
+  alert(t('brackets.generateLater'))
 }
 
 const loadBracketDetail = async () => {
@@ -213,15 +215,15 @@ const loadBracketDetail = async () => {
     const res = await fetchBracketDetail(route.params.id)
     if (res.success) bracket.value = res
   } catch (e) {
-    error.value = 'Ошибка загрузки'
+    error.value = t('brackets.loadError')
     console.error('Ошибка загрузки сетки:', e)
   }
   finally { isLoading.value = false }
 }
 
 const getStatusClass = s => ({ COMPLETED: 'status-completed', LIVE: 'status-live' }[s] || '')
-const getStatusText = s => ({ GENERATED: 'Сгенерирована', DRAFT: 'Черновик', COMPLETED: 'Завершена', LIVE: 'Идёт' }[s] || s)
-const getBracketTypeName = t => ({ single_elimination: 'Олимпийская', double_elimination: 'Двойная', round_robin: 'Круговая' }[t] || t)
+const getStatusText = s => ({ GENERATED: t('brackets.generated'), DRAFT: t('brackets.draft'), COMPLETED: t('brackets.completed'), LIVE: t('brackets.inProgress') }[s] || s)
+const getBracketTypeName = type => ({ single_elimination: t('brackets.singleElimination'), double_elimination: t('brackets.doubleElimination'), round_robin: t('brackets.roundRobin') }[type] || type)
 const getTotalAthletes = () => bracket.value ? new Set(Object.values(bracket.value.fights_by_round).flat().flatMap(f => [f.white_athlete?.id, f.blue_athlete?.id]).filter(Boolean)).size : 0
 
 onMounted(loadBracketDetail)

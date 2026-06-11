@@ -4,31 +4,31 @@
     <!-- Вкладки полуфиналисты / финалисты -->
     <div class="consolation-tabs">
       <button class="consolation-tab" :class="{ active: consolationTab === 'semifinalists' }" @click="consolationTab = 'semifinalists'">
-        Полуфиналисты
+        {{ t('fight.semifinalistConsolationTab') }}
       </button>
       <button class="consolation-tab" :class="{ active: consolationTab === 'finalists' }" @click="consolationTab = 'finalists'">
-        Финалисты
+        {{ t('fight.finalistConsolationTab') }}
       </button>
     </div>
 
     <div v-if="isLoading" class="bracket-loading">
       <div class="spinner"></div>
-      <p>Загрузка утешительных боёв...</p>
+      <p>{{ t('brackets.loadingBracket') }}</p>
     </div>
 
     <div v-else-if="!groupA.length && !groupB.length" class="no-fights">
-      <p>Утешительные бои ещё не сформированы</p>
+      <p>{{ t('fight.fightsNotFound') }}</p>
     </div>
 
     <div v-else class="groups-wrapper">
 
       <!-- Группа A -->
       <div class="group-outer">
-        <div class="group-label-title">Группа A</div>
+        <div class="group-label-title">{{ t('fight.groupA') }}</div>
         <div class="bracket-root" ref="rootA">
           <div class="rounds-row">
             <div v-for="(round, ri) in roundsA" :key="'a'+ri" class="round-col">
-              <div class="round-header">{{ ri === roundsA.length - 1 ? 'Бронза' : `Раунд ${ri + 1}` }}</div>
+              <div class="round-header">{{ ri === roundsA.length - 1 ? t('tournamentDetails.bronze') : t('fight.round', { number: ri + 1 }) }}</div>
               <div class="round-body">
                 <div v-for="(fight, fi) in round" :key="fi" class="match-slot">
                   <div :class="['match-card', { 'card-done': fight.result }]">
@@ -77,11 +77,11 @@
 
       <!-- Группа B -->
       <div class="group-outer">
-        <div class="group-label-title">Группа B</div>
+        <div class="group-label-title">{{ t('fight.groupB') }}</div>
         <div class="bracket-root" ref="rootB">
           <div class="rounds-row">
             <div v-for="(round, ri) in roundsB" :key="'b'+ri" class="round-col">
-              <div class="round-header">{{ ri === roundsB.length - 1 ? 'Бронза' : `Раунд ${ri + 1}` }}</div>
+              <div class="round-header">{{ ri === roundsB.length - 1 ? t('tournamentDetails.bronze') : t('fight.round', { number: ri + 1 }) }}</div>
               <div class="round-body">
                 <div v-for="(fight, fi) in round" :key="fi" class="match-slot">
                   <div :class="['match-card', { 'card-done': fight.result }]">
@@ -135,6 +135,9 @@
 <script setup>
 import { ref, watch, onMounted, computed, nextTick } from 'vue'
 import { getSemifinalists, getFinalists } from '@/components/View/Brackets/fetchBrackets.js'
+import { useI18n } from '@/i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   tournamentId: { type: Number, required: true },

@@ -11,7 +11,7 @@
     </transition>
 
     <section class="registration-navigation">
-      <h2>Регистрация звешивания</h2>
+      <h2>{{ t('weighings.createTitle') }}</h2>
       <!--<nav class="nav-tabs">
         <button
             class="nav-tab"
@@ -36,8 +36,10 @@
 <script setup>
 import { ref } from 'vue'
 import Weighing from '@/components/View/RegistrationAthletes/WeighingForm.vue'
+import { useI18n } from '@/i18n'
 import "./RegistrationAthletes.css"
 
+const { t } = useI18n()
 const activeTab = ref('weighing')
 
 // Toast состояние

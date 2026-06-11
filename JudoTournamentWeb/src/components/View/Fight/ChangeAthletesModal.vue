@@ -4,24 +4,24 @@
 
       <div class="modal-header">
         <div>
-          <div class="modal-title">Смена атлетов</div>
-          <div class="modal-subtitle">Выберите по одному атлету из каждого боя (только 1-й раунд)</div>
+          <div class="modal-title">{{ $t('fight.changeAthletesTitle') }}</div>
+          <div class="modal-subtitle">{{ $t('fight.changeAthletesSubtitle') }}</div>
         </div>
         <button class="close-btn" @click="$emit('close')">✕</button>
       </div>
 
       <div class="modal-body">
-        <div v-if="loading" class="loading-state">Загрузка боёв...</div>
+        <div v-if="loading" class="loading-state">{{ $t('fight.loadingFights') }}</div>
 
         <div v-else-if="round1Fights.length === 0" class="empty-state">
-          Бои 1-го раунда не найдены
+          {{ $t('fight.firstRoundNotFound') }}
         </div>
 
         <template v-else>
           <div class="fights-grid">
             <div v-for="fight in round1Fights" :key="fight.id" class="fight-card">
               <div class="fight-card-header">
-                Бой #{{ fight.id }} · Татами {{ fight.tatami_number }}
+                {{ $t('fight.fightTatami', { id: fight.id, tatami: fight.tatami_number }) }}
               </div>
 
               <!-- Синий угол -->
@@ -37,7 +37,7 @@
                 <span class="color-dot dot-blue"></span>
                 <div class="athlete-info">
                   <div class="athlete-name">{{ fullName(fight.blue_athlete) }}</div>
-                  <div class="athlete-label">Синий угол</div>
+                  <div class="athlete-label">{{ $t('fight.blueCorner') }}</div>
                 </div>
                 <div v-if="isSelected(fight, fight.blue_athlete)" class="check-mark">✓</div>
               </div>
@@ -59,7 +59,7 @@
                 <span class="color-dot dot-white"></span>
                 <div class="athlete-info">
                   <div class="athlete-name">{{ fullName(fight.white_athlete) }}</div>
-                  <div class="athlete-label">Белый угол</div>
+                  <div class="athlete-label">{{ $t('fight.whiteCorner') }}</div>
                 </div>
                 <div v-if="isSelected(fight, fight.white_athlete)" class="check-mark">✓</div>
               </div>
@@ -72,7 +72,7 @@
 
           <!-- Итог выбора -->
           <div v-if="selected1 && selected2" class="summary-box">
-            <div class="summary-label">Будет выполнен обмен</div>
+            <div class="summary-label">{{ $t('fight.swapSummary') }}</div>
             <div class="summary-row">
               <span>{{ fullName(selected1.athlete) }}</span>
               <span class="summary-arrow">⇄</span>
@@ -86,13 +86,13 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn-cancel" @click="$emit('close')">Отмена</button>
+        <button class="btn-cancel" @click="$emit('close')">{{ $t('fight.cancel') }}</button>
         <button
           class="btn-confirm"
           :disabled="!selected1 || !selected2 || swapping"
           @click="confirmSwap"
         >
-          {{ swapping ? 'Сохранение...' : 'Поменять местами' }}
+          {{ swapping ? $t('fight.saving') : $t('fight.swap') }}
         </button>
       </div>
 
@@ -199,10 +199,10 @@ export default {
           this.$emit('swapped')
           this.$emit('close')
         } else {
-          this.errorMsg = res?.message || 'Ошибка при смене атлетов'
+          this.errorMsg = res?.message || this.$t('fight.swapError')
         }
       } catch (e) {
-        this.errorMsg = 'Сетевая ошибка. Попробуйте ещё раз.'
+        this.errorMsg = this.$t('fight.networkError')
       } finally {
         this.swapping = false
       }

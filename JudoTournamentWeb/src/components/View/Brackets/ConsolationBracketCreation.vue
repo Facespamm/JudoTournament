@@ -1,24 +1,24 @@
 <template>
   <div class="bracket-selection">
-    <h3>Создание утешительной сетки</h3>
+    <h3>{{ t('brackets.consolationTitle') }}</h3>
 
     <!-- Индикатор загрузки -->
     <div v-if="isLoading" class="loading-overlay">
       <div class="loading-spinner"></div>
-      <p>Создание утешительной сетки...</p>
+      <p>{{ t('brackets.creatingConsolation') }}</p>
     </div>
 
     <!-- Модалка УСПЕХА -->
     <div v-if="showSuccessModal" class="admin-modal-overlay" @click.self="closeSuccessModal">
       <div class="admin-modal-content success-modal">
         <div class="success-icon">✅</div>
-        <h2>Утешительная сетка успешно создана!</h2>
+        <h2>{{ t('brackets.consolationCreatedTitle') }}</h2>
         <p class="success-text">
-          Сетка «<strong>{{ successBracketName }}</strong>» успешно создана!
+          {{ t('brackets.createdTextPrefix') }} «<strong>{{ successBracketName }}</strong>» {{ t('brackets.createdTextSuffix') }}
         </p>
         <div class="admin-modal-actions">
           <button class="admin-modal-button admin-modal-button-submit" @click="closeSuccessModal">
-            Отлично, продолжить
+            {{ t('brackets.continue') }}
           </button>
         </div>
       </div>
@@ -28,11 +28,11 @@
     <div v-if="showErrorModal" class="admin-modal-overlay" @click.self="closeErrorModal">
       <div class="admin-modal-content error-modal">
         <div class="error-icon">❌</div>
-        <h2>Ошибка создания</h2>
+        <h2>{{ t('brackets.createErrorTitle') }}</h2>
         <p class="error-text">{{ errorMessage }}</p>
         <div class="admin-modal-actions">
           <button class="admin-modal-button admin-modal-button-cancel" @click="closeErrorModal">
-            Закрыть
+            {{ t('brackets.close') }}
           </button>
         </div>
       </div>
@@ -42,13 +42,13 @@
       <div class="form-grid">
         <!-- Турнир -->
         <div class="form-group">
-          <label for="tournament_id">Турнир *</label>
+          <label for="tournament_id">{{ t('brackets.tournamentRequired') }}</label>
           <select
               v-model="formData.tournament_id"
               id="tournament_id"
               :disabled="isLoading || categoriesLoading"
           >
-            <option value="">Выберите турнир</option>
+            <option value="">{{ t('brackets.selectTournament') }}</option>
             <option v-for="t in tournaments" :key="t.id" :value="t.id">
               {{ t.name }}
             </option>
@@ -57,15 +57,15 @@
 
         <!-- Категория -->
         <div class="form-group">
-          <label for="category_id">Категория *</label>
+          <label for="category_id">{{ t('brackets.categoryRequired') }}</label>
           <select
               v-model="formData.category_id"
               id="category_id"
               :disabled="!formData.tournament_id || categoriesLoading || isLoading"
           >
             <option value="">
-              {{ categoriesLoading ? 'Загрузка категорий...' :
-                (formData.tournament_id ? 'Выберите категорию' : 'Сначала выберите турнир') }}
+              {{ categoriesLoading ? t('brackets.loadingCategories') :
+                (formData.tournament_id ? t('brackets.selectCategory') : t('brackets.selectTournamentFirst')) }}
             </option>
             <option v-for="c in categories" :key="c.id" :value="c.id">
               {{ c.name }} ({{ getGenderLabel(c.gender) }})
@@ -75,20 +75,20 @@
 
         <!-- Тип утешительной сетки -->
         <div class="form-group">
-          <label for="consolation_type">Тип утешительной сетки *</label>
+          <label for="consolation_type">{{ t('brackets.consolationType') }}</label>
           <select
               v-model="formData.consolation_type"
               id="consolation_type"
               :disabled="!formData.category_id || isLoading"
           >
-            <option value="semifinals">Полуфинал утешения</option>
-            <option value="finals">Финал утешения</option>
+            <option value="semifinals">{{ t('brackets.consolationSemifinal') }}</option>
+            <option value="finals">{{ t('brackets.consolationFinal') }}</option>
           </select>
         </div>
 
         <!-- Номер татами -->
         <div class="form-group">
-          <label for="tatami_number">Номер татами</label>
+          <label for="tatami_number">{{ t('brackets.tatamiNumber') }}</label>
           <input
               type="number"
               v-model.number="formData.tatami_number"
@@ -96,7 +96,7 @@
               min="1"
               step="1"
               class="tatami-input"
-              placeholder="Опционально, например: 1"
+              :placeholder="t('brackets.tatamiPlaceholder')"
           />
         </div>
       </div>
@@ -107,7 +107,7 @@
             class="submit-button"
             :disabled="isLoading || !isFormValid || categoriesLoading"
         >
-          {{ isLoading ? 'Создание...' : 'Создать утешительную сетку' }}
+          {{ isLoading ? t('brackets.creating') : t('brackets.createConsolationButton') }}
         </button>
       </div>
     </div>
@@ -118,6 +118,9 @@
 import { ref, computed, watch } from 'vue'
 import { fetchGetCategoryByTournament } from '@/components/View/Brackets/fetchBrackets.js'
 import { createBasketSemiFinals, createBasketFinals } from '@/components/View/Brackets/fetchBrackets.js'
+import { useI18n } from '@/i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   tournaments: { type: Array, default: () => [] },
@@ -183,7 +186,7 @@ watch(() => formData.value.tournament_id, async (id) => {
   } catch (err) {
     console.error('Ошибка загрузки категорий:', err)
     categories.value = []
-    alert('Не удалось загрузить категории. Проверьте консоль для деталей.')
+    alert(t('brackets.loadCategoriesError'))
   } finally {
     categoriesLoading.value = false
   }
@@ -191,9 +194,9 @@ watch(() => formData.value.tournament_id, async (id) => {
 
 const getBracketName = () => {
   const c = categories.value.find(cat => cat.id === formData.value.category_id)
-  const categoryStr = c ? `${c.name} (${getGenderLabel(c.gender)})` : 'Категория'
-  const stage = formData.value.consolation_type === 'semifinals' ? 'Полуфинал' : 'Финал'
-  return `Утешительная сетка (${stage}) — ${categoryStr}`
+  const categoryStr = c ? `${c.name} (${getGenderLabel(c.gender)})` : t('brackets.consolationFallback')
+  const stage = formData.value.consolation_type === 'semifinals' ? t('brackets.semifinal') : t('brackets.final')
+  return t('brackets.consolationName', { stage, category: categoryStr })
 }
 
 const closeSuccessModal = () => {
@@ -248,11 +251,11 @@ const submit = async () => {
       successBracketName.value = bracketName
       showSuccessModal.value = true
     } else {
-      throw new Error(result.error || 'Неизвестная ошибка')
+      throw new Error(result.error || t('brackets.unknownError'))
     }
   } catch (err) {
     console.error(err)
-    errorMessage.value = err.message || 'Неизвестная ошибка при создании утешительной сетки'
+    errorMessage.value = err.message || t('brackets.consolationUnknownError')
     showErrorModal.value = true
   } finally {
     isLoading.value = false

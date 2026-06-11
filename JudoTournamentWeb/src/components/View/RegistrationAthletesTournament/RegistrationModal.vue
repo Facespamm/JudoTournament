@@ -2,7 +2,7 @@
   <div class="tournament-view">
     <!-- Загрузка -->
     <div v-if="tournamentLoading" class="loading" style="text-align:center; padding: 4rem;">
-      Загрузка турнира...
+      {{ t('registrationTournament.loadingTournament') }}
     </div>
 
     <!-- Ошибка -->
@@ -13,36 +13,36 @@
     <template v-else>
       <!-- Заголовок и статус -->
       <div class="header">
-        <button class="btn-back" @click="router.back()">← Назад</button>
-        <h1 class="title">{{ tournament.name || 'Название турнира' }}</h1>
+        <button class="btn-back" @click="router.back()">{{ t('registrationTournament.back') }}</button>
+        <h1 class="title">{{ tournament.name || t('registrationTournament.tournamentNameFallback') }}</h1>
         <span class="status-tag" :class="statusClass">{{ statusText }}</span>
       </div>
 
       <!-- Краткая информация -->
       <div class="info-cards">
         <div class="info-card">
-          <strong>Дата проведения</strong>
+          <strong>{{ t('registrationTournament.date') }}</strong>
           <span>{{ formatDate(tournament.start_date, tournament.end_date) }}</span>
         </div>
         <div class="info-card">
-          <strong>Место</strong>
+          <strong>{{ t('registrationTournament.location') }}</strong>
           <span>{{ getLocation(tournament) }}</span>
         </div>
         <div class="info-card">
-          <strong>Участников</strong>
-          <span>{{ tournament.athletes_count || 0 }} чел.</span>
+          <strong>{{ t('registrationTournament.participants') }}</strong>
+          <span>{{ tournament.athletes_count || 0 }} {{ t('registrationTournament.peopleShort') }}</span>
         </div>
         <div class="info-card">
-          <strong>Татами</strong>
+          <strong>{{ t('registrationTournament.tatami') }}</strong>
           <span>{{ tournament.tatami_count || 0 }}</span>
         </div>
       </div>
 
       <!-- Описание -->
       <section class="section description-section">
-        <h2 class="section-title">О турнире</h2>
+        <h2 class="section-title">{{ t('registrationTournament.about') }}</h2>
         <p class="description-text">
-          {{ tournament.description || 'Описание турнира отсутствует.' }}
+          {{ tournament.description || t('registrationTournament.noDescription') }}
         </p>
       </section>
 
@@ -50,14 +50,14 @@
       <section class="section filters-section">
         <div class="filters-grid">
           <div class="filter-group">
-            <label for="club-select" class="filter-label">Клуб</label>
+            <label for="club-select" class="filter-label">{{ t('registrationTournament.club') }}</label>
             <select id="club-select" v-model="selectedClubId" :disabled="loadingClubs" class="select-input">
-              <option value="">Все клубы</option>
+              <option value="">{{ t('registrationTournament.allClubs') }}</option>
               <option v-for="club in clubs" :key="club.id" :value="club.id">
                 {{ club.name }} ({{ club.city }})
               </option>
             </select>
-            <small v-if="loadingClubs" class="text-muted">Загрузка клубов...</small>
+            <small v-if="loadingClubs" class="text-muted">{{ t('registrationTournament.loadingClubs') }}</small>
             <small v-if="clubsError" class="text-error">{{ clubsError }}</small>
 
             <!--<label for="category-select" class="filter-label mt-1">Категория *</label>
@@ -73,24 +73,24 @@
             <small v-if="categoriesLoading" class="text-muted">Загрузка категорий...</small>-->
 
             <button v-if="selectedClubId" @click="registerClub" :disabled="loadingClubs || registeringClub" class="btn btn-primary mt-1">
-              {{ registeringClub ? 'Регистрация...' : 'Зарегистрировать клуб' }}
+              {{ registeringClub ? t('registrationTournament.registering') : t('registrationTournament.registerClub') }}
             </button>
             <small v-if="clubRegistrationMessage" :class="clubRegistrationClass">
-              {{ clubRegistrationMessage }}
+              {{ clubRegistrationMessage.text }}
             </small>
           </div>
 
           <div class="search-group">
-            <h3 class="search-title">Поиск по ФИО</h3>
+            <h3 class="search-title">{{ t('registrationTournament.searchByName') }}</h3>
             <div class="search-inputs">
-              <input v-model="searchLastName" type="text" placeholder="Фамилия" class="text-input" />
-              <input v-model="searchFirstName" type="text" placeholder="Имя" class="text-input" />
-              <input v-model="searchMiddleName" type="text" placeholder="Отчество" class="text-input" />
+              <input v-model="searchLastName" type="text" :placeholder="t('registrationTournament.lastName')" class="text-input" />
+              <input v-model="searchFirstName" type="text" :placeholder="t('registrationTournament.firstName')" class="text-input" />
+              <input v-model="searchMiddleName" type="text" :placeholder="t('registrationTournament.middleName')" class="text-input" />
               <div class="search-actions">
                 <button @click="handleSearch" :disabled="loadingAthletes" class="btn btn-primary">
-                  {{ loadingAthletes ? 'Поиск...' : 'Найти' }}
+                  {{ loadingAthletes ? t('registrationTournament.searching') : t('registrationTournament.find') }}
                 </button>
-                <button @click="handleClearSearch" class="btn btn-secondary">Сбросить</button>
+                <button @click="handleClearSearch" class="btn btn-secondary">{{ t('registrationTournament.reset') }}</button>
               </div>
             </div>
           </div>
@@ -100,9 +100,9 @@
       <!-- Таблица атлетов -->
       <section class="section athletes-section">
         <div class="section-header">
-          <h2 class="section-title">Атлеты для регистрации</h2>
+          <h2 class="section-title">{{ t('registrationTournament.athletesForRegistration') }}</h2>
           <div v-if="filteredAthletes.length" class="counter">
-            Найдено: {{ filteredAthletes.length }}
+            {{ t('registrationTournament.found', { count: filteredAthletes.length }) }}
           </div>
           <button
               v-if="filteredAthletes.length > 0"
@@ -110,14 +110,14 @@
               :disabled="loadingAthletes || selectedAthletes.length === 0 || registeringAthletes"
               class="btn btn-primary"
           > <!--|| !selectedCategoryId -->
-            {{ registeringAthletes ? 'Регистрация...' : 'Зарегистрировать выбранных в категорию' }}
+            {{ registeringAthletes ? t('registrationTournament.registering') : t('registrationTournament.registerSelected') }}
           </button>
         </div>
 
-        <div v-if="loadingAthletes" class="loading">Загрузка атлетов...</div>
+        <div v-if="loadingAthletes" class="loading">{{ t('registrationTournament.loadingAthletes') }}</div>
         <div v-if="athletesError" class="error">{{ athletesError }}</div>
         <small v-if="athletesRegistrationMessage" :class="athletesRegistrationClass">
-          {{ athletesRegistrationMessage }}
+          {{ athletesRegistrationMessage.text }}
         </small>
 
         <div class="table-container">
@@ -128,10 +128,10 @@
                 <input type="checkbox" :checked="isAllSelected" @change="toggleAll" />
               </th>
               <th>#</th>
-              <th>ФИО</th>
-              <th>Пол</th>
-              <th>Возраст</th>
-              <th>Клуб</th>
+              <th>{{ t('registrationTournament.fullName') }}</th>
+              <th>{{ t('registrationTournament.gender') }}</th>
+              <th>{{ t('registrationTournament.age') }}</th>
+              <th>{{ t('registrationTournament.club') }}</th>
             </tr>
             </thead>
             <tbody>
@@ -149,30 +149,30 @@
                 />
               </td>
               <td>{{ index + 1 }}</td>
-              <td data-label="ФИО">
+              <td :data-label="t('registrationTournament.fullName')">
                 <div class="admin-club-name">{{ fullAthleteName(athlete) }}</div>
               </td>
-              <td data-label="Пол">
+              <td :data-label="t('registrationTournament.gender')">
         <span
             class="admin-athletes-count"
             :style="athlete.gender?.toLowerCase() === 'male'
             ? 'background: linear-gradient(135deg,#1e88e5,#42a5f5)'
             : 'background: linear-gradient(135deg,#d81b60,#f06292)'"
         >
-          {{ athlete.gender?.toLowerCase() === 'male' ? 'Муж' : 'Жен' }}
+          {{ athlete.gender?.toLowerCase() === 'male' ? t('registrationTournament.maleShort') : t('registrationTournament.femaleShort') }}
         </span>
               </td>
-              <td data-label="Возраст">
+              <td :data-label="t('registrationTournament.age')">
                 <span class="admin-athletes-count">{{ athlete.age ?? '—' }}</span>
               </td>
-              <td data-label="Клуб" class="admin-short-name">{{ getClubName(athlete.clubId) || '—' }}</td>
+              <td :data-label="t('registrationTournament.club')" class="admin-short-name">{{ getClubName(athlete.clubId) || '—' }}</td>
             </tr>
             </tbody>
           </table>
 
           <div v-else class="empty-state">
-            <p>Атлеты не найдены</p>
-            <small>Измените фильтры или выполните поиск</small>
+            <p>{{ t('registrationTournament.athletesNotFound') }}</p>
+            <small>{{ t('registrationTournament.emptyHint') }}</small>
           </div>
         </div>
       </section>
@@ -183,6 +183,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from '@/i18n'
 import { getClubs } from '@/components/View/Clubs/fetchClubs.js'
 import { fetchTournamentDetail} from "@/components/View/TournamentDetails/fetchTournamentDetail.js";
 import { fetchCategories } from '@/components/View/TournamentManagement/fetchTournamentManagement.js'
@@ -195,6 +196,7 @@ import {
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const tournamentId = ref(
     localStorage.getItem('registrationTournamentId') || route.params.id || null
 )
@@ -206,7 +208,7 @@ const tournamentError = ref(null)
 
 const loadTournament = async () => {
   if (!tournamentId.value) {
-    tournamentError.value = 'ID турнира не найден'
+    tournamentError.value = t('registrationTournament.tournamentIdMissing')
     return
   }
   tournamentLoading.value = true
@@ -215,7 +217,7 @@ const loadTournament = async () => {
     const data = await fetchTournamentDetail(tournamentId.value)
     tournament.value = data
   } catch (err) {
-    tournamentError.value = 'Не удалось загрузить данные турнира'
+    tournamentError.value = t('registrationTournament.tournamentLoadError')
     console.error(err)
   } finally {
     tournamentLoading.value = false
@@ -248,20 +250,21 @@ const registeringAthletes = ref(false)
 
 // === Вспомогательные ===
 const formatDate = (start, end) => {
-  if (!start) return 'Дата не указана'
-  const s = new Date(start).toLocaleDateString('ru-RU')
+  if (!start) return t('registrationTournament.dateMissing')
+  const locale = t('registrationTournament.dateLocale')
+  const s = new Date(start).toLocaleDateString(locale)
   if (!end || start === end) return s
-  return `${s} – ${new Date(end).toLocaleDateString('ru-RU')}`
+  return `${s} – ${new Date(end).toLocaleDateString(locale)}`
 }
 
-const getLocation = (t) => [t.city, t.country].filter(Boolean).join(', ') || 'Локация не указана'
+const getLocation = (tournament) => [tournament.city, tournament.country].filter(Boolean).join(', ') || t('registrationTournament.locationMissing')
 
 const statusText = computed(() => {
   switch (tournament.value.status) {
-    case 'REGISTRATION': return 'Идёт регистрация'
-    case 'LIVE':         return 'Идёт сейчас'
-    case 'COMPLETED':    return 'Завершён'
-    default:             return 'Запланирован'
+    case 'REGISTRATION': return t('registrationTournament.registrationOpen')
+    case 'LIVE':         return t('registrationTournament.live')
+    case 'COMPLETED':    return t('registrationTournament.completed')
+    default:             return t('registrationTournament.planned')
   }
 })
 
@@ -285,12 +288,12 @@ const filteredAthletes = computed(() => {
 })
 
 const clubRegistrationClass = computed(() =>
-    clubRegistrationMessage.value?.includes('Ошибка') || clubRegistrationMessage.value?.includes('не')
+    clubRegistrationMessage.value?.type === 'error'
         ? 'text-error' : 'text-success'
 )
 
 const athletesRegistrationClass = computed(() =>
-    athletesRegistrationMessage.value?.includes('Ошибка') || athletesRegistrationMessage.value?.includes('не')
+    athletesRegistrationMessage.value?.type === 'error'
         ? 'text-error' : 'text-success'
 )
 
@@ -304,10 +307,10 @@ const loadAthletes = async () => {
     if (result?.athletes) {
       athletes.value = Object.values(result.athletes).map(mapAthlete)
     } else {
-      athletesError.value = result?.error || 'Ошибка загрузки атлетов'
+      athletesError.value = result?.error || t('registrationTournament.athletesLoadError')
     }
   } catch (err) {
-    athletesError.value = 'Не удалось загрузить атлетов'
+    athletesError.value = t('registrationTournament.athletesLoadFailed')
   } finally {
     loadingAthletes.value = false
   }
@@ -335,7 +338,7 @@ onMounted(async () => {
   try {
     clubs.value = await getClubs()
   } catch {
-    clubsError.value = 'Не удалось загрузить клубы'
+    clubsError.value = t('registrationTournament.clubsLoadFailed')
   } finally {
     loadingClubs.value = false
   }
@@ -366,10 +369,10 @@ watch(selectedClubId, async (newId) => {
     if (result.success) {
       athletes.value = Object.values(result.athletes || {}).map(a => mapAthlete(a, Number(newId)))
     } else {
-      athletesError.value = result.error || 'Ошибка загрузки атлетов клуба'
+      athletesError.value = result.error || t('registrationTournament.clubAthletesLoadError')
     }
   } catch {
-    athletesError.value = 'Ошибка загрузки атлетов клуба'
+    athletesError.value = t('registrationTournament.clubAthletesLoadError')
   } finally {
     loadingAthletes.value = false
   }
@@ -395,11 +398,11 @@ const handleSearch = async () => {
       athletes.value = (Array.isArray(result.athletes) ? result.athletes : []).map(a => mapAthlete(a))
     } else {
       athletes.value = []
-      athletesError.value = result.error || 'Ничего не найдено'
+      athletesError.value = result.error || t('registrationTournament.nothingFound')
     }
   } catch {
     athletes.value = []
-    athletesError.value = 'Ошибка поиска'
+    athletesError.value = t('registrationTournament.searchError')
   } finally {
     loadingAthletes.value = false
   }
@@ -424,10 +427,10 @@ const registerClub = async () => {
   try {
     const result = await addClubToTournament(tournamentId.value, selectedClubId.value)
     clubRegistrationMessage.value = result.success
-        ? 'Клуб успешно зарегистрирован!'
-        : result.error || 'Ошибка регистрации клуба'
+        ? { type: 'success', text: t('registrationTournament.clubRegistered') }
+        : { type: 'error', text: result.error || t('registrationTournament.clubRegistrationError') }
   } catch {
-    clubRegistrationMessage.value = 'Ошибка при регистрации клуба'
+    clubRegistrationMessage.value = { type: 'error', text: t('registrationTournament.clubRegistrationFailed') }
   } finally {
     registeringClub.value = false
   }
@@ -455,8 +458,8 @@ const registerAthletes = async () => {
       athlete_ids: selectedAthletes.value
     })
     athletesRegistrationMessage.value = result.success
-        ? `Успешно зарегистрировано ${selectedAthletes.value.length} атлет(ов)!`
-        : result.error || 'Ошибка при регистрации атлетов'
+        ? { type: 'success', text: t('registrationTournament.athletesRegistered', { count: selectedAthletes.value.length }) }
+        : { type: 'error', text: result.error || t('registrationTournament.athletesRegistrationError') }
 
     if (result.success) {
       selectedAthletes.value = []
@@ -472,7 +475,7 @@ const registerAthletes = async () => {
       await loadTournament()
     }
   } catch {
-    athletesRegistrationMessage.value = 'Ошибка при регистрации атлетов'
+    athletesRegistrationMessage.value = { type: 'error', text: t('registrationTournament.athletesRegistrationError') }
   } finally {
     registeringAthletes.value = false
   }

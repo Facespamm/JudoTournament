@@ -2,7 +2,7 @@
   <div class="judo_referees">
     <!-- ПОИСК -->
     <div class="judo_referees-setting_search">
-      <input type="search" placeholder="Поиск судей" class="search-input" />
+      <input type="search" :placeholder="t('refereesPage.searchPlaceholder')" class="search-input" />
     </div>
 
     <!-- СПИСОК -->
@@ -12,7 +12,7 @@
         <!-- Лоадер -->
         <div v-if="isLoading" class="loading">
           <div class="spinner"></div>
-          <p>Загрузка судей...</p>
+          <p>{{ t('refereesPage.loading') }}</p>
         </div>
 
         <!-- Ошибка -->
@@ -30,15 +30,15 @@
               <h3 class="judo_card_name">{{ getFullName(referee) }}</h3>
               <div class="card-details">
                 <div class="detail-row">
-                  <span class="detail-label">Разряд:</span>
-                  <span class="detail-value">{{ referee.certification_level || 'Не указан' }}</span>
+                  <span class="detail-label">{{ t('refereesPage.rank') }}</span>
+                  <span class="detail-value">{{ referee.certification_level || t('refereesPage.notSpecified') }}</span>
                 </div>
               </div>
             </div>
           </article>
 
           <div v-if="referees.length === 0" class="no-data">
-            <p>Судьи не найдены</p>
+            <p>{{ t('refereesPage.empty') }}</p>
           </div>
         </div>
       </section>
@@ -47,7 +47,7 @@
     <!-- КНОПКА «Показать ещё» -->
     <div class="judo-tournament_button_pagination">
       <button type="button" class="judo-tournament_button_pagination_next" @click="loadMore">
-        Показать ещё
+        {{ t('refereesPage.loadMore') }}
       </button>
     </div>
   </div>
@@ -57,9 +57,11 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {getReferees} from "@/components/View/Referee/fetchReferee.js";
+import { useI18n } from '@/i18n'
 import "@/components/View/Referee/Referee.css"
 
 const router = useRouter()
+const { t } = useI18n()
 const referees = ref([])
 const isLoading = ref(true)
 const error = ref('')
@@ -84,7 +86,7 @@ const loadReferees = async () => {
   if (result.success) {
     referees.value = result.referees
   } else {
-    error.value = result.error || 'Ошибка загрузки'
+    error.value = result.error || t('refereesPage.loadError')
     referees.value = [] // очистите список при ошибке
   }
 

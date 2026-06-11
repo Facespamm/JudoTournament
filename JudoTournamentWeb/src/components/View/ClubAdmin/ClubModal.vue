@@ -6,79 +6,79 @@
         <div class="success-icon">✅</div>
         <h3 class="success-title">{{ successTitle }}</h3>
         <p class="success-message">{{ successMessage }}</p>
-        <button class="success-button" @click="close">Продолжить</button>
+        <button class="success-button" @click="close">{{ t('clubsAdmin.continue') }}</button>
       </div>
 
       <!-- Форма -->
       <template v-else>
-        <h2>{{ editingClub?.id ? 'Редактирование клуба' : 'Создание клуба' }}</h2>
+        <h2>{{ editingClub?.id ? t('clubsAdmin.editClubTitle') : t('clubsAdmin.createClubShortTitle') }}</h2>
 
         <div v-if="isLoading" class="loading-overlay">
           <div class="loading-spinner"></div>
-          <p>{{ editingClub?.id ? 'Сохранение...' : 'Создание...' }}</p>
+          <p>{{ editingClub?.id ? t('clubsAdmin.saving') : t('clubsAdmin.creating') }}</p>
         </div>
 
         <form @submit.prevent="submit">
           <div class="form-grid">
             <div class="form-group">
-              <label for="club_name">Название клуба *</label>
+              <label for="club_name">{{ t('clubsAdmin.clubNameRequired') }}</label>
               <input
                   v-model="formData.name"
                   type="text"
                   id="club_name"
-                  placeholder="Введите название клуба"
+                  :placeholder="t('clubsAdmin.enterClubName')"
                   :disabled="isLoading"
                   required
               />
             </div>
 
             <div class="form-group">
-              <label for="short_name">Короткое название</label>
+              <label for="short_name">{{ t('clubsAdmin.shortName') }}</label>
               <input
                   v-model="formData.short_name"
                   type="text"
                   id="short_name"
-                  placeholder="Сокращенное название"
+                  :placeholder="t('clubsAdmin.shortNamePlaceholder')"
                   :disabled="isLoading"
               />
             </div>
 
             <div class="form-group">
-              <label for="city">Город *</label>
+              <label for="city">{{ t('clubsAdmin.cityRequired') }}</label>
               <input
                   v-model="formData.city"
                   type="text"
                   id="city"
-                  placeholder="Введите город"
+                  :placeholder="t('clubsAdmin.enterCity')"
                   :disabled="isLoading"
                   required
               />
             </div>
 
             <div class="form-group">
-              <label for="country">Страна</label>
+              <label for="country">{{ t('clubsAdmin.country') }}</label>
               <input
                   v-model="formData.country"
                   type="text"
                   id="country"
-                  placeholder="Страна"
+                  :placeholder="t('clubsAdmin.country')"
                   :disabled="isLoading"
               />
             </div>
 
             <div class="form-group">
-              <label for="coach_name">Тренер</label>
+              <label for="coach_name">{{ t('clubsAdmin.coach') }}</label>
               <input
                   v-model="formData.coach_name"
                   type="text"
                   id="coach_name"
-                  placeholder="ФИО тренера"
+                  :placeholder="t('clubsAdmin.coachFullName')"
                   :disabled="isLoading"
               />
             </div>
 
             <div class="form-group">
-              <label for="phone">Телефон</label>
+              <label for="phone">{{ t('clubsAdmin.phone') }}</label>
               <input
                   v-model="formData.phone"
                   type="tel"
@@ -100,7 +100,7 @@
             </div>
 
             <div class="form-group">
-              <label for="founded_year">Год основания</label>
+              <label for="founded_year">{{ t('clubsAdmin.foundedYear') }}</label>
               <input
                   v-model.number="formData.founded_year"
                   type="number"
@@ -113,7 +113,7 @@
             </div>
 
             <div class="form-group full-width">
-              <label for="website">Веб-сайт</label>
+              <label for="website">{{ t('clubsAdmin.website') }}</label>
               <input
                   v-model="formData.website"
                   type="url"
@@ -124,11 +124,11 @@
             </div>
 
             <div class="form-group full-width">
-              <label for="address">Адрес</label>
+              <label for="address">{{ t('clubsAdmin.address') }}</label>
               <textarea
                   v-model="formData.address"
                   id="address"
-                  placeholder="Полный адрес клуба"
+                  :placeholder="t('clubsAdmin.fullAddress')"
                   rows="3"
                   :disabled="isLoading"
               ></textarea>
@@ -136,7 +136,7 @@
           </div>
 
           <div class="form-notes">
-            <p>* - обязательные поля для заполнения</p>
+            <p>{{ t('clubsAdmin.requiredFieldsNote') }}</p>
           </div>
 
           <div class="modal-actions">
@@ -146,7 +146,7 @@
                 @click="close"
                 :disabled="isLoading"
             >
-              Отмена
+              {{ t('clubsAdmin.cancel') }}
             </button>
             <button
                 type="submit"
@@ -156,11 +156,11 @@
               {{
                 isLoading
                     ? editingClub?.id
-                        ? 'Сохранение...'
-                        : 'Создание...'
+                        ? t('clubsAdmin.saving')
+                        : t('clubsAdmin.creating')
                     : editingClub?.id
-                        ? 'Сохранить'
-                        : 'Создать'
+                        ? t('clubsAdmin.save')
+                        : t('clubsAdmin.create')
               }}
             </button>
           </div>
@@ -174,6 +174,7 @@
 import { ref, watch, computed } from 'vue'
 import { createClub, UpdateClubs } from '@/components/View/ClubAdmin/fetchClubAdmin.js'
 import "./ClubsAdmin.css"
+import { useI18n } from '@/i18n'
 
 const props = defineProps({
   isOpen: { type: Boolean, default: false },
@@ -181,12 +182,13 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'submit'])
+const { t } = useI18n()
 
 const formData = ref({
   name: '',
   short_name: '',
   city: '',
-  country: 'Казахстан',
+  country: t('clubsAdmin.defaultCountry'),
   address: '',
   phone: '',
   email: '',
@@ -205,13 +207,13 @@ let successTimer = null
 const successTexts = computed(() => {
   if (props.editingClub?.id) {
     return {
-      title: 'Клуб успешно обновлён!',
-      message: `Данные клуба "${formData.value.name || '—'}" были успешно сохранены.`
+      title: t('clubsAdmin.clubUpdatedTitle'),
+      message: t('clubsAdmin.clubUpdatedMessage', { name: formData.value.name || '—' })
     }
   }
   return {
-    title: 'Клуб успешно создан!',
-    message: `Клуб "${formData.value.name || '—'}" был успешно создан и добавлен в систему.`
+    title: t('clubsAdmin.clubCreatedTitle'),
+    message: t('clubsAdmin.clubCreatedMessage', { name: formData.value.name || '—' })
   }
 })
 
@@ -235,7 +237,7 @@ const resetForm = () => {
     name: '',
     short_name: '',
     city: '',
-    country: 'Казахстан',
+    country: t('clubsAdmin.defaultCountry'),
     address: '',
     phone: '',
     email: '',
@@ -275,7 +277,7 @@ const submit = async () => {
       name: formData.value.name,
       short_name: formData.value.short_name || undefined,
       city: formData.value.city,
-      country: formData.value.country || 'Казахстан',
+      country: formData.value.country || t('clubsAdmin.defaultCountry'),
       address: formData.value.address || undefined,
       phone: formData.value.phone || undefined,
       email: formData.value.email || undefined,
@@ -302,11 +304,11 @@ const submit = async () => {
     emit('submit', { success: true, data: result, isEdit: !!props.editingClub?.id })
   } catch (error) {
     console.error('[MODAL] Ошибка сохранения:', error)
-    alert('Ошибка: ' + (error.message || 'Не удалось сохранить клуб'))
+    alert(t('clubsAdmin.saveError', { message: error.message || t('clubsAdmin.saveFailed') }))
 
     emit('submit', {
       success: false,
-      error: error.message || 'Произошла неизвестная ошибка',
+      error: error.message || t('clubsAdmin.unknownError'),
       isEdit: !!props.editingClub?.id
     })
   } finally {

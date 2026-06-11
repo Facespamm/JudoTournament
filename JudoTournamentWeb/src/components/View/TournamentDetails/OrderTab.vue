@@ -1,50 +1,50 @@
 <template>
   <div class="fights-overview">
     <div class="fights-header">
-      <h1>Схватки и поединки</h1>
-      <p class="subtitle">Все бои текущего турнира</p>
+      <h1>{{ t('fight.title') }}</h1>
+      <p class="subtitle">{{ t('fight.subtitle') }}</p>
     </div>
 
     <div v-if="isLoadingCategories" class="categories-loading">
       <div class="spinner"></div>
-      <p>Загрузка весовых категорий...</p>
+      <p>{{ t('fight.loadingCategories') }}</p>
     </div>
 
     <div v-else-if="!categories.length" class="no-categories">
-      <p>В этом турнире пока нет весовых категорий</p>
+      <p>{{ t('fight.noCategories') }}</p>
     </div>
 
     <div v-else class="weight-categories-dropdown">
       <select v-model="selectedCategory" class="category-dropdown" @change="loadFights">
         <option v-for="cat in categories" :key="cat.id" :value="cat">
-          {{ cat.name }} {{ cat.gender ? `(${cat.gender === 'MALE' ? 'М' : 'Ж'})` : '' }}
+          {{ cat.name }} {{ cat.gender ? `(${cat.gender === 'MALE' ? t('registrationTournament.maleShort') : t('registrationTournament.femaleShort')})` : '' }}
         </option>
       </select>
     </div>
 
     <div v-if="selectedCategory && selectedCategory.id !== null" class="group-section">
-      <span class="group-label">ВЕСОВАЯ КАТЕГОРИЯ</span>
+      <span class="group-label">{{ t('brackets.weightCategory') }}</span>
       <span class="group-weight">{{ selectedCategory.name }}</span>
     </div>
 
     <div v-if="isLoadingFights" class="fights-loading">
       <div class="spinner"></div>
-      <p>Загрузка схваток...</p>
+      <p>{{ t('fight.loadingFights') }}</p>
     </div>
 
     <div v-else-if="fights.length === 0" class="no-fights">
-      <p>{{ selectedCategory?.id === null ? 'В турнире пока нет схваток' : 'В этой категории пока нет схваток' }}</p>
+      <p>{{ selectedCategory?.id === null ? t('fight.fightsNotFound') : t('brackets.noFightsCategory') }}</p>
     </div>
 
     <div v-else class="tatami-sections">
       <div v-for="tatami in availableTatamis" :key="tatami" class="tatami-section">
         <div class="tatami-header">
           <div class="tatami-badge">
-            <span class="tatami-label">ТАТАМИ</span>
+            <span class="tatami-label">{{ t('fight.tatami') }}</span>
             <span class="tatami-num">{{ tatami > 0 ? tatami : '—' }}</span>
           </div>
           <div class="tatami-meta">
-            <span class="fights-count">{{ groupedFights[tatami]?.length || 0 }} схваток</span>
+            <span class="fights-count">{{ t('tournamentDetails.fightsCount', { count: groupedFights[tatami]?.length || 0 }) }}</span>
           </div>
         </div>
 
@@ -121,9 +121,11 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchGetCategoryByTournament, fetchBrackets } from "@/components/View/Brackets/fetchBrackets.js"
 import { fightScores, initFight } from "@/stores/fightScoresStore.js"
+import { useI18n } from '@/i18n'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const tournamentId = computed(() => Number(route.params.id))
 
 const categories = ref([])
@@ -141,11 +143,11 @@ const loadCategories = async () => {
   try {
     const res = await fetchGetCategoryByTournament(tournamentId.value)
     const fetchedCats = Array.isArray(res) ? res : res.categories || res.data?.categories || []
-    categories.value = [{ id: null, name: 'Все категории' }, ...fetchedCats]
+    categories.value = [{ id: null, name: t('tournaments.allCategories') }, ...fetchedCats]
     selectedCategory.value = categories.value[0]
   } catch (err) {
     console.error('Ошибка загрузки категорий:', err)
-    categories.value = [{ id: null, name: 'Все категории' }]
+    categories.value = [{ id: null, name: t('tournaments.allCategories') }]
     selectedCategory.value = categories.value[0]
   } finally {
     isLoadingCategories.value = false
@@ -163,7 +165,7 @@ const loadFights = async () => {
         try {
           const res = await fetchBrackets(tournamentId.value, cat.id)
           if (res?.success && res.fights?.length) {
-            const catName = `${cat.name} ${cat.gender ? `(${cat.gender === 'MALE' ? 'М' : 'Ж'})` : ''}`
+            const catName = `${cat.name} ${cat.gender ? `(${cat.gender === 'MALE' ? t('registrationTournament.maleShort') : t('registrationTournament.femaleShort')})` : ''}`
             allFights.push(...res.fights.map(fight => { initFight(fight.id); return mapFight(fight, catName) }))
           }
         } catch {}
@@ -191,11 +193,11 @@ const mapFight = (fight, catName) => ({
   fighter1: formatAthlete(fight.white_athlete),
   fighter2: formatAthlete(fight.blue_athlete),
   round: fight.round || null,
-  round_info: fight.round ? `Раунд ${fight.round}` : (fight.next_fight === null ? 'Финал' : '—')
+  round_info: fight.round ? t('fight.round', { number: fight.round }) : (fight.next_fight === null ? t('fight.final') : '—')
 })
 
 const formatAthlete = (athlete) => {
-  if (!athlete) return { name: 'Ожидает победителя', club: '' }
+  if (!athlete) return { name: t('fight.waitingWinner'), club: '' }
   return { name: [athlete.last_name, athlete.first_name, athlete.middle_name].filter(Boolean).join(' '), club: athlete.club_name || '' }
 }
 
@@ -217,7 +219,7 @@ const groupedFights = computed(() => {
   return grouped
 })
 
-const statusText = (s) => ({ IN_PROGRESS: 'LIVE', SCHEDULED: 'Запланировано', COMPLETED: 'Завершено' }[s] || 'Неизвестно')
+const statusText = (s) => ({ IN_PROGRESS: 'LIVE', SCHEDULED: t('fight.scheduled'), COMPLETED: t('fight.completed') }[s] || t('fight.unknown'))
 
 watch(selectedCategory, loadFights)
 onMounted(() => { loadCategories() })

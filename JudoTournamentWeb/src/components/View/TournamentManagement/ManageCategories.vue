@@ -1,24 +1,24 @@
 <template>
   <div class="manage-categories">
-    <h3>Создание категории</h3>
+    <h3>{{ t('tournamentManagement.createCategoryTitle') }}</h3>
 
     <!-- Индикатор загрузки -->
     <div v-if="isLoading" class="loading-overlay">
       <div class="loading-spinner"></div>
-      <p>Создание категории...</p>
+      <p>{{ t('tournamentManagement.creatingCategory') }}</p>
     </div>
 
     <!-- Модалка УСПЕХА -->
     <div v-if="showSuccessModal" class="admin-modal-overlay" @click.self="closeSuccessModal">
       <div class="admin-modal-content success-modal">
         <div class="success-icon">✅</div>
-        <h2>Категория успешно создана!</h2>
+        <h2>{{ t('tournamentManagement.categoryCreatedTitle') }}</h2>
         <p class="success-text">
-          Новая категория добавлена в систему
+          {{ t('tournamentManagement.categoryCreatedText') }}
         </p>
         <div class="admin-modal-actions">
           <button class="admin-modal-button admin-modal-button-submit" @click="closeSuccessModal">
-            Отлично, продолжить
+            {{ t('tournamentManagement.continue') }}
           </button>
         </div>
       </div>
@@ -28,11 +28,11 @@
     <div v-if="showErrorModal" class="admin-modal-overlay" @click.self="closeErrorModal">
       <div class="admin-modal-content error-modal">
         <div class="error-icon">❌</div>
-        <h2>Ошибка создания</h2>
+        <h2>{{ t('tournamentManagement.createErrorTitle') }}</h2>
         <p class="error-text">{{ errorMessage }}</p>
         <div class="admin-modal-actions">
           <button class="admin-modal-button admin-modal-button-cancel" @click="closeErrorModal">
-            Закрыть
+            {{ t('tournamentManagement.close') }}
           </button>
         </div>
       </div>
@@ -41,66 +41,66 @@
     <form @submit.prevent="submit">
       <div class="form-grid">
         <div class="form-group">
-          <label for="gender">Пол *</label>
+          <label for="gender">{{ t('tournamentManagement.gender') }}</label>
           <select
               v-model="formData.gender"
               id="gender"
               :disabled="isLoading"
               required
           >
-            <option value="мужской">Мужской</option>
-            <option value="женский">Женский</option>
+            <option value="мужской">{{ t('tournamentManagement.male') }}</option>
+            <option value="женский">{{ t('tournamentManagement.female') }}</option>
           </select>
         </div>
 
         <!-- Числовые поля теперь компактные -->
         <div class="form-group number-group">
-          <label for="min_age">Минимальный год рождения</label>
+          <label for="min_age">{{ t('tournamentManagement.minBirthYear') }}</label>
           <input
               v-model.number="formData.min_age"
               type="number"
               id="min_age"
               min="0"
-              placeholder="0 — без ограничения"
+              :placeholder="t('tournamentManagement.noLimit')"
               :disabled="isLoading"
           />
         </div>
 
         <div class="form-group number-group">
-          <label for="max_age">Максимальный год рождения</label>
+          <label for="max_age">{{ t('tournamentManagement.maxBirthYear') }}</label>
           <input
               v-model.number="formData.max_age"
               type="number"
               id="max_age"
               min="0"
-              placeholder="0 — без ограничения"
+              :placeholder="t('tournamentManagement.noLimit')"
               :disabled="isLoading"
           />
           <span v-if="errors.max_age" class="error">{{ errors.max_age }}</span>
         </div>
 
         <div class="form-group number-group">
-          <label for="min_weight">Минимальный вес (кг)</label>
+          <label for="min_weight">{{ t('tournamentManagement.minWeight') }}</label>
           <input
               v-model.number="formData.min_weight"
               type="number"
               id="min_weight"
               min="0"
               step="0.1"
-              placeholder="0 — без ограничения"
+              :placeholder="t('tournamentManagement.noLimit')"
               :disabled="isLoading"
           />
         </div>
 
         <div class="form-group number-group">
-          <label for="max_weight">Максимальный вес (кг)</label>
+          <label for="max_weight">{{ t('tournamentManagement.maxWeight') }}</label>
           <input
               v-model.number="formData.max_weight"
               type="number"
               id="max_weight"
               min="0"
               step="0.1"
-              placeholder="0 — без ограничения"
+              :placeholder="t('tournamentManagement.noLimit')"
               :disabled="isLoading"
           />
           <span v-if="errors.max_weight" class="error">{{ errors.max_weight }}</span>
@@ -113,7 +113,7 @@
             class="submit-button"
             :disabled="isLoading"
         >
-          {{ isLoading ? 'Создание...' : 'Создать категорию' }}
+          {{ isLoading ? t('tournamentManagement.creating') : t('tournamentManagement.createCategory') }}
         </button>
       </div>
     </form>
@@ -123,6 +123,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { createCategory } from '@/components/View/TournamentManagement/fetchTournamentManagement.js'
+import { useI18n } from '@/i18n'
+
+const { t } = useI18n()
 
 const isLoading = ref(false)
 const showSuccessModal = ref(false)
@@ -140,17 +143,19 @@ const formData = ref({
 const errors = ref({})
 
 const generateCategoryName = (data) => {
-  const genderTitle = data.gender === 'мужской' ? 'Мужская' : 'Женская'
+  const genderTitle = data.gender === 'мужской'
+      ? t('tournamentManagement.maleCategory')
+      : t('tournamentManagement.femaleCategory')
   const parts = [genderTitle]
 
   let agePart = ''
   if (data.min_age > 0 || data.max_age > 0) {
     if (data.min_age > 0 && data.max_age > 0) {
-      agePart = `${data.min_age}-${data.max_age} лет`
+      agePart = `${data.min_age}-${data.max_age} ${t('tournamentManagement.years')}`
     } else if (data.min_age > 0) {
-      agePart = `${data.min_age}+ лет`
+      agePart = `${data.min_age}+ ${t('tournamentManagement.years')}`
     } else if (data.max_age > 0) {
-      agePart = `до ${data.max_age} лет`
+      agePart = `${t('tournamentManagement.upTo')} ${data.max_age} ${t('tournamentManagement.years')}`
     }
   }
   if (agePart) parts.push(agePart)
@@ -160,11 +165,11 @@ const generateCategoryName = (data) => {
     const minW = data.min_weight.toString().replace('.', ',')
     const maxW = data.max_weight.toString().replace('.', ',')
     if (data.min_weight > 0 && data.max_weight > 0) {
-      weightPart = `${minW}-${maxW} кг`
+      weightPart = `${minW}-${maxW} ${t('tournamentManagement.kg')}`
     } else if (data.min_weight > 0) {
-      weightPart = `${minW}+ кг`
+      weightPart = `${minW}+ ${t('tournamentManagement.kg')}`
     } else if (data.max_weight > 0) {
-      weightPart = `до ${maxW} кг`
+      weightPart = `${t('tournamentManagement.upTo')} ${maxW} ${t('tournamentManagement.kg')}`
     }
   }
   if (weightPart) parts.push(weightPart)
@@ -179,12 +184,12 @@ const validateForm = () => {
   let isValid = true
 
   if (formData.value.min_age > formData.value.max_age && formData.value.max_age > 0) {
-    errors.value.max_age = 'Максимальный возраст не может быть меньше минимального'
+    errors.value.max_age = t('tournamentManagement.maxAgeError')
     isValid = false
   }
 
   if (formData.value.min_weight > formData.value.max_weight && formData.value.max_weight > 0) {
-    errors.value.max_weight = 'Максимальный вес не может быть меньше минимального'
+    errors.value.max_weight = t('tournamentManagement.maxWeightError')
     isValid = false
   }
 
@@ -229,11 +234,11 @@ const submit = async () => {
       }
       errors.value = {}
     } else {
-      throw new Error(result.error || 'Неизвестная ошибка')
+      throw new Error(result.error || t('tournamentManagement.unknownError'))
     }
   } catch (error) {
     console.error('Ошибка при создании категории:', error)
-    errorMessage.value = error.message || 'Неизвестная ошибка при создании категории'
+    errorMessage.value = error.message || t('tournamentManagement.categoryUnknownError')
     showErrorModal.value = true
   } finally {
     isLoading.value = false

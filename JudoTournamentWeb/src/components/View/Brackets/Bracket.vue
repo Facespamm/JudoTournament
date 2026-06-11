@@ -1,28 +1,28 @@
 <template>
   <div class="bracket-management-page">
     <section class="management-navigation">
-      <h2>Управление сетками турниров</h2>
+      <h2>{{ t('brackets.managementTitle') }}</h2>
       <nav class="nav-tabs">
         <button
             class="nav-tab"
             :class="{ active: activeTab === 'create' }"
             @click="activeTab = 'create'"
         >
-          Создать основную сетку
+          {{ t('brackets.createMain') }}
         </button>
         <button
             class="nav-tab"
             :class="{ active: activeTab === 'consolation' }"
             @click="activeTab = 'consolation'"
         >
-          Создать утешительную сетку
+          {{ t('brackets.createConsolation') }}
         </button>
         <button
             class="nav-tab"
             :class="{ active: activeTab === 'view' }"
             @click="activeTab = 'view'"
         >
-          Просмотр сеток
+          {{ t('brackets.view') }}
         </button>
       </nav>
     </section>
@@ -61,6 +61,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { fetchTournaments } from '@/components/View/Tournaments/fetchTournaments.js'
+import { useI18n } from '@/i18n'
 
 import BracketCreation from './BracketsCreate.vue'
 import ConsolationBracketCreation from './../Brackets/ConsolationBracketCreation.vue'
@@ -70,6 +71,7 @@ import BracketsCreateFight from './BracketsCreateFight.vue'
 import "./Brackets.css"
 
 const activeTab = ref('create')
+const { t } = useI18n()
 const tournaments = ref([])
 const brackets = ref([])
 

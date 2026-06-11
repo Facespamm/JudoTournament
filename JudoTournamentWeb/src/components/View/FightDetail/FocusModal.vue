@@ -16,12 +16,12 @@
               <circle cx="24" cy="24" r="4" fill="currentColor"/>
             </svg>
           </div>
-          <div class="focus-title">АКТИВИРОВАТЬ ТАБЛО</div>
-          <div class="focus-sub">Нажмите в любое место для активации управления</div>
+          <div class="focus-title">{{ $t('fightDetail.focusTitle') }}</div>
+          <div class="focus-sub">{{ $t('fightDetail.focusSubtitle') }}</div>
           <div class="focus-hint">
-            <span class="hint-key">SPACE</span> старт/стоп
-            <span class="hint-key">Q W E</span> белый
-            <span class="hint-key">I O P</span> синий
+            <span class="hint-key">SPACE</span> {{ $t('fightDetail.startStop') }}
+            <span class="hint-key">Q W E</span> {{ $t('fightDetail.whiteHint') }}
+            <span class="hint-key">I O P</span> {{ $t('fightDetail.blueHint') }}
           </div>
           <div class="focus-pulse" />
         </div>

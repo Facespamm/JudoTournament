@@ -3,9 +3,9 @@
 
     <!-- ЗАГОЛОВОК -->
     <div class="results-header">
-      <h2 class="results-title">Результаты турнира</h2>
+      <h2 class="results-title">{{ t('tournamentDetails.resultsTitle') }}</h2>
       <div class="results-total" v-if="!loading && results.length > 0">
-        Всего схваток: <strong>{{ total }}</strong>
+        {{ t('tournamentDetails.totalFights') }} <strong>{{ total }}</strong>
       </div>
     </div>
 
@@ -25,27 +25,27 @@
     <!-- ЗАГРУЗКА КАТЕГОРИЙ -->
     <div v-if="loadingCategories" class="results-loading">
       <div class="spinner"></div>
-      <p>Загрузка категорий...</p>
+      <p>{{ t('tournamentDetails.loadingCategories') }}</p>
     </div>
 
     <!-- ЗАГРУЗКА РЕЗУЛЬТАТОВ -->
     <div v-else-if="loading" class="results-loading">
       <div class="spinner"></div>
-      <p>Загрузка результатов...</p>
+      <p>{{ t('tournamentDetails.loadingResults') }}</p>
     </div>
 
     <!-- ОШИБКА -->
     <div v-else-if="error" class="results-error">
       <div class="error-icon">⚠️</div>
       <p>{{ error }}</p>
-      <button class="retry-btn" @click="loadResults">Повторить</button>
+      <button class="retry-btn" @click="loadResults">{{ t('tournamentDetails.retry') }}</button>
     </div>
 
     <!-- ПУСТО -->
     <div v-else-if="results.length === 0" class="results-empty">
       <div class="empty-icon">🏆</div>
-      <h3>Результатов пока нет</h3>
-      <p>Результаты появятся после завершения схваток</p>
+      <h3>{{ t('tournamentDetails.noResultsTitle') }}</h3>
+      <p>{{ t('tournamentDetails.noResultsText') }}</p>
     </div>
 
     <!-- КОНТЕНТ -->
@@ -57,10 +57,10 @@
           <thead>
           <tr>
             <th class="th-num">#</th>
-            <th class="th-fight">Схватка</th>
-            <th class="th-winner">Победитель</th>
-            <th class="th-type">Тип победы</th>
-            <th class="th-time">Время</th>
+            <th class="th-fight">{{ t('tournamentDetails.fight') }}</th>
+            <th class="th-winner">{{ t('tournamentDetails.winner') }}</th>
+            <th class="th-type">{{ t('tournamentDetails.victoryType') }}</th>
+            <th class="th-time">{{ t('tournamentDetails.time') }}</th>
           </tr>
           </thead>
           <tbody>
@@ -112,8 +112,10 @@
 import { ref, inject, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchGetCategoryByTournament, getResultTournament } from '@/components/View/Brackets/fetchBrackets.js'
+import { useI18n } from '@/i18n'
 
 const route = useRoute()
+const { t } = useI18n()
 const tournament = inject('tournament')
 const tournamentId = computed(() => tournament?.value?.id || Number(route.params.id))
 
@@ -162,10 +164,10 @@ const loadResults = async () => {
       results.value = data.results || []
       total.value = data.total || 0
     } else {
-      throw new Error(data.message || 'Ошибка загрузки результатов')
+      throw new Error(data.message || t('tournamentDetails.resultsLoadError'))
     }
   } catch (err) {
-    error.value = err.message || 'Не удалось загрузить результаты'
+    error.value = err.message || t('tournamentDetails.resultsLoadFailed')
   } finally {
     loading.value = false
   }

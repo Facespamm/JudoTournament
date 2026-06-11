@@ -1,11 +1,25 @@
 <template>
   <div class="auth-background" :style="{ backgroundImage: `url(${BackgroundImage})` }">
+    <div class="auth-language-switcher" :aria-label="t('nav.language')">
+      <button
+          v-for="lang in languages"
+          :key="lang.code"
+          type="button"
+          class="auth-language-btn"
+          :class="{ active: locale === lang.code }"
+          :disabled="isLoading"
+          @click="setLocale(lang.code)"
+      >
+        {{ lang.shortName }}
+      </button>
+    </div>
+
     <div class="auth-container">
       <div class="auth-card">
         <div class="auth-header">
           <h1 class="title-registration">
             <img :src="TrophyIcon" alt="Trophy" class="header-icon" />
-            Регистрация
+            {{ t('authPages.registrationTitle') }}
           </h1>
           <p class="subtitle-registration">
             <span class="judo">Judo</span><span class="stream">-Stream</span>
@@ -14,7 +28,7 @@
 
         <form @submit.prevent="handleRegister" class="auth-form">
           <div class="input-group">
-            <label class="form-title">Логин</label>
+            <label class="form-title">{{ t('authPages.login') }}</label>
             <input
                 type="text"
                 v-model="form.login"
@@ -27,7 +41,7 @@
           </div>
 
           <div class="input-group">
-            <label class="form-title">Имя пользователя</label>
+            <label class="form-title">{{ t('authPages.username') }}</label>
             <input
                 type="text"
                 v-model="form.name"
@@ -35,13 +49,13 @@
                 required
                 minlength="3"
                 maxlength="50"
-                placeholder="Саша"
+                :placeholder="t('authPages.usernamePlaceholder')"
                 :disabled="isLoading"
             />
           </div>
 
           <div class="input-group">
-            <label class="form-title">Электронная почта</label>
+            <label class="form-title">{{ t('authPages.email') }}</label>
             <input
                 type="email"
                 v-model="form.email"
@@ -52,7 +66,7 @@
           </div>
 
           <div class="input-group">
-            <label class="form-title">Телефон</label>
+            <label class="form-title">{{ t('authPages.phone') }}</label>
             <input
                 type="tel"
                 v-model="form.phone"
@@ -63,7 +77,7 @@
           </div>
 
           <div class="input-group">
-            <label class="form-title">Пароль</label>
+            <label class="form-title">{{ t('authPages.password') }}</label>
             <input
                 type="password"
                 v-model="form.password"
@@ -75,7 +89,7 @@
           </div>
 
           <div class="input-group">
-            <label class="form-title">Повторить пароль</label>
+            <label class="form-title">{{ t('authPages.repeatPassword') }}</label>
             <input
                 type="password"
                 v-model="form.passwordConfirm"
@@ -90,15 +104,15 @@
               class="btn-primary"
               :disabled="isLoading"
           >
-            <span v-if="isLoading">Регистрация...</span>
-            <span v-else>Зарегистрироваться</span>
+            <span v-if="isLoading">{{ t('authPages.registering') }}</span>
+            <span v-else>{{ t('authPages.register') }}</span>
           </button>
         </form>
 
         <div class="auth-footer">
-          <p>Уже есть аккаунт?</p>
+          <p>{{ t('authPages.haveAccount') }}</p>
           <button @click="RedirectToLogin" class="btn-link" :disabled="isLoading">
-            Войти
+            {{ t('authPages.signIn') }}
           </button>
         </div>
       </div>
@@ -119,9 +133,11 @@ import TrophyIcon from '@/components/icons/CupIconAdmin.png'
 import BackgroundImage from '@/assets/Background.png'
 import { createUser } from "@/components/View/Authentication/Registration/fetchRegistration.js"
 import { useAuthStore } from '@/components/stores/authStore.js'
+import { useI18n } from '@/i18n'
 
 const router = useRouter()
 const { cookies } = useCookies()
+const { locale, languages, setLocale, t } = useI18n()
 
 let authStore
 onMounted(() => {
@@ -157,17 +173,17 @@ const showNotification = (message, type = 'success') => {
 
 const validateForm = () => {
   if (!form.value.login || !form.value.name || !form.value.password) {
-    showNotification('Заполните все обязательные поля!', 'error')
+    showNotification(t('authPages.requiredFields'), 'error')
     return false
   }
 
   if (form.value.password !== form.value.passwordConfirm) {
-    showNotification('Пароли не совпадают!', 'error')
+    showNotification(t('authPages.passwordsMismatch'), 'error')
     return false
   }
 
   if (form.value.password.length < 6) {
-    showNotification('Пароль должен содержать минимум 6 символов!', 'error')
+    showNotification(t('authPages.passwordMin'), 'error')
     return false
   }
 
@@ -225,7 +241,7 @@ const handleRegister = async () => {
         }))
       }
 
-      showNotification(message || 'Регистрация успешна! Перенаправляем...', 'success')
+      showNotification(message || t('authPages.registrationSuccess'), 'success')
 
       // Полная перезагрузка страницы — чтобы модалка точно появилась на /roles
       setTimeout(() => {
@@ -234,12 +250,12 @@ const handleRegister = async () => {
       }, 1200)
 
     } else {
-      const errorMessage = response.error || message || 'Ошибка регистрации'
+      const errorMessage = response.error || message || t('authPages.registrationError')
       showNotification(errorMessage, 'error')
     }
   } catch (error) {
     console.error('Registration error:', error)
-    showNotification('Ошибка при регистрации. Попробуйте еще раз.', 'error')
+    showNotification(t('authPages.registrationRetry'), 'error')
   } finally {
     isLoading.value = false
     console.log('=== ЗАВЕРШЕНИЕ РЕГИСТРАЦИИ ===')
@@ -276,6 +292,44 @@ const RedirectToLogin = () => {
 
 .notification.error {
   background-color: #f44336;
+}
+
+.auth-language-switcher {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1101;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(200, 155, 60, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(8px);
+}
+
+.auth-language-btn {
+  min-width: 38px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #333;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.auth-language-btn.active {
+  background: #c89b3c;
+  color: #fff;
+}
+
+.auth-language-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 @keyframes slideIn {
@@ -536,6 +590,11 @@ html, body {
 @media (max-width: 480px) {
   .auth-background {
     padding: 1rem;
+  }
+
+  .auth-language-switcher {
+    top: 12px;
+    right: 12px;
   }
 
   .auth-card {

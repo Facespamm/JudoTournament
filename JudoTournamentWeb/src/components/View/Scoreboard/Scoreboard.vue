@@ -2,20 +2,20 @@
   <div class="scoreboard-page">
     <!-- ЗАГОЛОВОК -->
     <div class="scoreboard-header">
-      <h1>🏆 Турнирное табло</h1>
-      <p class="subtitle">Прямые трансляции схваток в реальном времени</p>
+      <h1>{{ t('scoreboard.title') }}</h1>
+      <p class="subtitle">{{ t('scoreboard.subtitle') }}</p>
       <div class="tournament-stats">
         <div class="stat-item">
           <span class="stat-number">{{ liveFights.length }}</span>
-          <span class="stat-label">LIVE схваток</span>
+          <span class="stat-label">{{ t('scoreboard.liveFights') }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-number">{{ completedFightsCount }}</span>
-          <span class="stat-label">Завершено</span>
+          <span class="stat-label">{{ t('scoreboard.completed') }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-number">{{ totalFightsCount }}</span>
-          <span class="stat-label">Всего схваток</span>
+          <span class="stat-label">{{ t('scoreboard.totalFights') }}</span>
         </div>
       </div>
     </div>
@@ -23,29 +23,29 @@
     <!-- ФИЛЬТРЫ -->
     <div class="scoreboard-filters">
       <select v-model="selectedTournament" @change="loadLiveFights" class="filter-select">
-        <option value="">Все турниры</option>
+        <option value="">{{ t('scoreboard.allTournaments') }}</option>
         <option v-for="tournament in tournaments" :key="tournament.id" :value="tournament.id">
           {{ tournament.name }}
         </option>
       </select>
       <select v-model="selectedTatami" @change="loadLiveFights" class="filter-select">
-        <option value="">Все татами</option>
+        <option value="">{{ t('scoreboard.allTatami') }}</option>
         <option v-for="tatami in tatamiList" :key="tatami" :value="tatami">
-          Татами {{ tatami }}
+          {{ t('scoreboard.tatami', { number: tatami }) }}
         </option>
       </select>
       <button @click="loadLiveFights" class="refresh-btn">
-        🔄 Обновить
+        {{ t('scoreboard.refresh') }}
       </button>
     </div>
 
     <!-- LIVE СХВАТКИ -->
     <div class="live-fights-section">
-      <h2>🔴 Прямой эфир</h2>
+      <h2>{{ t('scoreboard.live') }}</h2>
       <div v-if="liveFights.length === 0" class="no-fights">
         <div class="no-fights-icon">⏸️</div>
-        <p>Нет активных схваток</p>
-        <p class="subtext">Следующие схватки появятся здесь автоматически</p>
+        <p>{{ t('scoreboard.noActiveFights') }}</p>
+        <p class="subtext">{{ t('scoreboard.nextFightsAuto') }}</p>
       </div>
       <div v-else class="fights-list">
         <div
@@ -57,9 +57,9 @@
           <!-- Шапка: татами + номер + категория -->
           <div class="fight-header">
             <div class="fight-meta">
-              <span class="tatami-badge">Татами {{ fight.tatami }}</span>
-              <span class="fight-number">Схватка #{{ fight.fight_number }}</span>
-              <span class="category-badge">{{ fight.category?.name || 'Категория' }}</span>
+              <span class="tatami-badge">{{ t('scoreboard.tatami', { number: fight.tatami }) }}</span>
+              <span class="fight-number">{{ t('scoreboard.fightNumber', { number: fight.fight_number }) }}</span>
+              <span class="category-badge">{{ fight.category?.name || t('scoreboard.category') }}</span>
             </div>
           </div>
 
@@ -112,15 +112,15 @@
 
     <!-- БЛИЖАЙШИЕ СХВАТКИ -->
     <div class="upcoming-fights-section">
-      <h2>⏭️ Следующие схватки</h2>
+      <h2>{{ t('scoreboard.upcoming') }}</h2>
       <div v-if="upcomingFights.length === 0" class="no-upcoming">
-        <p>Нет запланированных схваток</p>
+        <p>{{ t('scoreboard.noScheduledFights') }}</p>
       </div>
       <div v-else class="upcoming-list">
         <div v-for="fight in upcomingFights" :key="fight.id" class="upcoming-fight">
           <div class="upcoming-info">
             <span class="time">{{ formatScheduledTime(fight.scheduled_time) }}</span>
-            <span class="tatami">Татами {{ fight.tatami }}</span>
+            <span class="tatami">{{ t('scoreboard.tatami', { number: fight.tatami }) }}</span>
             <span class="category">{{ fight.category?.name }}</span>
           </div>
           <div class="athletes-preview">
@@ -136,10 +136,10 @@
     <div class="auto-refresh-indicator">
       <div class="refresh-status">
         <span class="dot" :class="{ active: isAutoRefreshing }"></span>
-        Авто-обновление: {{ isAutoRefreshing ? 'ВКЛ' : 'ВЫКЛ' }}
+        {{ t('scoreboard.autoRefresh') }} {{ isAutoRefreshing ? t('scoreboard.on') : t('scoreboard.off') }}
       </div>
       <button @click="toggleAutoRefresh" class="toggle-refresh-btn">
-        {{ isAutoRefreshing ? '⏸️ Пауза' : '▶️ Возобновить' }}
+        {{ isAutoRefreshing ? t('scoreboard.pause') : t('scoreboard.resume') }}
       </button>
     </div>
   </div>
@@ -147,7 +147,9 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from '@/i18n'
 import "./Scoreboard.css"
+const { t } = useI18n()
 const liveFights = ref([])
 const upcomingFights = ref([])
 const tournaments = ref([])
@@ -169,7 +171,7 @@ const loadLiveFights = async () => {
       status: 'LIVE',
       timer_seconds: 187,
       is_golden_score: false,
-      category: { name: 'Мужчины до 73кг' },
+      category: { name: '-73 kg' },
       white_athlete: {
         id: 101,
         full_name: 'Азамат Сарсенбеков',
@@ -196,7 +198,7 @@ const loadLiveFights = async () => {
       id: 3,
       tatami: 2,
       scheduled_time: '2025-11-18T14:30:00Z',
-      category: { name: 'Мужчины до 81кг' },
+      category: { name: '-81 kg' },
       white_athlete: { full_name: 'Нурлан Омаров' },
       blue_athlete: { full_name: 'Алишер Жуманов' }
     },
@@ -204,7 +206,7 @@ const loadLiveFights = async () => {
       id: 4,
       tatami: 1,
       scheduled_time: '2025-11-18T14:45:00Z',
-      category: { name: 'Женщины до 63кг' },
+      category: { name: '-63 kg' },
       white_athlete: { full_name: 'Гульнара Абдрахманова' },
       blue_athlete: { full_name: 'Камила Бекенова' }
     }
@@ -224,7 +226,7 @@ const getPenalties = (result, color) => {
   return penalties ? penalties.split(',') : []
 }
 
-const formatScheduledTime = (time) => time ? new Date(time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : ''
+const formatScheduledTime = (time) => time ? new Date(time).toLocaleTimeString(t('scoreboard.timeLocale'), { hour: '2-digit', minute: '2-digit' }) : ''
 
 const toggleAutoRefresh = () => {
   isAutoRefreshing.value = !isAutoRefreshing.value

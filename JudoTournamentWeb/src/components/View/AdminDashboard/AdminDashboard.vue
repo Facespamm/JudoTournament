@@ -2,8 +2,8 @@
   <div class="admin-dashboard">
     <!-- ЗАГОЛОВОК -->
     <div class="dashboard-header">
-      <h1>Панель администратора</h1>
-      <p>Обзор системы управления турнирами по дзюдо</p>
+      <h1>{{ t('adminDashboard.title') }}</h1>
+      <p>{{ t('adminDashboard.subtitle') }}</p>
     </div>
 
     <!-- СТАТИСТИКА -->
@@ -16,7 +16,7 @@
         </div>
         <div class="stat-info">
           <div class="stat-number">{{ stats.total_tournaments || 0 }}</div>
-          <div class="stat-label">Всего турниров</div>
+          <div class="stat-label">{{ t('adminDashboard.totalTournaments') }}</div>
         </div>
       </div>
 
@@ -28,7 +28,7 @@
         </div>
         <div class="stat-info">
           <div class="stat-number">{{ stats.active_tournaments || 0 }}</div>
-          <div class="stat-label">Активных турниров</div>
+          <div class="stat-label">{{ t('adminDashboard.activeTournamentsCount') }}</div>
         </div>
       </div>
 
@@ -40,7 +40,7 @@
         </div>
         <div class="stat-info">
           <div class="stat-number">{{ stats.unique_athletes || 0 }}</div>
-          <div class="stat-label">Участников</div>
+          <div class="stat-label">{{ t('adminDashboard.participants') }}</div>
         </div>
       </div>
 
@@ -52,7 +52,7 @@
         </div>
         <div class="stat-info">
           <div class="stat-number">{{ stats.unique_clubs || 0 }}</div>
-          <div class="stat-label">Клубов</div>
+          <div class="stat-label">{{ t('adminDashboard.clubs') }}</div>
         </div>
       </div>
 
@@ -64,7 +64,7 @@
         </div>
         <div class="stat-info">
           <div class="stat-number">{{ stats.total_users || 0 }}</div>
-          <div class="stat-label">Пользователей</div>
+          <div class="stat-label">{{ t('adminDashboard.users') }}</div>
         </div>
       </div>
 
@@ -77,14 +77,14 @@
         </div>
         <div class="stat-info">
           <div class="stat-number">{{ stats.live_fights || 0 }}</div>
-          <div class="stat-label">Live схваток</div>
+          <div class="stat-label">{{ t('adminDashboard.liveFights') }}</div>
         </div>
       </div>
     </div>
 
     <!-- БЫСТРЫЕ ДЕЙСТВИЯ -->
     <div class="quick-actions-section">
-      <h2>Быстрые действия</h2>
+      <h2>{{ t('adminDashboard.quickActions') }}</h2>
       <div class="actions-grid">
         <button class="action-btn" @click="navigateToCreateTournament">
           <span class="action-icon create">
@@ -92,7 +92,7 @@
               <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="currentColor"/>
             </svg>
           </span>
-          <span class="action-text">Создать турнир</span>
+          <span class="action-text">{{ t('adminDashboard.createTournament') }}</span>
         </button>
 
         <button class="action-btn" @click="navigateToWeighing">
@@ -101,7 +101,7 @@
               <path d="M12 3C10.73 3 9.6 3.8 9.18 5H3V7H4.95L2 14C1.53 16 3 17 5.5 17C8 17 9.56 16 9 14L6.05 7H9.17C9.5 7.85 10.15 8.5 11 8.83V20H2V22H22V20H13V8.82C13.85 8.5 14.5 7.85 14.82 7H17.95L15 14C14.53 16 16 17 18.5 17C21 17 22.56 16 22 14L19.05 7H21V5H14.83C14.4 3.8 13.27 3 12 3ZM12 5C12.55 5 13 5.45 13 6C13 6.55 12.55 7 12 7C11.45 7 11 6.55 11 6C11 5.45 11.45 5 12 5ZM6.05 9L7.5 13.5C7.65 14.05 7.23 14.65 6.5 14.93C5.77 15.21 5.05 15.08 4.9 14.5L3.45 9H6.05ZM17.95 9H20.55L19.1 14.5C18.95 15.08 18.23 15.21 17.5 14.93C16.77 14.65 16.35 14.05 16.5 13.5L17.95 9Z" fill="currentColor"/>
             </svg>
           </span>
-          <span class="action-text">Взвешивание</span>
+          <span class="action-text">{{ t('adminDashboard.weighing') }}</span>
         </button>
 
         <button class="action-btn" @click="navigateToBrackets">
@@ -110,7 +110,7 @@
               <path d="M3 3V21H21V3H3ZM19 19H5V5H19V19ZM7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H14V17H7V15Z" fill="currentColor"/>
             </svg>
           </span>
-          <span class="action-text">Сетки</span>
+          <span class="action-text">{{ t('adminDashboard.brackets') }}</span>
         </button>
 
         <button class="action-btn" @click="navigateToUsers">
@@ -119,7 +119,7 @@
               <path d="M16 11C17.66 11 18.99 9.66 18.99 8C18.99 6.34 17.66 5 16 5C14.34 5 13 6.34 13 8C13 9.66 14.34 11 16 11ZM8 11C9.66 11 10.99 9.66 10.99 8C10.99 6.34 9.66 5 8 5C6.34 5 5 6.34 5 8C5 9.66 6.34 11 8 11ZM8 13C5.67 13 1 14.17 1 16.5V19H15V16.5C15 14.17 10.33 13 8 13ZM16 13C15.71 13 15.38 13.02 15.03 13.05C16.19 13.89 17 15.02 17 16.5V19H23V16.5C23 14.17 18.33 13 16 13Z" fill="currentColor"/>
             </svg>
           </span>
-          <span class="action-text">Управление пользователями</span>
+          <span class="action-text">{{ t('adminDashboard.manageUsers') }}</span>
         </button>
 
         <button class="action-btn" @click="navigateToClubs">
@@ -128,7 +128,7 @@
               <path d="M12 7V3H2V21H22V7H12ZM6 19H4V17H6V19ZM6 15H4V13H6V15ZM6 11H4V9H6V11ZM6 7H4V5H6V7ZM10 19H8V17H10V19ZM10 15H8V13H10V15ZM10 11H8V9H10V11ZM10 7H8V5H10V7ZM20 19H12V17H14V15H12V13H14V11H12V9H20V19ZM18 11H16V13H18V11ZM18 15H16V17H18V15Z" fill="currentColor"/>
             </svg>
           </span>
-          <span class="action-text">Управление клубами</span>
+          <span class="action-text">{{ t('adminDashboard.manageClubs') }}</span>
         </button>
 
         <!--<button class="action-btn" @click="navigateToAthletes">
@@ -147,7 +147,7 @@
               <path d="M20 6H16V4C16 2.89 15.11 2 14 2H10C8.89 2 8 2.89 8 4V6H4C2.89 6 2.01 6.89 2.01 8L2 19C2 20.11 2.89 21 4 21H20C21.11 21 22 20.11 22 19V8C22 6.89 21.11 6 20 6ZM10 4H14V6H10V4ZM16 15H13V18H11V15H8V13H11V10H13V13H16V15Z" fill="currentColor"/>
             </svg>
           </span>
-          <span class="action-text">Панель рефери</span>
+          <span class="action-text">{{ t('adminDashboard.refereePanel') }}</span>
         </button>
 
         <!-- НОВАЯ КНОПКА -->
@@ -157,7 +157,7 @@
               <path d="M15 12C17.21 12 19 10.21 19 8C19 5.79 17.21 4 15 4C12.79 4 11 5.79 11 8C11 10.21 12.79 12 15 12ZM6 10V7H4V10H1V12H4V15H6V12H9V10H6ZM15 14C12.33 14 7 15.34 7 18V20H23V18C23 15.34 17.67 14 15 14Z" fill="currentColor"/>
             </svg>
           </span>
-          <span class="action-text">Регистрация участника</span>
+          <span class="action-text">{{ t('adminDashboard.registerAthlete') }}</span>
         </button>
       </div>
     </div>
@@ -165,8 +165,8 @@
     <!-- АКТИВНЫЕ ТУРНИРЫ -->
     <div class="active-tournaments-section">
       <div class="section-header">
-        <h2>Активные турниры</h2>
-        <button class="view-all-btn" @click="navigateToTournaments">Все турниры</button>
+        <h2>{{ t('adminDashboard.activeTournaments') }}</h2>
+        <button class="view-all-btn" @click="navigateToTournaments">{{ t('adminDashboard.allTournaments') }}</button>
       </div>
 
       <div class="tournaments-grid">
@@ -184,16 +184,16 @@
             <template v-if="tournament.country">, {{ tournament.country }}</template>
           </p>
           <div class="tournament-stats">
-            <span class="stat">{{ tournament.athletes_count || 0 }} участников</span>
-            <span class="stat" v-if="tournament.live_fights_count !== undefined">{{ tournament.live_fights_count }} live схваток</span>
-            <span class="stat" v-if="tournament.tatami_count">{{ tournament.tatami_count }} татами</span>
+            <span class="stat">{{ t('adminDashboard.participantCount', { count: tournament.athletes_count || 0 }) }}</span>
+            <span class="stat" v-if="tournament.live_fights_count !== undefined">{{ t('adminDashboard.liveFightCount', { count: tournament.live_fights_count }) }}</span>
+            <span class="stat" v-if="tournament.tatami_count">{{ t('adminDashboard.tatamiCount', { count: tournament.tatami_count }) }}</span>
           </div>
-          <button class="manage-btn" @click="navigateToTournament(tournament.id)">Управлять</button>
+          <button class="manage-btn" @click="navigateToTournament(tournament.id)">{{ t('adminDashboard.manage') }}</button>
         </div>
 
         <div v-if="activeTournaments.length === 0" class="no-tournaments">
-          <p>Нет активных турниров</p>
-          <button class="create-btn" @click="navigateToCreateTournament">Создать первый турнир</button>
+          <p>{{ t('adminDashboard.noActiveTournaments') }}</p>
+          <button class="create-btn" @click="navigateToCreateTournament">{{ t('adminDashboard.createFirstTournament') }}</button>
         </div>
       </div>
     </div>
@@ -211,12 +211,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import "./AdminDashboard.css"
 import { GetAdminStatistics, GetLiveTournamentAdmin } from "@/components/View/AdminDashboard/fetchAdminDashboard.js"
+import { useI18n } from '@/i18n'
 
 const router = useRouter()
+const { locale, t } = useI18n()
+const dateLocale = computed(() => ({ ru: 'ru-RU', en: 'en-US', kk: 'kk-KZ' })[locale.value] ?? 'ru-RU')
 
 const stats = ref({})
 const activeTournaments = ref([])
@@ -251,7 +254,7 @@ const loadDashboardData = async () => {
       console.log('✅ Успешно распарсена статистика:', stats.value)
     } else {
       console.warn('⚠️ Не удалось распознать структуру статистики')
-      showToast('Получены некорректные данные статистики', 'error')
+      showToast(t('adminDashboard.invalidStats'), 'error')
     }
 
     console.log('=== Запрос GetLiveTournamentAdmin ===')
@@ -276,7 +279,7 @@ const loadDashboardData = async () => {
 
   } catch (error) {
     console.error('❌ Ошибка загрузки данных дашборда:', error)
-    showToast('Не удалось загрузить данные панели. Попробуйте позже.', 'error')
+    showToast(t('adminDashboard.loadError'), 'error')
     stats.value = {}
     activeTournaments.value = []
   }
@@ -288,13 +291,18 @@ const getStatusClass = (status) => {
 }
 
 const getStatusText = (status) => {
-  const statusMap = { 'LIVE': 'LIVE', 'BRACKETS': 'Сетки', 'REGISTRATION': 'Регистрация', 'WEIGHING': 'Взвешивание' }
+  const statusMap = {
+    'LIVE': 'LIVE',
+    'BRACKETS': t('adminDashboard.statusBrackets'),
+    'REGISTRATION': t('adminDashboard.statusRegistration'),
+    'WEIGHING': t('adminDashboard.statusWeighing')
+  }
   return statusMap[status] || status
 }
 
 const formatDate = (dateString) => {
   if (!dateString) return ''
-  return new Date(dateString).toLocaleDateString('ru-RU')
+  return new Date(dateString).toLocaleDateString(dateLocale.value)
 }
 
 // Навигация

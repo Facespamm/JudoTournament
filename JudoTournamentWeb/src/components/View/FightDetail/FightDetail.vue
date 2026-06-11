@@ -8,14 +8,14 @@
     />
     <!-- ══ ЭКРАН ОТДЫХА ══ -->
     <div v-if="restMode" class="rest-screen">
-      <div class="rest-label">ОТДЫХ</div>
+      <div class="rest-label">{{ $t('fightDetail.rest') }}</div>
       <div class="rest-timer">{{ fmt(restSeconds) }}</div>
-      <div class="rest-sub">Следующий бой начнётся через...</div>
+      <div class="rest-sub">{{ $t('fightDetail.nextFightStartsIn') }}</div>
     </div>
 
     <!-- ══ НЕТ БОЁВ ══ -->
     <div v-else-if="!fight" class="no-fight">
-      Нет боёв на татами {{ tatami }}
+      {{ $t('fightDetail.noFightsTatami', { tatami }) }}
     </div>
 
     <!-- ══ ОСНОВНОЕ ТАБЛО ══ -->
@@ -49,7 +49,7 @@
         </div>
 
         <div class="penalty-block" :class="{ 'penalty-block--danger': white.shido >= 2 }">
-          <div class="penalty-label">ШТРАФЫ</div>
+          <div class="penalty-label">{{ $t('fightDetail.penalties') }}</div>
           <div class="penalty-value">
             <span v-if="white.hansoku" class="hansoku-badge">H</span>
             <span v-else>{{ white.shido }}</span>
@@ -85,7 +85,7 @@
         </div>
 
         <div class="penalty-block" :class="{ 'penalty-block--danger': blue.shido >= 2 }">
-          <div class="penalty-label">ШТРАФЫ</div>
+          <div class="penalty-label">{{ $t('fightDetail.penalties') }}</div>
           <div class="penalty-value">
             <span v-if="blue.hansoku" class="hansoku-badge">H</span>
             <span v-else>{{ blue.shido }}</span>
@@ -97,7 +97,7 @@
       <div class="bottom-bar">
         <div class="category-block">
           <div class="category-text">{{ fight.category || fight.weight_class || 'Senior' }}</div>
-          <div class="stage-text">{{ fight.stage || `Раунд ${fight.round_number || '—'}` }}</div>
+          <div class="stage-text">{{ fight.stage || $t('fightDetail.round', { number: fight.round_number || '—' }) }}</div>
         </div>
 
         <div class="timer-block">
@@ -110,7 +110,7 @@
         <div class="osa-block">
           <template v-if="osa.active">
             <div class="osa-label">
-              OSAEKOMI — {{ osa.color === 'white' ? 'БЕЛЫЙ' : 'СИНИЙ' }}
+              OSAEKOMI — {{ osa.color === 'white' ? $t('fightDetail.white') : $t('fightDetail.blue') }}
             </div>
             <div class="osa-track">
               <div class="osa-fill" :class="osa.color"
@@ -301,7 +301,7 @@ export default {
     canStartFight() {
       // Проверяем, является ли раунд вторым (или выше)
       if (this.fight?.status === 'COMPLETED' || this.fight?.status === 'FINISHED') {
-        alert("Этот бой уже завершен. Его нельзя начать снова.");
+        alert(this.$t('fightDetail.completedCannotRestart'));
         return false;
       }
 
@@ -312,7 +312,7 @@ export default {
         const hasBlue = !!this.fight.blue_athlete?.id || !!this.fight.blue_athlete?.first_name;
 
         if (!hasWhite || !hasBlue) {
-          alert("Нельзя начать бой! Во 2-м раунде и далее должны быть заполнены оба атлета.");
+          alert(this.$t('fightDetail.missingAthletesLaterRound'));
           return false;
         }
       }
@@ -408,7 +408,7 @@ export default {
     // ─── Вспомогательные методы ────────────────────────────────────────────
     getAthleteName(a) {
       if (!a) return 'TBD'
-      return [a.middle_name, a.first_name, a.last_name].filter(Boolean).join(' ') || a.name || 'Неизвестный'
+      return [a.middle_name, a.first_name, a.last_name].filter(Boolean).join(' ') || a.name || this.$t('fightDetail.unknownAthlete')
     },
 
     emptyScore() {
@@ -803,7 +803,7 @@ export default {
       if (this.isFightCompleted) {
         if (e.key === 'Escape') {
           e.preventDefault()
-          if (window.confirm('Отменить результат схватки?')) {
+          if (window.confirm(this.$t('fightDetail.resetFightConfirm'))) {
             this.resetCurrentFight()
           }
         }
@@ -911,7 +911,6 @@ export default {
     async onActivate() {
       // 1. Закрываем модалку в интерфейсе
       if (!this.canStartFight()) {
-        alert("Нельзя начать бой! Во 2-м раунде и далее должны быть заполнены оба атлета.");
         // Важно: НЕ ставим showFocusModal = false,
         // тогда модалка остается, и пробел/клавиши не работают.
         return;

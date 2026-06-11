@@ -1,11 +1,11 @@
 <template>
   <div v-if="isOpen" class="overlay" @click="emitClose">
     <div class="modal" @click.stop>
-      <h3>Редактировать судью</h3>
+      <h3>{{ t('refereeManagement.editTitle') }}</h3>
 
       <!-- ФИО — только просмотр -->
       <div class="referee-info">
-        <strong>Судья:</strong><br>
+        <strong>{{ t('refereeManagement.refereeLabel') }}</strong><br>
         {{ fullName }}
       </div>
 
@@ -13,19 +13,19 @@
 
         <!-- Категория судьи (редактируемое) -->
         <div class="form-group">
-          <label for="certification_level">Категория судьи</label>
+          <label for="certification_level">{{ t('refereeManagement.refereeCategory') }}</label>
           <input
               id="certification_level"
               v-model="formData.certification_level"
               type="text"
               class="modal-input"
-              placeholder="Например: Национальный 3 категории"
+              :placeholder="t('refereeManagement.refereeCategoryPlaceholder')"
           />
         </div>
 
         <!-- Телефон (редактируемое) -->
         <div class="form-group">
-          <label for="phone">Телефон</label>
+          <label for="phone">{{ t('refereeManagement.phone') }}</label>
           <input
               id="phone"
               v-model="formData.phone"
@@ -48,10 +48,10 @@
 
         <div class="modal-actions">
           <button type="button" class="btn-ghost" @click="emitClose">
-            Отмена
+            {{ t('refereeManagement.cancel') }}
           </button>
           <button type="submit" class="btn-primary" :disabled="loading">
-            {{ loading ? 'Сохранение...' : 'Сохранить изменения' }}
+            {{ loading ? t('refereeManagement.saving') : t('refereeManagement.saveChanges') }}
           </button>
         </div>
       </form>
@@ -62,6 +62,9 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { UpdateReferee } from '@/components/View/RefereeManagement/fetchRefereeManagement.js'
+import { useI18n } from '@/i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   isOpen: { type: Boolean, default: false },
@@ -117,11 +120,11 @@ const handleSubmit = async () => {
       emit('submit', { success: true })
       emit('close')
     } else {
-      alert('Ошибка сохранения: ' + (result.error || 'Неизвестная ошибка'))
+      alert(t('refereeManagement.saveError', { message: result.error || t('refereeManagement.unknownError') }))
     }
   } catch (err) {
     console.error(err)
-    alert('Не удалось сохранить данные судьи')
+    alert(t('refereeManagement.saveFailed'))
   } finally {
     loading.value = false
   }

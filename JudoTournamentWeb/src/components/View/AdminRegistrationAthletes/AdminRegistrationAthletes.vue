@@ -8,8 +8,8 @@
           </svg>
         </button>
         <div class="header-text">
-          <span class="header-label">РЕГИСТРАЦИЯ</span>
-          <h1>Новый участник</h1>
+          <span class="header-label">{{ t('adminRegistration.headerLabel') }}</span>
+          <h1>{{ t('adminRegistration.title') }}</h1>
         </div>
         <div class="header-badge">
           <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
@@ -24,11 +24,11 @@
         <div class="form-block">
           <div class="block-title">
             <span class="block-num">01</span>
-            <span>Данные аккаунта</span>
+            <span>{{ t('adminRegistration.accountData') }}</span>
           </div>
           <div class="fields-grid">
             <div class="field-wrap full">
-              <label>Логин <span class="req">*</span></label>
+              <label>{{ t('adminRegistration.login') }} <span class="req">*</span></label>
               <input v-model="form.login" type="text" placeholder="gugiguga" required />
             </div>
             <div class="field-wrap">
@@ -36,7 +36,7 @@
               <input v-model="form.email" type="email" placeholder="email@example.com" />
             </div>
             <div class="field-wrap">
-              <label>Телефон</label>
+              <label>{{ t('adminRegistration.phone') }}</label>
               <input v-model="form.phone" type="tel" placeholder="+79031234567" />
             </div>
 <!--            убран на время-->
@@ -68,30 +68,30 @@
         <div class="form-block">
           <div class="block-title">
             <span class="block-num">02</span>
-            <span>Личные данные</span>
+            <span>{{ t('adminRegistration.personalData') }}</span>
           </div>
           <div class="fields-grid">
             <div class="field-wrap full">
-              <label>ФИО <span class="req">*</span></label>
-              <input v-model="form.fullname" type="text" placeholder="Фамилия Имя Отчество" required />
+              <label>{{ t('adminRegistration.fullName') }} <span class="req">*</span></label>
+              <input v-model="form.fullname" type="text" :placeholder="t('adminRegistration.fullNamePlaceholder')" required />
             </div>
             <div class="field-wrap">
-              <label>Дата рождения <span class="req">*</span></label>
+              <label>{{ t('adminRegistration.birthDate') }} <span class="req">*</span></label>
               <input v-model="form.birth_date" type="date" required />
             </div>
             <div class="field-wrap">
-              <label>Пол <span class="req">*</span></label>
+              <label>{{ t('adminRegistration.gender') }} <span class="req">*</span></label>
               <div class="gender-toggle">
                 <button
                     type="button"
                     :class="{ active: form.gender === 'male' }"
                     @click="form.gender = 'male'"
-                >Мужской</button>
+                >{{ t('adminRegistration.male') }}</button>
                 <button
                     type="button"
                     :class="{ active: form.gender === 'female' }"
                     @click="form.gender = 'female'"
-                >Женский</button>
+                >{{ t('adminRegistration.female') }}</button>
               </div>
             </div>
           </div>
@@ -101,33 +101,33 @@
         <div class="form-block">
           <div class="block-title">
             <span class="block-num">03</span>
-            <span>Спортивные данные</span>
+            <span>{{ t('adminRegistration.sportData') }}</span>
           </div>
           <div class="fields-grid">
             <div class="field-wrap">
-              <label>Разряд <span class="req">*</span></label>
+              <label>{{ t('adminRegistration.rank') }} <span class="req">*</span></label>
               <select v-model="form.rank_id" required :disabled="loadingRanks">
-                <option :value="null" disabled>Выберите разряд</option>
+                <option :value="null" disabled>{{ t('adminRegistration.selectRank') }}</option>
                 <option v-for="rank in ranks" :key="rank.id" :value="rank.id">
                   {{ rank.description }} — {{ rank.level }}
                 </option>
               </select>
             </div>
             <div class="field-wrap">
-              <label>Клуб</label>
+              <label>{{ t('adminRegistration.club') }}</label>
               <select v-model="form.club_id" :disabled="loadingClubs">
-                <option :value="null">Без клуба</option>
+                <option :value="null">{{ t('adminRegistration.noClub') }}</option>
                 <option v-for="club in clubs" :key="club.id" :value="club.id">
                   {{ club.name }} ({{ club.short_name }}, {{ club.city }})
                 </option>
               </select>
             </div>
             <div class="field-wrap">
-              <label>Номер лицензии <!--<span class="req">*</span>--></label>
+              <label>{{ t('adminRegistration.licenseNumber') }} <!--<span class="req">*</span>--></label>
               <input v-model="form.license_number" type="text" placeholder="77 25 456789"/> <!--required-->
             </div>
             <div class="field-wrap">
-              <label>Страховой номер <!--<span class="req">*</span>--></label>
+              <label>{{ t('adminRegistration.insuranceNumber') }} <!--<span class="req">*</span>--></label>
               <input v-model="form.insurance_number" type="text" placeholder="1234-567-890 1234"/> <!--required-->
             </div>
           </div>
@@ -137,7 +137,7 @@
         <div class="form-block">
           <div class="block-title">
             <span class="block-num">04</span>
-            <span>Медицинский допуск</span>
+            <span>{{ t('adminRegistration.medicalBlock') }}</span>
           </div>
           <div class="checkbox-row" @click="form.medical_check = !form.medical_check">
             <div class="custom-checkbox" :class="{ checked: form.medical_check }">
@@ -145,7 +145,7 @@
                 <path d="M20 6L9 17L4 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <span>Медицинский допуск получен</span>
+            <span>{{ t('adminRegistration.medicalReceived') }}</span>
           </div>
         </div>
 
@@ -175,12 +175,12 @@
             class="submit-btn"
             :disabled="isLoading || loadingRanks || loadingClubs"
         >
-          <span v-if="!isLoading">Зарегистрировать участника</span>
+          <span v-if="!isLoading">{{ t('adminRegistration.submit') }}</span>
           <span v-else class="btn-loading">
             <svg viewBox="0 0 24 24" fill="none" width="20" height="20" class="spin">
               <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/>
             </svg>
-            Регистрация...
+            {{ t('adminRegistration.submitting') }}
           </span>
         </button>
 
@@ -194,8 +194,10 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { adminRegistration, getRanks } from '@/components/View/AdminRegistrationAthletes/fetchAdminRegistration.js'
 import { getClubs } from '@/components/View/Clubs/fetchClubs.js'
+import { useI18n } from '@/i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const showPassword = ref(false)
 const isLoading = ref(false)
@@ -229,10 +231,10 @@ const loadRanks = async () => {
     if (res.success) {
       ranks.value = res.athletes || []
     } else {
-      errorMsg.value = res.error || 'Не удалось загрузить список разрядов'
+      errorMsg.value = res.error || t('adminRegistration.loadRanksFailed')
     }
   } catch (err) {
-    errorMsg.value = 'Ошибка при загрузке разрядов'
+    errorMsg.value = t('adminRegistration.loadRanksError')
     console.error(err)
   } finally {
     loadingRanks.value = false
@@ -245,7 +247,7 @@ const loadClubs = async () => {
     const data = await getClubs()
     clubs.value = Array.isArray(data) ? data : (data.clubs || [])
   } catch (err) {
-    errorMsg.value = 'Ошибка при загрузке списка клубов'
+    errorMsg.value = t('adminRegistration.loadClubsError')
     console.error(err)
   } finally {
     loadingClubs.value = false
@@ -279,14 +281,14 @@ const submitForm = async () => {
   try {
     const result = await adminRegistration(payload)
     if (!result.success) {
-      throw new Error(result.error || 'Ошибка создания участника')
+      throw new Error(result.error || t('adminRegistration.createError'))
     }
 
-    successMsg.value = `Участник ${form.value.fullname} успешно зарегистрирован`
+    successMsg.value = t('adminRegistration.success', { name: form.value.fullname })
     //setTimeout(() => router.back(), 1800)
 
   } catch (err) {
-    errorMsg.value = err.message || 'Произошла ошибка при регистрации'
+    errorMsg.value = err.message || t('adminRegistration.registrationError')
     console.error(err)
   } finally {
     isLoading.value = false

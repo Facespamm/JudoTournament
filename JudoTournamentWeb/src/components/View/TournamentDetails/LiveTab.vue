@@ -1,6 +1,6 @@
 <template>
   <div class="tab-section live-section">
-    <h2>Прямая трансляция</h2>
+    <h2>{{ t('tournamentDetails.liveTitle') }}</h2>
 
     <div class="stream-wrapper">
       <div class="stream-player">
@@ -8,23 +8,29 @@
           <div class="play-icon">
             <svg width="44" height="44" viewBox="0 0 20 20" fill="currentColor"><polygon points="4,2 18,10 4,18"/></svg>
           </div>
-          <p class="stream-label">Трансляция начнётся в назначенное время</p>
+          <p class="stream-label">{{ t('tournamentDetails.liveStartsLater') }}</p>
         </div>
       </div>
 
       <div class="stream-meta">
         <div class="meta-item">
           <span class="meta-dot offline"></span>
-          <span>Оффлайн</span>
+          <span>{{ t('tournamentDetails.offline') }}</span>
         </div>
         <div class="meta-item">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span>Скоро начнётся</span>
+          <span>{{ t('tournamentDetails.startsSoon') }}</span>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<script setup>
+import { useI18n } from '@/i18n'
+
+const { t } = useI18n()
+</script>
 
 <style scoped>
 .tab-section {

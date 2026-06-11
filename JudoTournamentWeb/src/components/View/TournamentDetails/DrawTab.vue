@@ -3,11 +3,11 @@
     <!-- Лоадер категорий -->
     <div v-if="isLoadingCategories" class="categories-loading">
       <div class="spinner"></div>
-      <p>Загрузка весовых категорий...</p>
+      <p>{{ t('brackets.loadingWeightCategories') }}</p>
     </div>
     <!-- Если нет категорий -->
     <div v-else-if="!categories.length" class="no-categories">
-      <p>В этом турнире пока нет весовых категорий</p>
+      <p>{{ t('brackets.noCategories') }}</p>
     </div>
 
     <template v-else>
@@ -15,10 +15,10 @@
       <div class="tabs-header">
         <div class="main-tabs">
           <button class="main-tab" :class="{ active: mainTab === 'bracket' }" @click="mainTab = 'bracket'">
-            Турнирная сетка
+            {{ t('brackets.tournamentBracket') }}
           </button>
           <button class="main-tab" :class="{ active: mainTab === 'consolation' }" @click="mainTab = 'consolation'">
-            Утешительные бои
+            {{ t('brackets.consolationFights') }}
           </button>
         </div>
 
@@ -26,9 +26,9 @@
             class="document-btn"
             @click="downloadDocument"
             :disabled="!selectedCategory"
-            title="Скачать протокол категории в PDF"
+            :title="t('tournamentDetails.categoryDocumentTitle')"
         >
-          📄 Документ
+          {{ t('tournamentDetails.document') }}
         </button>
       </div>
       <!-- ========================================= -->
@@ -52,22 +52,22 @@
             :category-id="selectedCategory.id"
         />
         <div v-else class="placeholder">
-          <p>Выберите весовую категорию выше</p>
+          <p>{{ t('brackets.selectWeightCategoryAbove') }}</p>
         </div>
       </template>
 
       <template v-else>
         <div v-if="selectedCategory" class="page">
           <div class="group-section">
-            <span class="group-label">ВЕСОВАЯ КАТЕГОРИЯ</span>
+            <span class="group-label">{{ t('brackets.weightCategory') }}</span>
             <span class="group-weight">{{ selectedCategory.name }}</span>
           </div>
           <div v-if="isLoadingBracket" class="bracket-loading">
             <div class="spinner"></div>
-            <p>Загрузка турнирной сетки...</p>
+            <p>{{ t('brackets.loadingBracket') }}</p>
           </div>
           <div v-else-if="!rounds.length" class="no-fights">
-            <p>В этой категории пока нет схваток</p>
+            <p>{{ t('brackets.noFightsCategory') }}</p>
           </div>
           <div v-else id="bracket-root" ref="bracketRoot">
             <div class="rounds-row">
@@ -116,7 +116,7 @@
                 </div>
               </div>
               <div class="round-col champion-col">
-                <div class="round-header">Чемпион</div>
+                <div class="round-header">{{ t('brackets.champion') }}</div>
                 <div class="champion-body">
                   <div class="match-slot">
                     <div class="match-card champion-card">
@@ -143,7 +143,7 @@
           </div>
         </div>
         <div v-else-if="categories.length && !selectedCategory" class="placeholder">
-          <p>Выберите весовую категорию выше</p>
+          <p>{{ t('brackets.selectWeightCategoryAbove') }}</p>
         </div>
       </template>
     </template>
@@ -153,6 +153,7 @@
 <script setup>
 import { ref, onMounted, nextTick, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from '@/i18n'
 import {
   fetchGetCategoryByTournament,
   fetchBrackets,
@@ -163,6 +164,7 @@ import {
 import ConsolationBracket from "@/components/View/TournamentDetails/ConsolationBracket.vue"
 
 const route = useRoute()
+const { t } = useI18n()
 const tournamentId = computed(() => Number(route.params.id))
 
 const categories = ref([])
@@ -252,7 +254,7 @@ const processBracketData = (fights, resultsMap = new Map()) => {
   const maxRound = fights.length ? Math.max(...fights.map(f => f.round)) : 0
   if (maxRound === 0) return
 
-  const stageLabels = ['1/32 финала', '1/16 финала', '1/4 финала', 'Полуфинал']
+  const stageLabels = [t('tournamentDetails.roundOf32'), t('tournamentDetails.roundOf16'), t('tournamentDetails.quarterfinal'), t('brackets.semifinal')]
   let labelIndex = stageLabels.length - (maxRound - 1)
 
   const bracketRounds = []
@@ -280,7 +282,7 @@ const processBracketData = (fights, resultsMap = new Map()) => {
       }
     })
 
-    const label = r === maxRound ? 'Финал' : stageLabels[labelIndex++] || `Раунд ${r}`
+    const label = r === maxRound ? t('brackets.final') : stageLabels[labelIndex++] || t('brackets.round', { number: r })
     bracketRounds.push({ label, matches })
   }
 
@@ -308,7 +310,7 @@ const processBracketData = (fights, resultsMap = new Map()) => {
 // === НОВАЯ ФУНКЦИЯ СКАЧИВАНИЯ PDF ===
 const downloadDocument = async () => {
   if (!selectedCategory.value) {
-    alert('Пожалуйста, выберите весовую категорию')
+    alert(t('tournamentDetails.selectWeightCategoryRequired'))
     return
   }
 
@@ -318,14 +320,14 @@ const downloadDocument = async () => {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `Протокол_${selectedCategory.value.name.replace(/\s+/g, '_')}_${tournamentId.value}.pdf`
+    link.download = `${t('tournamentDetails.protocolFileName')}_${selectedCategory.value.name.replace(/\s+/g, '_')}_${tournamentId.value}.pdf`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
   } catch (error) {
     console.error('Ошибка при скачивании PDF:', error)
-    alert('Не удалось скачать документ. Попробуйте позже.')
+    alert(t('tournamentDetails.documentDownloadError'))
   }
 }
 

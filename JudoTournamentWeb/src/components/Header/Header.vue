@@ -2,20 +2,22 @@
   <header class="simple-header">
     <!-- Кнопка выхода с иконкой -->
     <button class="header-btn" @click="handleLogout">
-      <img :src="UserIcon" alt="Выход" class="btn-icon" />
+      <img :src="UserIcon" :alt="t('auth.logout')" class="btn-icon" />
     </button>
   </header>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { useI18n } from '@/i18n'
 import UserIcon from '@/components/icons/Open.png' // ← ПОПРАВЬ ПУТЬ НА СВОЙ
 
 const router = useRouter()
+const { t } = useI18n()
 
 const handleLogout = () => {
   // Подтверждение выхода
-  const confirmLogout = window.confirm('Вы действительно хотите выйти?')
+  const confirmLogout = window.confirm(t('auth.logoutConfirm'))
 
   if (confirmLogout) {
     // Удаляем JWT-токен из кук

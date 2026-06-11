@@ -2,7 +2,7 @@
     <div class="bracket-detail-container">
         <!-- Состояние загрузки -->
         <div v-if="loading" class="loading-state">
-            Загрузка сетки...
+            {{ t('brackets.loadingBracket') }}
         </div>
 
         <!-- Состояние ошибки -->
@@ -31,17 +31,17 @@
                     :ref="el => setMatchRef(fight.id, el)"
                     >
                     <div class="participant white">
-                        {{ getAthleteName(fight.white_athlete) || 'Ожидается победитель' }}
+                        {{ getAthleteName(fight.white_athlete) || t('brackets.waitingWinner') }}
                     </div>
 
                     <div class="vs">VS</div>
 
                     <div class="participant blue">
-                        {{ getAthleteName(fight.blue_athlete) || 'Ожидается победитель' }}
+                        {{ getAthleteName(fight.blue_athlete) || t('brackets.waitingWinner') }}
                     </div>
 
                     <div class="fight-info">
-                        <span v-if="fight.tatami_number">Татами {{ fight.tatami_number }}</span>
+                        <span v-if="fight.tatami_number">{{ t('brackets.tatami', { number: fight.tatami_number }) }}</span>
                         <span class="status">{{ getFightStatusText(fight.status_fight) }}</span>
                     </div>
                 </div>
@@ -66,13 +66,16 @@
 
 <!-- Если данных нет -->
 <div v-else class="empty-state">
-    Сетка не найдена или данные недоступны
+    {{ t('brackets.bracketUnavailable') }}
 </div>
 </div>
 </template>
 
 <script setup>
     import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
+    import { useI18n } from '@/i18n'
+
+    const { t } = useI18n()
 
     const props = defineProps({
     bracketData: { type: Object, default: null },
@@ -131,16 +134,16 @@
     const maxRound = rounds.value[rounds.value.length - 1]
     const matchesInRound = getFightsForRound(roundNum).length
 
-    if (roundNum === maxRound || matchesInRound === 1) return 'Финал'
-    if (matchesInRound === 2) return 'Полуфинал'
-    if (matchesInRound === 4) return 'Четвертьфинал'
-    return `Раунд ${roundNum}`
+    if (roundNum === maxRound || matchesInRound === 1) return t('brackets.final')
+    if (matchesInRound === 2) return t('brackets.semifinal')
+    if (matchesInRound === 4) return t('brackets.quarterfinal')
+    return t('brackets.round', { number: roundNum })
 }
 
     const getFightStatusText = status => ({
-    SCHEDULED: 'Запланирован',
-    IN_PROGRESS: 'Идёт',
-    COMPLETED: 'Завершён'
+    SCHEDULED: t('brackets.draft'),
+    IN_PROGRESS: t('brackets.inProgress'),
+    COMPLETED: t('brackets.completed')
 }[status] || status)
 
     // Расчёт соединительных линий

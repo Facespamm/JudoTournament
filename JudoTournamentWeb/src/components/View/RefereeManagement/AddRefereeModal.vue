@@ -2,31 +2,31 @@
   <div v-if="isOpen" class="modal-overlay" @click.self="close">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Добавить судью</h2>
+        <h2>{{ t('refereeManagement.addReferee') }}</h2>
         <button class="modal-close-btn" @click="close">×</button>
       </div>
 
       <form @submit.prevent="handleSubmit" class="referee-form">
         <div class="form-row">
           <div class="form-group">
-            <label>Фамилия <span class="required">*</span></label>
+            <label>{{ t('refereeManagement.lastName') }} <span class="required">*</span></label>
             <input
                 v-model.trim="form.last_name"
                 type="text"
                 required
-                placeholder="Фамилия"
+                :placeholder="t('refereeManagement.lastName')"
                 :class="{ 'input-error': errors.last_name }"
             />
             <div v-if="errors.last_name" class="error-text">{{ errors.last_name }}</div>
           </div>
 
           <div class="form-group">
-            <label>Имя <span class="required">*</span></label>
+            <label>{{ t('refereeManagement.firstName') }} <span class="required">*</span></label>
             <input
                 v-model.trim="form.first_name"
                 type="text"
                 required
-                placeholder="Имя"
+                :placeholder="t('refereeManagement.firstName')"
                 :class="{ 'input-error': errors.first_name }"
             />
             <div v-if="errors.first_name" class="error-text">{{ errors.first_name }}</div>
@@ -34,20 +34,20 @@
         </div>
 
         <div class="form-group">
-          <label>Отчество</label>
-          <input v-model.trim="form.middle_name" type="text" placeholder="Отчество" />
+          <label>{{ t('refereeManagement.middleName') }}</label>
+          <input v-model.trim="form.middle_name" type="text" :placeholder="t('refereeManagement.middleName')" />
         </div>
 
         <!-- Дропдаун категории судейства -->
         <div class="form-group">
-          <label>Категория судейства <span class="required">*</span></label>
+          <label>{{ t('refereeManagement.certificationCategory') }} <span class="required">*</span></label>
           <select
               v-model="form.certification_level"
               :class="{ 'input-error': errors.certification_level }"
           >
-            <option value="" disabled>— Выберите категорию —</option>
-            <option v-for="(label, key) in REFEREE_LEVELS" :key="key" :value="label">
-              {{ label }}
+            <option value="" disabled>{{ t('refereeManagement.selectCategory') }}</option>
+            <option v-for="level in refereeLevels" :key="level.value" :value="level.value">
+              {{ level.label }}
             </option>
           </select>
           <div v-if="errors.certification_level" class="error-text">{{ errors.certification_level }}</div>
@@ -55,7 +55,7 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label>Телефон</label>
+            <label>{{ t('refereeManagement.phone') }}</label>
             <input
                 v-model.trim="form.phone"
                 type="tel"
@@ -74,9 +74,9 @@
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" @click="close">Отмена</button>
+          <button type="button" class="btn-cancel" @click="close">{{ t('refereeManagement.cancel') }}</button>
           <button type="submit" class="btn-save" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Сохранение...' : 'Добавить' }}
+            {{ isSubmitting ? t('refereeManagement.saving') : t('refereeManagement.add') }}
           </button>
         </div>
       </form>
@@ -85,20 +85,23 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { CreateReferee } from '@/components/View/RefereeManagement/fetchRefereeManagement.js'
+import { useI18n } from '@/i18n'
 
-const REFEREE_LEVELS = {
-  NATIONAL_3:      'Национальный 3 категории',
-  NATIONAL_2:      'Национальный 2 категории',
-  NATIONAL_1:      'Национальный 1 категории',
-  CONTINENTAL_C:   'Континентальный C',
-  CONTINENTAL_B:   'Континентальный B',
-  CONTINENTAL_A:   'Континентальный A',
-  INTERNATIONAL_C: 'Международный C',
-  INTERNATIONAL_B: 'Международный B',
-  INTERNATIONAL_A: 'Международный A',
-}
+const { t } = useI18n()
+
+const refereeLevels = computed(() => [
+  { value: 'Национальный 3 категории', label: t('refereeManagement.national3') },
+  { value: 'Национальный 2 категории', label: t('refereeManagement.national2') },
+  { value: 'Национальный 1 категории', label: t('refereeManagement.national1') },
+  { value: 'Континентальный C', label: t('refereeManagement.continentalC') },
+  { value: 'Континентальный B', label: t('refereeManagement.continentalB') },
+  { value: 'Континентальный A', label: t('refereeManagement.continentalA') },
+  { value: 'Международный C', label: t('refereeManagement.internationalC') },
+  { value: 'Международный B', label: t('refereeManagement.internationalB') },
+  { value: 'Международный A', label: t('refereeManagement.internationalA') },
+])
 
 const props = defineProps({
   isOpen: { type: Boolean, required: true }
@@ -135,15 +138,15 @@ const validateForm = () => {
   let isValid = true
 
   if (!form.value.last_name.trim()) {
-    errors.value.last_name = 'Обязательное поле'
+    errors.value.last_name = t('refereeManagement.required')
     isValid = false
   }
   if (!form.value.first_name.trim()) {
-    errors.value.first_name = 'Обязательное поле'
+    errors.value.first_name = t('refereeManagement.required')
     isValid = false
   }
   if (!form.value.certification_level) {
-    errors.value.certification_level = 'Обязательное поле'
+    errors.value.certification_level = t('refereeManagement.required')
     isValid = false
   }
 
@@ -160,7 +163,7 @@ const handleSubmit = async () => {
     close()
   } catch (err) {
     console.error('Ошибка создания судьи:', err)
-    alert('Не удалось добавить судью\n' + (err.message || 'Неизвестная ошибка'))
+    alert(t('refereeManagement.createFailed', { message: err.message || t('refereeManagement.unknownError') }))
   } finally {
     isSubmitting.value = false
   }

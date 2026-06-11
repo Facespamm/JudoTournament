@@ -2,12 +2,12 @@
 <template>
   <div v-if="isOpen" class="admin-modal-overlay" @click.self="close">
     <div class="admin-modal-content">
-      <h2>Редактирование клуба</h2>
+      <h2>{{ t('clubsAdmin.editClubTitle') }}</h2>
 
       <form @submit.prevent="submit" class="admin-form-grid">
         <!-- поля аналогично, но с id -->
         <div class="admin-form-group">
-          <label>Название клуба *</label>
+          <label>{{ t('clubsAdmin.clubNameRequired') }}</label>
           <input v-model="form.name" required />
         </div>
 
@@ -15,10 +15,10 @@
 
         <div class="admin-modal-actions">
           <button type="button" class="admin-modal-button admin-modal-button-cancel" @click="close">
-            Отмена
+            {{ t('clubsAdmin.cancel') }}
           </button>
           <button type="submit" class="admin-modal-button admin-modal-button-submit" :disabled="saving">
-            {{ saving ? 'Сохраняется...' : 'Сохранить изменения' }}
+            {{ saving ? t('clubsAdmin.saving') : t('clubsAdmin.saveChanges') }}
           </button>
         </div>
       </form>
@@ -30,12 +30,14 @@
 import { ref, watch } from 'vue'
 import { UpdateClubs } from '@/components/View/Clubs/fetchClubs.js'
 import "./ClubsAdmin.css"
+import { useI18n } from '@/i18n'
 const props = defineProps({
   isOpen: Boolean,
   club: Object  // передаём существующий клуб
 })
 
 const emit = defineEmits(['close', 'updated'])
+const { t } = useI18n()
 
 const form = ref({})
 const saving = ref(false)
@@ -53,7 +55,7 @@ const submit = async () => {
     emit('updated')
     emit('close')
   } catch (err) {
-    alert('Ошибка обновления: ' + err.message)
+    alert(t('clubsAdmin.updateError', { message: err.message }))
   } finally {
     saving.value = false
   }

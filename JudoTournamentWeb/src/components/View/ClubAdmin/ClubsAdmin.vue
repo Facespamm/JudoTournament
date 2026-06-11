@@ -2,8 +2,8 @@
   <div class="admin-clubs-management">
     <!-- Заголовок -->
     <div class="admin-management-header">
-      <h1>Управление клубами</h1>
-      <p>Регистрация и редактирование клубов дзюдо</p>
+      <h1>{{ t('clubsAdmin.title') }}</h1>
+      <p>{{ t('clubsAdmin.subtitle') }}</p>
     </div>
 
     <!-- Фильтры и кнопка создания -->
@@ -11,11 +11,11 @@
       <input
           v-model="adminSearchQuery"
           type="search"
-          placeholder="Поиск по названию, короткому имени, тренеру..."
+          :placeholder="t('clubsAdmin.searchPlaceholder')"
           class="admin-search-input"
       />
       <select v-model="adminCityFilter" class="admin-filter-select">
-        <option value="">Все города</option>
+        <option value="">{{ t('clubsAdmin.allCities') }}</option>
         <option value="Астана">Астана</option>
         <option value="Алматы">Алматы</option>
         <option value="Шымкент">Шымкент</option>
@@ -23,53 +23,53 @@
         <option value="Караганда">Караганда</option>
       </select>
       <button class="admin-add-button" @click="openCreateModal">
-        + Добавить клуб
+        {{ t('clubsAdmin.addClub') }}
       </button>
     </div>
 
     <!-- Карточка с таблицей -->
     <div class="admin-clubs-table-card">
       <div class="admin-table-header">
-        <h3>Список клубов</h3>
+        <h3>{{ t('clubsAdmin.listTitle') }}</h3>
         <div class="admin-table-actions">
           <button
               class="admin-btn-edit"
               :disabled="!selectedClubId"
               @click="openAddAthlete"
           >
-            добавить участников
+            {{ t('clubsAdmin.addAthletes') }}
           </button>
           <button
               class="admin-btn-edit"
               :disabled="!selectedClubId"
               @click="openEditModal"
           >
-            Редактировать
+            {{ t('clubsAdmin.edit') }}
           </button>
           <button
               class="admin-btn-delete"
               :disabled="!selectedClubId"
               @click="confirmDelete"
           >
-            Удалить
+            {{ t('clubsAdmin.delete') }}
           </button>
         </div>
       </div>
 
       <div class="admin-table-container">
         <div v-if="loading" class="admin-loading-state">
-          <p>Загрузка данных...</p>
+          <p>{{ t('clubsAdmin.loading') }}</p>
         </div>
 
         <table v-else-if="filteredClubs.length > 0" class="admin-clubs-table">
           <thead>
           <tr>
             <th class="admin-col-select"></th>
-            <th>Название клуба</th>
-            <th>Город</th>
-            <th>Тренер</th>
-            <th>Участников</th>
-            <th>Контакты</th>
+            <th>{{ t('clubsAdmin.clubName') }}</th>
+            <th>{{ t('clubsAdmin.city') }}</th>
+            <th>{{ t('clubsAdmin.coach') }}</th>
+            <th>{{ t('clubsAdmin.athletes') }}</th>
+            <th>{{ t('clubsAdmin.contacts') }}</th>
           </tr>
           </thead>
           <tbody>
@@ -87,30 +87,30 @@
                   @click.stop="selectClub(club.id)"
               />
             </td>
-            <td data-label="Название">
+            <td :data-label="t('clubsAdmin.nameLabel')">
               <div class="admin-club-name">{{ club.name }}</div>
               <div v-if="club.short_name" class="admin-short-name">{{ club.short_name }}</div>
             </td>
-            <td data-label="Город">
+            <td :data-label="t('clubsAdmin.city')">
               {{ club.city || '—' }}
               <div v-if="club.country && club.country !== 'Казахстан'" class="admin-country">
                 {{ club.country }}
               </div>
             </td>
-            <td data-label="Тренер">
-              {{ club.coach_name || 'Не указан' }}
+            <td :data-label="t('clubsAdmin.coach')">
+              {{ club.coach_name || t('clubsAdmin.notSpecified') }}
             </td>
-            <td data-label="Участников">
+            <td :data-label="t('clubsAdmin.athletes')">
               <span class="admin-athletes-count">{{ club.athletes_count || 0 }}</span>
             </td>
-            <td data-label="Контакты" class="admin-contacts-cell">
+            <td :data-label="t('clubsAdmin.contacts')" class="admin-contacts-cell">
               <div v-if="club.phone" class="admin-contact-item">📞 {{ club.phone }}</div>
               <div v-if="club.email" class="admin-contact-item">✉️ {{ club.email }}</div>
               <div v-if="club.website" class="admin-contact-item">
-                <a :href="club.website" target="_blank" rel="noopener noreferrer">🌐 Сайт</a>
+                <a :href="club.website" target="_blank" rel="noopener noreferrer">{{ t('clubsAdmin.site') }}</a>
               </div>
               <div v-if="!club.phone && !club.email && !club.website" class="admin-no-contacts">
-                контакты отсутствуют
+                {{ t('clubsAdmin.noContacts') }}
               </div>
             </td>
           </tr>
@@ -119,10 +119,10 @@
 
         <div v-else class="admin-empty-state">
           <div class="admin-empty-icon">🏢</div>
-          <h3>Клубы не найдены</h3>
-          <p>Попробуйте изменить параметры поиска или добавить новый клуб</p>
+          <h3>{{ t('clubsAdmin.emptyTitle') }}</h3>
+          <p>{{ t('clubsAdmin.emptyText') }}</p>
           <button class="admin-add-button" @click="openCreateModal">
-            + Добавить клуб
+            {{ t('clubsAdmin.addClub') }}
           </button>
         </div>
       </div>
@@ -147,13 +147,13 @@
     <div v-if="clubToDelete" class="admin-modal-overlay" @click="cancelDelete">
       <div class="admin-confirm-modal" @click.stop>
         <div class="admin-confirm-icon">!</div>
-        <h3>Подтверждение удаления</h3>
-        <p>Вы уверены, что хотите удалить клуб</p>
+        <h3>{{ t('clubsAdmin.deleteTitle') }}</h3>
+        <p>{{ t('clubsAdmin.deleteQuestion') }}</p>
         <p><strong>{{ clubToDelete.name }}</strong> ?</p>
-        <p class="admin-warning-text">Действие нельзя отменить. Все связанные данные будут удалены.</p>
+        <p class="admin-warning-text">{{ t('clubsAdmin.deleteWarning') }}</p>
         <div class="admin-confirm-actions">
-          <button class="admin-btn-cancel" @click="cancelDelete">Отмена</button>
-          <button class="admin-btn-confirm-delete" @click="executeDelete">Удалить</button>
+          <button class="admin-btn-cancel" @click="cancelDelete">{{ t('clubsAdmin.cancel') }}</button>
+          <button class="admin-btn-confirm-delete" @click="executeDelete">{{ t('clubsAdmin.delete') }}</button>
         </div>
       </div>
     </div>
@@ -167,7 +167,9 @@ import { getClubs } from '@/components/View/Clubs/fetchClubs.js'
 import {DeleteClub} from "@/components/View/ClubAdmin/fetchClubAdmin.js";
 import './ClubsAdmin.css'
 import AddAthleteModal from "@/components/View/ClubAdmin/AddAthleteModal.vue";
+import { useI18n } from '@/i18n'
 
+const { t } = useI18n()
 const clubs = ref([])
 const adminSearchQuery = ref('')
 const adminCityFilter = ref('')
@@ -277,7 +279,7 @@ const executeDelete = async () => {
     selectedClubId.value = null
     await loadClubs()
   } catch (error) {
-    alert(`Не удалось удалить клуб:\n${error.message || String(error)}`)
+    alert(t('clubsAdmin.deleteFailed', { message: error.message || String(error) }))
   }
 }
 

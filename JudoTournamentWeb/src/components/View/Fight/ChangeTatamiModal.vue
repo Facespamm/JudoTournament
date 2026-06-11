@@ -4,17 +4,17 @@
 
       <div class="modal-header">
         <div>
-          <div class="modal-title">Выберите татами</div>
-          <div class="modal-subtitle">Бой #{{ fightId }}</div>
+          <div class="modal-title">{{ $t('fight.selectTatamiTitle') }}</div>
+          <div class="modal-subtitle">{{ $t('fight.fightNumber', { id: fightId }) }}</div>
         </div>
         <button class="close-btn" @click="$emit('close')">✕</button>
       </div>
 
       <div class="modal-body">
-        <div v-if="loading" class="loading-state">Загрузка татами...</div>
+        <div v-if="loading" class="loading-state">{{ $t('fight.loadingTatami') }}</div>
 
         <div v-else-if="tatamis.length === 0" class="empty-state">
-          Татами не найдены
+          {{ $t('fight.tatamiNotFound') }}
         </div>
 
         <div v-else class="tatami-grid">
@@ -29,7 +29,7 @@
               @click="selectedTatami = tatami.tatami_number"
           >
             <div class="tatami-icon">🥋</div>
-            <div class="tatami-name">Татами {{ tatami.tatami_number }}</div>
+            <div class="tatami-name">{{ $t('fight.tatami', { number: tatami.tatami_number }) }}</div>
 
             <!-- Если идёт бой — показываем атлетов -->
             <div v-if="tatami.fight" class="tatami-fighters">
@@ -37,7 +37,7 @@
               <span class="vs">vs</span>
               <span class="fighter-white">{{ formatAthlete(tatami.fight.white_athlete) }}</span>
             </div>
-            <div v-else class="tatami-free">Свободно</div>
+            <div v-else class="tatami-free">{{ $t('fight.free') }}</div>
 
             <div v-if="selectedTatami === tatami.tatami_number" class="tatami-check">✓</div>
           </div>
@@ -47,13 +47,13 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn-cancel" @click="$emit('close')">Отмена</button>
+        <button class="btn-cancel" @click="$emit('close')">{{ $t('fight.cancel') }}</button>
         <button
             class="btn-confirm"
             :disabled="selectedTatami === null || saving"
             @click="confirmChange"
         >
-          {{ saving ? 'Сохранение...' : 'Сохранить' }}
+          {{ saving ? $t('fight.saving') : $t('fight.save') }}
         </button>
       </div>
 
@@ -126,10 +126,10 @@ export default {
           this.$emit('changed')
           this.$emit('close')
         } else {
-          this.errorMsg = res?.message || 'Ошибка при смене татами'
+          this.errorMsg = res?.message || this.$t('fight.tatamiChangeError')
         }
       } catch (e) {
-        this.errorMsg = 'Сетевая ошибка. Попробуйте ещё раз.'
+        this.errorMsg = this.$t('fight.networkError')
       } finally {
         this.saving = false
       }

@@ -2,8 +2,8 @@
 <template>
   <div class="roles-selection">
     <div class="selection-header">
-      <h3>Выбор роли</h3>
-      <p>Выберите вашу роль в системе для доступа к соответствующим функциям</p>
+      <h3>{{ t('selectRole.roleTitle') }}</h3>
+      <p>{{ t('selectRole.roleSubtitle') }}</p>
     </div>
 
     <div class="roles-grid">
@@ -13,9 +13,9 @@
           @click="selectRole('athlete')"
       >
         <div class="role-icon">🤼</div>
-        <div class="role-title">Спортсмен</div>
+        <div class="role-title">{{ t('selectRole.athlete') }}</div>
         <div class="role-description">
-          Регистрация на турниры, управление профилем, просмотр результатов
+          {{ t('selectRole.athleteDescription') }}
         </div>
       </div>
 
@@ -25,9 +25,9 @@
           @click="selectRole('referee')"
       >
         <div class="role-icon">⚖️</div>
-        <div class="role-title">Рефери</div>
+        <div class="role-title">{{ t('selectRole.referee') }}</div>
         <div class="role-description">
-          Судейство соревнований, ведение протоколов, оценка выступлений
+          {{ t('selectRole.refereeDescription') }}
         </div>
       </div>
 
@@ -37,9 +37,9 @@
           @click="selectRole('browsing')"
       >
         <div class="role-icon">👀</div>
-        <div class="role-title">Просмотрщик</div>
+        <div class="role-title">{{ t('selectRole.viewer') }}</div>
         <div class="role-description">
-          Просмотр результатов, расписания турниров и статистики
+          {{ t('selectRole.viewerDescription') }}
         </div>
       </div>
     </div>
@@ -50,7 +50,7 @@
           @click="confirmRole"
           :disabled="!selectedRole"
       >
-        Подтвердить роль
+        {{ t('selectRole.confirmRole') }}
       </button>
     </div>
   </div>
@@ -58,8 +58,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from '@/i18n'
 
 const emit = defineEmits(['role-selected', 'show-toast'])
+const { t } = useI18n()
 
 const selectedRole = ref('')
 
@@ -69,7 +71,7 @@ const selectRole = (role) => {
 
 const confirmRole = () => {
   if (!selectedRole.value) {
-    emit('show-toast', 'Пожалуйста, выберите роль', 'error')
+    emit('show-toast', t('selectRole.chooseRoleError'), 'error')
     return
   }
 
@@ -81,7 +83,7 @@ const confirmRole = () => {
     emit('role-selected', selectedRole.value)
 
   } catch (error) {
-    emit('show-toast', 'Ошибка при выборе роли: ' + error.message, 'error')
+    emit('show-toast', t('selectRole.chooseRoleSaveError', { message: error.message }), 'error')
   }
 }
 </script>

@@ -1,22 +1,22 @@
 <template>
   <div class="brackets-edit">
-    <h3>Создание боя на сетку</h3>
+    <h3>{{ t('brackets.createFightTitle') }}</h3>
 
     <div class="edit-controls">
       <div class="form-group">
-        <label for="bracket-select">Выберите сетку:</label>
+        <label for="bracket-select">{{ t('brackets.selectBracketLabel') }}</label>
         <select
             v-model="selectedBracketId"
             id="bracket-select"
             class="bracket-select"
         >
-          <option :value="null">Выберите сетку</option>
+          <option :value="null">{{ t('brackets.selectBracket') }}</option>
           <option
               v-for="bracket in brackets"
               :key="bracket.id"
               :value="bracket.id"
           >
-            {{ bracket.name }} (Турнир: {{ bracket.tournament_id }})
+            {{ bracket.name }} ({{ t('brackets.tournamentIdInline', { id: bracket.tournament_id }) }})
           </option>
         </select>
       </div>
@@ -26,7 +26,7 @@
           :disabled="!selectedBracketId || creating"
           class="create-fight-btn"
       >
-        {{ creating ? 'Создание...' : 'Создать бой' }}
+        {{ creating ? t('brackets.creating') : t('brackets.createFight') }}
       </button>
     </div>
 
@@ -35,39 +35,39 @@
     </div>
 
     <div v-if="selectedBracket" class="bracket-info">
-      <h4>Информация о выбранной сетке:</h4>
+      <h4>{{ t('brackets.selectedBracketInfo') }}</h4>
       <div class="info-grid">
         <div class="info-item">
-          <span class="label">Название:</span>
+          <span class="label">{{ t('brackets.name') }}</span>
           <span class="value">{{ selectedBracket.name }}</span>
         </div>
         <div class="info-item">
-          <span class="label">Турнир ID:</span>
+          <span class="label">{{ t('brackets.tournamentId') }}</span>
           <span class="value">{{ selectedBracket.tournament_id }}</span>
         </div>
         <div class="info-item">
-          <span class="label">Тип сетки:</span>
+          <span class="label">{{ t('brackets.bracketType') }}</span>
           <span class="value">{{ selectedBracket.bracket_type }}</span>
         </div>
         <div class="info-item">
-          <span class="label">Количество атлетов:</span>
+          <span class="label">{{ t('brackets.athletesCount') }}</span>
           <span class="value">{{ selectedBracket.athletes_count }}</span>
         </div>
         <div class="info-item">
-          <span class="label">Статус:</span>
+          <span class="label">{{ t('brackets.status') }}</span>
           <span class="value status" :class="getStatusClass(selectedBracket.status)">
             {{ getStatusText(selectedBracket.status) }}
           </span>
         </div>
         <div class="info-item">
-          <span class="label">Прогресс:</span>
+          <span class="label">{{ t('brackets.progress') }}</span>
           <span class="value">{{ selectedBracket.progress_percentage }}%</span>
         </div>
       </div>
     </div>
 
     <div v-else-if="selectedBracketId" class="no-bracket-info">
-      Сетка с ID {{ selectedBracketId }} не найдена
+      {{ t('brackets.bracketNotFound', { id: selectedBracketId }) }}
     </div>
   </div>
 </template>
@@ -76,6 +76,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { createFight } from "@/components/View/Brackets/fetchBrackets.js"
 import { fetchBrackets } from "@/components/View/Brackets/fetchBrackets.js"
+import { useI18n } from '@/i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   tournaments: { type: Array, default: () => [] }
@@ -105,10 +108,10 @@ const getStatusClass = (s) => ({
 }[s] || 'status-draft')
 
 const getStatusText = (s) => ({
-  GENERATED: 'Сгенерирована',
-  DRAFT: 'Черновик',
-  COMPLETED: 'Завершена'
-}[s] || 'Черновик')
+  GENERATED: t('brackets.generated'),
+  DRAFT: t('brackets.draft'),
+  COMPLETED: t('brackets.completed')
+}[s] || t('brackets.draft'))
 
 const createFightForBracket = async () => {
   if (!selectedBracketId.value) return
@@ -125,14 +128,14 @@ const createFightForBracket = async () => {
     const result = await createFight(bracketFightData, selectedBracketId.value)
 
     if (result.success) {
-      message.value = 'Бой успешно создан!'
+      message.value = t('brackets.fightCreated')
       messageType.value = 'success'
     } else {
-      message.value = `Ошибка при создании боя: ${result.error}`
+      message.value = t('brackets.fightCreateError', { error: result.error })
       messageType.value = 'error'
     }
   } catch (error) {
-    message.value = `Ошибка: ${error.message}`
+    message.value = t('brackets.errorPrefix', { message: error.message })
     messageType.value = 'error'
   } finally {
     creating.value = false

@@ -2,13 +2,13 @@
 <template>
   <div class="role-content">
     <div class="role-header">
-      <h3>Профиль спортсмена</h3>
-      <p>Заполните данные для регистрации</p>
+      <h3>{{ t('selectRole.athleteProfile') }}</h3>
+      <p>{{ t('selectRole.athleteSubtitle') }}</p>
     </div>
 
     <div class="loading-overlay" v-if="isLoading">
       <div class="loading-spinner"></div>
-      <p>Сохранение...</p>
+      <p>{{ t('selectRole.saving') }}</p>
     </div>
 
     <form @submit.prevent="saveAthleteProfile" class="role-form" novalidate>
@@ -16,57 +16,57 @@
 
         <!-- Дата рождения + возраст -->
         <div class="form-group">
-          <label>Дата рождения</label>
+          <label>{{ t('selectRole.birthDate') }}</label>
           <div class="input-with-badge">
             <input v-model="athleteForm.birth_date" type="date" :disabled="isLoading" required />
-            <span class="age-badge" v-if="calculatedAge !== null">{{ calculatedAge }} лет</span>
+            <span class="age-badge" v-if="calculatedAge !== null">{{ t('selectRole.years', { count: calculatedAge }) }}</span>
           </div>
         </div>
 
         <!-- Пол -->
         <div class="form-group">
-          <label>Пол</label>
+          <label>{{ t('selectRole.gender') }}</label>
           <select v-model="athleteForm.gender" :disabled="isLoading" required>
-            <option value="" disabled>Выберите пол</option>
-            <option value="мужской">Мужской</option>
-            <option value="женский">Женский</option>
+            <option value="" disabled>{{ t('selectRole.selectGender') }}</option>
+            <option value="мужской">{{ t('selectRole.male') }}</option>
+            <option value="женский">{{ t('selectRole.female') }}</option>
           </select>
         </div>
 
         <!-- Вес -->
         <div class="form-group">
-          <label>Вес (кг)</label>
+          <label>{{ t('selectRole.weight') }}</label>
           <input v-model.number="athleteForm.weight" type="number" min="20" step="0.5" :disabled="isLoading" placeholder="68.5" required />
         </div>
 
         <!-- Кю/Дан -->
         <div class="form-group">
-          <label>Кю / Дан</label>
+          <label>{{ t('selectRole.rank') }}</label>
           <select v-model="athleteForm.rank_id" :disabled="isLoading" required>
-            <option value="" disabled>Выберите разряд</option>
+            <option value="" disabled>{{ t('selectRole.selectRank') }}</option>
             <option v-for="dan in dans" :key="dan.id" :value="dan.id">{{ dan.description }}</option>
           </select>
         </div>
 
         <!-- Клуб (необязательно) -->
         <div class="form-group">
-          <label>Клуб <span class="optional">(необязательно)</span></label>
+          <label>{{ t('selectRole.clubOptional') }} <span class="optional">{{ t('selectRole.optional') }}</span></label>
           <select v-model="athleteForm.club_id" :disabled="isLoading">
-            <option value="">Без клуба</option>
+            <option value="">{{ t('selectRole.noClub') }}</option>
             <option v-for="club in clubs" :key="club.id" :value="club.id">{{ club.name }}</option>
           </select>
         </div>
 
         <!-- Лицензия -->
         <div class="form-group">
-          <label>Номер лицензии <span class="optional">(необязательно)</span></label>
-          <input v-model="athleteForm.license_number" type="text" :disabled="isLoading" placeholder="Введите номер" />
+          <label>{{ t('selectRole.licenseOptional') }} <span class="optional">{{ t('selectRole.optional') }}</span></label>
+          <input v-model="athleteForm.license_number" type="text" :disabled="isLoading" :placeholder="t('selectRole.enterNumber')" />
         </div>
 
         <!-- Страховка -->
         <div class="form-group">
-          <label>Номер страховки <span class="optional">(необязательно)</span></label>
-          <input v-model="athleteForm.insurance_number" type="text" :disabled="isLoading" placeholder="Введите номер" />
+          <label>{{ t('selectRole.insuranceOptional') }} <span class="optional">{{ t('selectRole.optional') }}</span></label>
+          <input v-model="athleteForm.insurance_number" type="text" :disabled="isLoading" :placeholder="t('selectRole.enterNumber')" />
         </div>
 
         <!-- Чекбокс -->
@@ -74,14 +74,14 @@
           <label class="checkbox-label">
             <input type="checkbox" v-model="athleteForm.medical_check" :disabled="isLoading" class="hidden-checkbox" />
             <span class="custom-checkbox"></span>
-            <span class="checkbox-text">Медицинская справка в наличии</span>
+            <span class="checkbox-text">{{ t('selectRole.medicalCertificate') }}</span>
           </label>
         </div>
       </div>
 
       <div class="form-actions">
         <button type="submit" class="submit-button" :disabled="isLoading">
-          {{ isLoading ? 'Сохранение...' : 'Сохранить профиль' }}
+          {{ isLoading ? t('selectRole.saving') : t('selectRole.saveProfile') }}
         </button>
       </div>
     </form>
@@ -92,10 +92,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchClubs, fetchDan, fetchCreateAthlete } from '@/components/View/Authentication/SelectRoleView/fetchGetInformation.js'
+import { useI18n } from '@/i18n'
 import './Roles.css'
 
 const emit = defineEmits(['show-toast'])
 const router = useRouter()
+const { t } = useI18n()
 
 const isLoading = ref(false)
 const clubs = ref([])
@@ -158,12 +160,12 @@ const validateForm = () => {
 
 const saveAthleteProfile = async () => {
   if (!validateForm()) {
-    emit('show-toast', 'Пожалуйста, заполните все обязательные поля', 'error')
+    emit('show-toast', t('selectRole.requiredFields'), 'error')
     return
   }
   const userId = getUserId()
   if (!userId) {
-    emit('show-toast', 'Не удалось получить ID пользователя', 'error')
+    emit('show-toast', t('selectRole.userIdError'), 'error')
     return
   }
 
@@ -181,13 +183,13 @@ const saveAthleteProfile = async () => {
     }, userId)
 
     if (res?.success) {
-      emit('show-toast', 'Профиль успешно сохранён', 'success')
+      emit('show-toast', t('selectRole.athleteSaved'), 'success')
       router.push({ name: 'login' })
     } else {
-      emit('show-toast', res?.error || 'Не удалось сохранить профиль', 'error')
+      emit('show-toast', res?.error || t('selectRole.saveFailed'), 'error')
     }
   } catch {
-    emit('show-toast', 'Ошибка сервера. Попробуйте позже', 'error')
+    emit('show-toast', t('selectRole.serverError'), 'error')
   } finally {
     isLoading.value = false
   }

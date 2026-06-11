@@ -1,42 +1,42 @@
 <template>
   <div class="admin-users-management">
     <div class="page-header">
-      <h1 class="page-title">Управление пользователями</h1>
+      <h1 class="page-title">{{ t('users.title') }}</h1>
     </div>
 
     <!-- ФИЛЬТРЫ -->
     <div class="filters-card">
       <div class="filters-header">
-        <h3>Фильтры и поиск</h3>
+        <h3>{{ t('users.filtersTitle') }}</h3>
       </div>
       <div class="filters-body">
         <div class="filters-grid">
           <div class="filter-group">
-            <label class="filter-label">Поиск</label>
-            <input v-model="filters.search" type="text" class="filter-input" placeholder="Имя, логин или email..." />
+            <label class="filter-label">{{ t('users.search') }}</label>
+            <input v-model="filters.search" type="text" class="filter-input" :placeholder="t('users.searchPlaceholder')" />
           </div>
           <div class="filter-group">
-            <label class="filter-label">Роль</label>
+            <label class="filter-label">{{ t('users.role') }}</label>
             <select v-model="filters.role" class="filter-select">
-              <option value="">Все роли</option>
-              <option value="ADMIN">Администратор</option>
-              <option value="REFEREE">Судья</option>
-              <option value="SCOREBOARD">Табло</option>
-              <option value="PARTICIPANT">Участник</option>
-              <option value="VIEWER">Зритель</option>
+              <option value="">{{ t('users.allRoles') }}</option>
+              <option value="ADMIN">{{ t('users.admin') }}</option>
+              <option value="REFEREE">{{ t('users.referee') }}</option>
+              <option value="SCOREBOARD">{{ t('users.scoreboard') }}</option>
+              <option value="PARTICIPANT">{{ t('users.participant') }}</option>
+              <option value="VIEWER">{{ t('users.viewer') }}</option>
             </select>
           </div>
           <div class="filter-group">
-            <label class="filter-label">Статус</label>
+            <label class="filter-label">{{ t('users.status') }}</label>
             <select v-model="filters.status" class="filter-select">
-              <option value="">Все статусы</option>
-              <option value="true">Активные</option>
-              <option value="false">Неактивные</option>
+              <option value="">{{ t('users.allStatuses') }}</option>
+              <option value="true">{{ t('users.activePlural') }}</option>
+              <option value="false">{{ t('users.inactivePlural') }}</option>
             </select>
           </div>
           <div class="filter-actions">
-            <button class="apply-filters-btn" @click="loadUsers">Применить</button>
-            <button class="reset-filters-btn" @click="resetFilters">Сбросить</button>
+            <button class="apply-filters-btn" @click="loadUsers">{{ t('users.apply') }}</button>
+            <button class="reset-filters-btn" @click="resetFilters">{{ t('users.reset') }}</button>
           </div>
         </div>
       </div>
@@ -47,31 +47,31 @@
       <div class="stat-card">
         <div class="stat-info">
           <div class="stat-number">{{ stats.adminCount }}</div>
-          <div class="stat-label">Администраторов</div>
+          <div class="stat-label">{{ t('users.adminsCount') }}</div>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-info">
           <div class="stat-number">{{ stats.refereeCount }}</div>
-          <div class="stat-label">Судей</div>
+          <div class="stat-label">{{ t('users.refereesCount') }}</div>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-info">
           <div class="stat-number">{{ stats.scoreboardCount }}</div>
-          <div class="stat-label">Операторов табло</div>
+          <div class="stat-label">{{ t('users.scoreboardCount') }}</div>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-info">
           <div class="stat-number">{{ stats.participantCount }}</div>
-          <div class="stat-label">Участников</div>
+          <div class="stat-label">{{ t('users.participantsCount') }}</div>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-info">
           <div class="stat-number">{{ stats.totalCount }}</div>
-          <div class="stat-label">Всего активных</div>
+          <div class="stat-label">{{ t('users.totalActive') }}</div>
         </div>
       </div>
     </div>
@@ -79,28 +79,28 @@
     <!-- ТАБЛИЦА ПОЛЬЗОВАТЕЛЕЙ -->
     <div class="users-table-card">
       <div class="table-header">
-        <h3>Список пользователей</h3>
+        <h3>{{ t('users.listTitle') }}</h3>
         <div class="table-actions">
-          <button class="btn-edit" :disabled="!selectedUserId" @click="editSelectedUser" title="Редактировать выбранного">
-            Редактировать
+          <button class="btn-edit" :disabled="!selectedUserId" @click="editSelectedUser" :title="t('users.editSelectedTitle')">
+            {{ t('users.edit') }}
           </button>
-          <button class="btn-delete" :disabled="!selectedUserId" @click="confirmDeleteSelected" title="Удалить выбранного">
-            Удалить
+          <button class="btn-delete" :disabled="!selectedUserId" @click="confirmDeleteSelected" :title="t('users.deleteSelectedTitle')">
+            {{ t('users.delete') }}
           </button>
         </div>
       </div>
       <div class="table-container">
         <div v-if="loading" class="loading-state">
-          <p>Загрузка данных...</p>
+          <p>{{ t('users.loadingData') }}</p>
         </div>
         <table v-else-if="users.length > 0" class="users-table">
           <thead>
           <tr>
             <th class="col-select"></th>
-            <th class="col-user">Пользователь</th>
-            <th class="col-contact">Контакт</th>
-            <th class="col-role">Роль</th>
-            <th class="col-status">Статус</th>
+            <th class="col-user">{{ t('users.user') }}</th>
+            <th class="col-contact">{{ t('users.contact') }}</th>
+            <th class="col-role">{{ t('users.role') }}</th>
+            <th class="col-status">{{ t('users.status') }}</th>
           </tr>
           </thead>
           <tbody>
@@ -124,19 +124,19 @@
             <td class="contact-info">
               <div class="contact-email" v-if="user.email">{{ user.email }}</div>
               <div class="contact-phone" v-if="user.phone">{{ user.phone }}</div>
-              <div class="contact-empty" v-else>Контакты не указаны</div>
+              <div class="contact-empty" v-else>{{ t('users.contactsEmpty') }}</div>
             </td>
             <td class="role-info">
                 <span class="role-badge" :class="getRoleClass(getUserRole(user))">
                   {{ getRoleDisplay(getUserRole(user)) }}
                 </span>
               <div class="referee-level" v-if="user.referee_level">
-                {{ user.referee_level === 'NATIONAL' ? 'Национальный' : 'Международный' }}
+                {{ user.referee_level === 'NATIONAL' ? t('users.national') : t('users.international') }}
               </div>
             </td>
             <td class="status-info">
                 <span class="status-badge" :class="user.is_active ? 'active' : 'inactive'">
-                  {{ user.is_active ? 'Активен' : 'Неактивен' }}
+                  {{ user.is_active ? t('users.active') : t('users.inactive') }}
                 </span>
               <div class="last-login" v-if="user.last_login">
                 {{ formatDate(user.last_login) }}
@@ -146,16 +146,16 @@
           </tbody>
         </table>
         <div v-else class="empty-state">
-          <div class="empty-icon">Пользователи не найдены</div>
-          <h3>Пользователи не найдены</h3>
-          <p>Попробуйте изменить параметры фильтрации</p>
-          <button class="empty-action-btn" @click="resetFilters">Сбросить фильтры</button>
+          <div class="empty-icon">{{ t('users.notFound') }}</div>
+          <h3>{{ t('users.notFound') }}</h3>
+          <p>{{ t('users.changeFilters') }}</p>
+          <button class="empty-action-btn" @click="resetFilters">{{ t('users.resetFilters') }}</button>
         </div>
       </div>
 
       <div v-if="users.length > 0 && !loading" class="pagination">
         <button class="pagination-btn" :disabled="pagination.page === 1" @click="prevPage">←</button>
-        <span class="pagination-info">Страница {{ pagination.page }} из {{ pagination.totalPages }}</span>
+        <span class="pagination-info">{{ t('users.pageInfo', { page: pagination.page, total: pagination.totalPages }) }}</span>
         <button class="pagination-btn" :disabled="pagination.page === pagination.totalPages" @click="nextPage">→</button>
       </div>
     </div>
@@ -167,11 +167,11 @@
     <div v-if="deletingUser" class="modal-overlay" @click="cancelDelete">
       <div class="confirm-modal" @click.stop>
         <div class="confirm-icon">!</div>
-        <h3>Подтверждение удаления</h3>
-        <p>Вы уверены, что хотите удалить пользователя <strong>{{ getFullName(deletingUser) }}</strong>?</p>
+        <h3>{{ t('users.deleteConfirmTitle') }}</h3>
+        <p>{{ t('users.deleteConfirmText') }} <strong>{{ getFullName(deletingUser) }}</strong>?</p>
         <div class="confirm-actions">
-          <button class="btn-cancel" @click="cancelDelete">Отмена</button>
-          <button class="btn-confirm-delete" @click="deleteUser">Удалить</button>
+          <button class="btn-cancel" @click="cancelDelete">{{ t('users.cancel') }}</button>
+          <button class="btn-confirm-delete" @click="deleteUser">{{ t('users.delete') }}</button>
         </div>
       </div>
     </div>
@@ -180,11 +180,11 @@
     <div v-if="showDeleteSuccessModal" class="modal-overlay" @click.self="closeDeleteSuccessModal">
       <div class="admin-modal-content success-modal" @click.stop>
         <div class="success-icon">✅</div>
-        <h2>Успешно!</h2>
+        <h2>{{ t('users.successTitle') }}</h2>
         <p class="success-text">{{ deleteSuccessMessage }}</p>
         <div class="admin-modal-actions">
           <button class="admin-modal-button-submit" @click="closeDeleteSuccessModal">
-            Отлично, продолжить
+            {{ t('users.continue') }}
           </button>
         </div>
       </div>
@@ -193,13 +193,21 @@
 </template>
 
 <script>
+import { computed } from 'vue';
 import { GetCountRolesUsers, GetAllUsersInformation, DeleteUser } from "@/components/View/Users/fetchUsers.js";
 import UserEditModal from '@/components/View/Users/UserEditModal.vue';
+import { useI18n } from '@/i18n';
 import './Users.css';
 
 export default {
   name: 'AdminUsersManagement',
   components: { UserEditModal },
+  setup() {
+    const { locale, t } = useI18n();
+    const dateLocale = computed(() => ({ ru: 'ru-RU', en: 'en-US', kk: 'kk-KZ' })[locale.value] ?? 'ru-RU');
+
+    return { dateLocale, t };
+  },
   data() {
     return {
       users: [],
@@ -361,17 +369,17 @@ export default {
         if (result.success) {
           this.deletingUser = null;
           this.selectedUserId = null;
-          this.deleteSuccessMessage = `Пользователь ${userName} успешно удалён`;
+          this.deleteSuccessMessage = this.t('users.deletedMessage', { name: userName });
           this.showDeleteSuccessModal = true;
           await this.loadUsers();
           await this.loadStats();
         } else {
-          const errorMsg = result.message || 'Не удалось удалить пользователя';
-          alert(`Ошибка: ${errorMsg}`);
+          const errorMsg = result.message || this.t('users.deleteFailed');
+          alert(this.t('users.errorPrefix', { message: errorMsg }));
         }
       } catch (err) {
         console.error('Ошибка удаления пользователя:', err);
-        alert('Произошла ошибка при попытке удаления');
+        alert(this.t('users.deleteError'));
       }
     },
     closeDeleteSuccessModal() {
@@ -420,18 +428,18 @@ export default {
     },
     getRoleDisplay(role) {
       const map = {
-        'ADMIN': 'Администратор',
-        'REFEREE': 'Судья',
-        'SCOREBOARD': 'Оператор табло',
-        'PARTICIPANT': 'Участник',
-        'VIEWER': 'Зритель'
+        'ADMIN': this.t('users.admin'),
+        'REFEREE': this.t('users.referee'),
+        'SCOREBOARD': this.t('users.scoreboardOperator'),
+        'PARTICIPANT': this.t('users.participant'),
+        'VIEWER': this.t('users.viewer')
       };
       return map[role] || role || '—';
     },
     formatDate(date) {
       if (!date) return '—';
       try {
-        return new Date(date).toLocaleDateString('ru-RU', {
+        return new Date(date).toLocaleDateString(this.dateLocale, {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric'

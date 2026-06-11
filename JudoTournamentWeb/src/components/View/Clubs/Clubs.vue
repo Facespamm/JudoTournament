@@ -2,8 +2,8 @@
   <div class="clubs-view">
     <!-- ЗАГОЛОВОК -->
     <div class="view-header">
-      <h1>Клубы дзюдо</h1>
-      <p>Все зарегистрированные клубы Казахстана</p>
+      <h1>{{ t('clubsPage.title') }}</h1>
+      <p>{{ t('clubsPage.subtitle') }}</p>
     </div>
 
     <!-- ПОИСК И ФИЛЬТРЫ -->
@@ -11,16 +11,16 @@
       <input
           v-model="searchQuery"
           type="search"
-          placeholder="Поиск по названию, короткому названию или тренеру..."
+          :placeholder="t('clubsPage.searchPlaceholder')"
           class="search-input"
       />
       <select v-model="cityFilter" class="filter-select">
-        <option value="">Все города</option>
-        <option value="Астана">Астана</option>
-        <option value="Алматы">Алматы</option>
-        <option value="Шымкент">Шымкент</option>
-        <option value="Актобе">Актобе</option>
-        <option value="Караганда">Караганда</option>
+        <option value="">{{ t('clubsPage.allCities') }}</option>
+        <option value="Астана">{{ t('clubsPage.cityAstana') }}</option>
+        <option value="Алматы">{{ t('clubsPage.cityAlmaty') }}</option>
+        <option value="Шымкент">{{ t('clubsPage.cityShymkent') }}</option>
+        <option value="Актобе">{{ t('clubsPage.cityAktobe') }}</option>
+        <option value="Караганда">{{ t('clubsPage.cityKaraganda') }}</option>
       </select>
     </div>
 
@@ -32,21 +32,21 @@
           class="club-card"
       >
         <div class="club-main">
-          <h3 class="club-name">{{ club.name || 'Без названия' }}</h3>
+          <h3 class="club-name">{{ club.name || t('clubsPage.unnamed') }}</h3>
           <p v-if="club.short_name" class="club-short">{{ club.short_name }}</p>
         </div>
 
         <div class="club-info">
           <div class="info-item">
-            <span class="label">Город</span>
+            <span class="label">{{ t('clubsPage.city') }}</span>
             <span class="value">{{ club.city || '—' }}</span>
           </div>
           <div class="info-item">
-            <span class="label">Тренер</span>
-            <span class="value">{{ club.coach_name || 'Не указан' }}</span>
+            <span class="label">{{ t('clubsPage.coach') }}</span>
+            <span class="value">{{ club.coach_name || t('clubsPage.notSpecified') }}</span>
           </div>
           <div class="info-item">
-            <span class="label">Участников</span>
+            <span class="label">{{ t('clubsPage.athletes') }}</span>
             <span class="value athletes-count">{{ club.athletes_count ?? 0 }}</span>
           </div>
         </div>
@@ -55,15 +55,15 @@
       <!-- Пустое состояние -->
       <div v-if="filteredClubs.length === 0" class="no-data">
         <div class="no-data-icon">🥋</div>
-        <p>Клубы не найдены</p>
+        <p>{{ t('clubsPage.emptyTitle') }}</p>
         <small v-if="searchQuery || cityFilter">
-          Попробуйте изменить поисковый запрос или фильтр
+          {{ t('clubsPage.emptyHint') }}
         </small>
         <small v-else-if="loading">
-          Загрузка клубов...
+          {{ t('clubsPage.loading') }}
         </small>
         <small v-else-if="error">
-          Не удалось загрузить список клубов. Попробуйте позже.
+          {{ t('clubsPage.loadFailed') }}
         </small>
       </div>
     </div>
@@ -73,8 +73,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import {fetchClubs} from "@/components/View/Authentication/SelectRoleView/fetchGetInformation.js";
+import { useI18n } from '@/i18n'
 import "./Clubs.css"
 
+const { t } = useI18n()
 const clubs = ref([])
 const searchQuery = ref('')
 const cityFilter = ref('')

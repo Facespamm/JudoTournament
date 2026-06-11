@@ -9,12 +9,12 @@
             <p class="date">
               {{ formatDate(featured.start_date, featured.end_date) }} — {{ featured.city }}
             </p>
-            <p class="stats">{{ featured.athletes_count || 0 }} дзюдоистов</p>
+            <p class="stats">{{ featured.athletes_count || 0 }} {{ t('homePage.judoka') }}</p>
             <div class="tournament-buttons">
-              <button class="btn-outline">Обзор</button>
-              <button class="btn-primary" @click.stop="goToAllTournaments">Календарь</button>
+              <button class="btn-outline">{{ t('homePage.overview') }}</button>
+              <button class="btn-primary" @click.stop="goToAllTournaments">{{ t('homePage.calendar') }}</button>
             </div>
-            <span v-if="featured.status === 'LIVE'" class="live-badge">ПРЯМОЙ ЭФИР</span>
+            <span v-if="featured.status === 'LIVE'" class="live-badge">{{ t('homePage.live') }}</span>
           </div>
         </div>
       </div>
@@ -22,11 +22,11 @@
       <div v-else class="tournament-card">
         <div class="tournament-placeholder">
           <div class="tournament-overlay">
-            <h1>Текущий турнир</h1>
-            <p class="date">Информация о турнире появится здесь</p>
+            <h1>{{ t('homePage.currentTournament') }}</h1>
+            <p class="date">{{ t('homePage.tournamentInfoPlaceholder') }}</p>
             <div class="tournament-buttons">
-              <button class="btn-outline" disabled>Обзор</button>
-              <button class="btn-primary" @click="goToAllTournaments">Календарь</button>
+              <button class="btn-outline" disabled>{{ t('homePage.overview') }}</button>
+              <button class="btn-primary" @click="goToAllTournaments">{{ t('homePage.calendar') }}</button>
             </div>
           </div>
         </div>
@@ -34,22 +34,22 @@
 
       <!-- Правая панель -->
       <div class="events-panel">
-        <h2 class="panel-title">Актуальные соревнования</h2>
+        <h2 class="panel-title">{{ t('homePage.currentCompetitions') }}</h2>
         <div class="events-list">
           <div
-              v-for="t in upcoming"
-              :key="t.id"
+              v-for="tournament in upcoming"
+              :key="tournament.id"
               class="event-item"
-              :class="{ live: t.status === 'LIVE' }"
-              @click="goToTournament(t.id)"
+              :class="{ live: tournament.status === 'LIVE' }"
+              @click="goToTournament(tournament.id)"
           >
-            <span v-if="t.status === 'LIVE'" class="live-badge">ПРЯМОЙ ЭФИР</span>
-            <p class="event-date">{{ formatDate(t.start_date, t.end_date) }} — {{ t.city }}</p>
-            <h3>{{ t.name }}</h3>
-            <p class="event-stats">{{ t.athletes_count || 0 }} дзюдоистов</p>
+            <span v-if="tournament.status === 'LIVE'" class="live-badge">{{ t('homePage.live') }}</span>
+            <p class="event-date">{{ formatDate(tournament.start_date, tournament.end_date) }} — {{ tournament.city }}</p>
+            <h3>{{ tournament.name }}</h3>
+            <p class="event-stats">{{ tournament.athletes_count || 0 }} {{ t('homePage.judoka') }}</p>
           </div>
           <div v-if="!isLoading && upcoming.length === 0" class="event-item">
-            <p>Нет актуальных соревнований</p>
+            <p>{{ t('homePage.noCurrentCompetitions') }}</p>
           </div>
         </div>
       </div>
@@ -61,8 +61,10 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchTournaments } from '@/components/View/Tournaments/fetchTournaments.js'
+import { useI18n } from '@/i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 const tournaments = ref([])
 const isLoading = ref(true)
 
@@ -81,9 +83,10 @@ const upcoming = computed(() =>
 const formatDate = (start, end) => {
   if (!start) return ''
   const options = { day: 'numeric', month: 'short' }
-  const s = new Date(start).toLocaleDateString('ru-RU', options)
+  const locale = t('homePage.dateLocale')
+  const s = new Date(start).toLocaleDateString(locale, options)
   if (!end || start === end) return s
-  const e = new Date(end).toLocaleDateString('ru-RU', options)
+  const e = new Date(end).toLocaleDateString(locale, options)
   return `${s}–${e}`
 }
 

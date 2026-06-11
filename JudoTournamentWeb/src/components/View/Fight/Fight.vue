@@ -1,16 +1,16 @@
 <template>
   <div class="fights-overview">
     <div class="fights-header">
-      <h1>Схватки и поединки</h1>
-      <p class="subtitle">Управление всеми боями турнира</p>
+      <h1>{{ $t('fight.title') }}</h1>
+      <p class="subtitle">{{ $t('fight.subtitle') }}</p>
     </div>
 
     <div class="filters-section">
       <div class="filter-group">
-        <label>Турнир:</label>
+        <label>{{ $t('fight.tournament') }}</label>
         <select v-model="selectedTournament" @change="onTournamentChange" :disabled="tournamentsLoading">
           <option :value="null">
-            {{ tournamentsLoading ? 'Загрузка турниров...' : 'Выберите турнир' }}
+            {{ tournamentsLoading ? $t('fight.loadingTournaments') : $t('fight.selectTournament') }}
           </option>
           <option v-for="t in tournaments" :key="t.id" :value="t.id">
             {{ t.name }}
@@ -18,17 +18,17 @@
         </select>
       </div>
       <div class="filter-group">
-        <label>Категория:</label>
+        <label>{{ $t('fight.category') }}</label>
         <select
             v-model="selectedCategory"
             :disabled="!selectedTournament || categoriesLoading || tournamentsLoading"
             @change="loadFights"
         >
           <option :value="null">
-            {{ categoriesLoading ? 'Загрузка категорий...' : 'Выберите категорию' }}
+            {{ categoriesLoading ? $t('fight.loadingCategories') : $t('fight.selectCategory') }}
           </option>
           <option v-for="c in categories" :key="c.id" :value="c.id">
-            {{ c.name }} ({{ c.gender === 'MALE' ? 'М' : 'Ж' }})
+            {{ c.name }} ({{ c.gender === 'MALE' ? $t('fight.maleShort') : $t('fight.femaleShort') }})
           </option>
         </select>
       </div>
@@ -48,7 +48,7 @@
         <span class="tab-count">{{ tab.count }}</span>
       </button>
       <button class="bracket-tab" @click="showChangeModal = true">
-        Поменять атлетов в бою
+        {{ $t('fight.changeAthletes') }}
       </button>
     </div>
 
@@ -66,7 +66,7 @@
       <div v-for="tatami in mainTatamis" :key="tatami" class="tatami-section">
         <div class="tatami-header">
           <div class="tatami-number">{{ tatami > 0 ? tatami : '—' }}</div>
-          <h2 class="tatami-title">{{ tatami > 0 ? `Татами ${tatami}` : 'Не назначено' }}</h2>
+          <h2 class="tatami-title">{{ tatami > 0 ? $t('fight.tatami', { number: tatami }) : $t('fight.unassigned') }}</h2>
         </div>
         <div class="fights-rows">
           <div
@@ -116,8 +116,8 @@
       <div class="consolation-header-banner semifinalist-banner">
         <span class="banner-icon">🥉</span>
         <div>
-          <div class="banner-title">Утешительные от полуфиналистов</div>
-          <div class="banner-subtitle">Бои за 3 место — ветки A и B</div>
+          <div class="banner-title">{{ $t('fight.semifinalistConsolationTitle') }}</div>
+          <div class="banner-subtitle">{{ $t('fight.consolationSubtitle') }}</div>
         </div>
       </div>
       <div class="consolation-groups">
@@ -127,7 +127,7 @@
             class="consolation-group"
         >
           <div class="group-header">
-            <span class="group-label">{{ group === 'SEMIFINALIST_CONSOLATION_GROUP_A' ? 'Ветка A' : 'Ветка B' }}</span>
+            <span class="group-label">{{ group === 'SEMIFINALIST_CONSOLATION_GROUP_A' ? $t('fight.groupA') : $t('fight.groupB') }}</span>
           </div>
           <div v-if="consolationByType[group]?.length">
             <div
@@ -160,7 +160,7 @@
             </div>
             <button class="tatami-btn" @click.stop="openTatamiModal(fight)"> 🥋 {{ fight.tatami || '—' }} </button>
           </div>
-          <div v-else class="empty-group">Нет боёв в этой ветке</div>
+          <div v-else class="empty-group">{{ $t('fight.emptyGroup') }}</div>
         </div>
       </div>
     </div>
@@ -170,8 +170,8 @@
       <div class="consolation-header-banner finalist-banner">
         <span class="banner-icon">🏅</span>
         <div>
-          <div class="banner-title">Утешительные от финалистов</div>
-          <div class="banner-subtitle">Бои за 3 место — ветки A и B</div>
+          <div class="banner-title">{{ $t('fight.finalistConsolationTitle') }}</div>
+          <div class="banner-subtitle">{{ $t('fight.consolationSubtitle') }}</div>
         </div>
       </div>
       <div class="consolation-groups">
@@ -181,7 +181,7 @@
             class="consolation-group"
         >
           <div class="group-header finalist-group-header">
-            <span class="group-label">{{ group === 'FINALIST_CONSOLATION_GROUP_A' ? 'Ветка A' : 'Ветка B' }}</span>
+            <span class="group-label">{{ group === 'FINALIST_CONSOLATION_GROUP_A' ? $t('fight.groupA') : $t('fight.groupB') }}</span>
           </div>
           <div v-if="consolationByType[group]?.length">
             <div
@@ -214,15 +214,15 @@
             </div>
             <button class="tatami-btn" @click.stop="openTatamiModal(fight)"> 🥋 {{ fight.tatami || '—' }} </button>
           </div>
-          <div v-else class="empty-group">Нет боёв в этой ветке</div>
+          <div v-else class="empty-group">{{ $t('fight.emptyGroup') }}</div>
         </div>
       </div>
     </div>
 
     <div v-if="fights.length === 0 && !tournamentsLoading" class="empty-state">
-      <h3>{{ selectedCategory ? 'Схватки не найдены' : 'Выберите категорию для просмотра схваток' }}</h3>
+      <h3>{{ selectedCategory ? $t('fight.fightsNotFound') : $t('fight.selectCategoryToView') }}</h3>
       <button v-if="selectedTournament || selectedCategory" class="reset-filters-btn" @click="resetFilters">
-        Сбросить фильтры
+        {{ $t('fight.resetFilters') }}
       </button>
     </div>
   </div>
@@ -290,19 +290,19 @@ export default {
     },
     availableTabs() {
       const tabs = [
-        { key: 'main', label: 'Основная сетка', icon: '🏆', count: this.mainFights.length }
+        { key: 'main', label: this.$t('fight.mainBracket'), icon: '🏆', count: this.mainFights.length }
       ]
       if (this.hasSemifinalistConsolation) {
         const count =
             (this.consolationByType['SEMIFINALIST_CONSOLATION_GROUP_A']?.length || 0) +
             (this.consolationByType['SEMIFINALIST_CONSOLATION_GROUP_B']?.length || 0)
-        tabs.push({ key: 'semifinalist', label: 'Утешительные (полуфин.)', icon: '🥉', count })
+        tabs.push({ key: 'semifinalist', label: this.$t('fight.semifinalistConsolationTab'), icon: '🥉', count })
       }
       if (this.hasFinalistConsolation) {
         const count =
             (this.consolationByType['FINALIST_CONSOLATION_GROUP_A']?.length || 0) +
             (this.consolationByType['FINALIST_CONSOLATION_GROUP_B']?.length || 0)
-        tabs.push({ key: 'finalist', label: 'Утешительные (финал.)', icon: '🏅', count })
+        tabs.push({ key: 'finalist', label: this.$t('fight.finalistConsolationTab'), icon: '🏅', count })
       }
       return tabs
     },
@@ -374,7 +374,7 @@ export default {
   },
   methods: {
     formatAthlete(athlete) {
-      if (!athlete) return { name: 'Ожидает победителя', club: '' }
+      if (!athlete) return { name: this.$t('fight.waitingWinner'), club: '' }
       const name = [athlete.last_name, athlete.first_name, athlete.middle_name]
           .filter(Boolean)
           .join(' ')
@@ -458,7 +458,7 @@ export default {
             fighter1: this.formatAthlete(fight.white_athlete),
             fighter2: this.formatAthlete(fight.blue_athlete),
             round: fight.round || null,
-            round_info: fight.round ? `Раунд ${fight.round}` : (fight.next_fight === null ? 'Финал' : '—'),
+            round_info: fight.round ? this.$t('fight.round', { number: fight.round }) : (fight.next_fight === null ? this.$t('fight.final') : '—'),
             type_bracket: fight.type_bracket || 'MAIN',
           }))
         } else {
@@ -482,9 +482,9 @@ export default {
     statusText(s) {
       switch (s) {
         case 'IN_PROGRESS': return 'LIVE'
-        case 'SCHEDULED': return 'Запланировано'
-        case 'COMPLETED': return 'Завершено'
-        default: return 'Неизвестно'
+        case 'SCHEDULED': return this.$t('fight.scheduled')
+        case 'COMPLETED': return this.$t('fight.completed')
+        default: return this.$t('fight.unknown')
       }
     },
     viewFightDetail(fightId) {

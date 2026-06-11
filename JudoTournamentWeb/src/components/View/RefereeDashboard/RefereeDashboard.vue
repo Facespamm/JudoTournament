@@ -2,8 +2,8 @@
   <div class="referee-dashboard">
     <!-- ЗАГОЛОВОК -->
     <div class="dashboard-header">
-      <h1>Панель судьи</h1>
-      <p>Управление схватками и турнирами</p>
+      <h1>{{ t('refereeDashboard.title') }}</h1>
+      <p>{{ t('refereeDashboard.subtitle') }}</p>
     </div>
 
     <!-- СТАТИСТИКА -->
@@ -16,7 +16,7 @@
         </div>
         <div class="stat-info">
           <div class="stat-number">{{ stats.active_tournaments || 0 }}</div>
-          <div class="stat-label">Активных турниров</div>
+          <div class="stat-label">{{ t('refereeDashboard.activeTournamentsCount') }}</div>
         </div>
       </div>
 
@@ -28,7 +28,7 @@
         </div>
         <div class="stat-info">
           <div class="stat-number">{{ stats.unique_athletes || 0 }}</div>
-          <div class="stat-label">Участников</div>
+          <div class="stat-label">{{ t('refereeDashboard.participants') }}</div>
         </div>
       </div>
 
@@ -41,14 +41,14 @@
         </div>
         <div class="stat-info">
           <div class="stat-number">{{ stats.live_fights || 0 }}</div>
-          <div class="stat-label">Live схваток</div>
+          <div class="stat-label">{{ t('refereeDashboard.liveFights') }}</div>
         </div>
       </div>
     </div>
 
     <!-- БЫСТРЫЕ ДЕЙСТВИЯ -->
     <div class="quick-actions-section">
-      <h2>Быстрые действия</h2>
+      <h2>{{ t('refereeDashboard.quickActions') }}</h2>
       <div class="actions-grid">
         <button class="action-btn" @click="navigateToBrackets">
           <span class="action-icon brackets">
@@ -57,7 +57,7 @@
               <path d="M3 3V21H5V19H3V5H5V3H3ZM19 3V5H21V19H19V21H21V3H19Z" fill="currentColor"/>
             </svg>
           </span>
-          <span class="action-text">Сетки</span>
+          <span class="action-text">{{ t('refereeDashboard.brackets') }}</span>
         </button>
 
         <button class="action-btn" @click="navigateToTatami">
@@ -69,7 +69,7 @@
               <path d="M12 2V6M12 18V22M22 12H18M6 12H2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </span>
-          <span class="action-text">Татами</span>
+          <span class="action-text">{{ t('refereeDashboard.tatami') }}</span>
         </button>
 
         <button class="action-btn" @click="navigateToTournaments">
@@ -78,7 +78,7 @@
               <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
             </svg>
           </span>
-          <span class="action-text">Турниры</span>
+          <span class="action-text">{{ t('refereeDashboard.tournaments') }}</span>
         </button>
 
         <button class="action-btn" @click="navigateToReferees">
@@ -88,7 +88,7 @@
               <path d="M17 8L19 10L23 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </span>
-          <span class="action-text">Судьи</span>
+          <span class="action-text">{{ t('refereeDashboard.referees') }}</span>
         </button>
       </div>
     </div>
@@ -96,8 +96,8 @@
     <!-- АКТИВНЫЕ ТУРНИРЫ -->
     <div class="active-tournaments-section">
       <div class="section-header">
-        <h2>Активные турниры</h2>
-        <button class="view-all-btn" @click="navigateToTournaments">Все турниры</button>
+        <h2>{{ t('refereeDashboard.activeTournaments') }}</h2>
+        <button class="view-all-btn" @click="navigateToTournaments">{{ t('refereeDashboard.allTournaments') }}</button>
       </div>
 
       <div class="tournaments-grid">
@@ -111,15 +111,15 @@
           <h3 class="tournament-name">{{ tournament.name }}</h3>
           <p class="tournament-location">{{ tournament.city }}, {{ tournament.country }}</p>
           <div class="tournament-stats">
-            <span class="stat">{{ tournament.athletes_count || 0 }} участников</span>
-            <span class="stat">{{ tournament.live_fights_count || 0 }} live-схваток</span>
-            <span class="stat">{{ tournament.tatami_count || 0 }} татами</span>
+            <span class="stat">{{ t('refereeDashboard.participantsCount', { count: tournament.athletes_count || 0 }) }}</span>
+            <span class="stat">{{ t('refereeDashboard.liveFightsCount', { count: tournament.live_fights_count || 0 }) }}</span>
+            <span class="stat">{{ t('refereeDashboard.tatamiCount', { count: tournament.tatami_count || 0 }) }}</span>
           </div>
-          <button class="manage-btn" @click="navigateToTournament(tournament.id)">Управлять</button>
+          <button class="manage-btn" @click="navigateToTournament(tournament.id)">{{ t('refereeDashboard.manage') }}</button>
         </div>
 
         <div v-if="activeTournaments.length === 0" class="no-tournaments">
-          <p>Нет активных турниров</p>
+          <p>{{ t('refereeDashboard.noActiveTournaments') }}</p>
         </div>
       </div>
     </div>
@@ -139,10 +139,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from '@/i18n'
 import "./RefereeDashboard.css"
 import { GetRefereeStatistics, GetLiveTournamentReferee } from "@/components/View/RefereeDashboard/fetchRefereeDashboard.js"
 
 const router = useRouter()
+const { t } = useI18n()
 
 const stats = ref({})
 const activeTournaments = ref([])
@@ -166,7 +168,7 @@ const loadDashboardData = async () => {
     if (statsData?.success && statsData?.data) {
       stats.value = statsData.data
     } else {
-      showToast('Не удалось загрузить статистику', 'error')
+      showToast(t('refereeDashboard.statsLoadFailed'), 'error')
       stats.value = {}
     }
 
@@ -176,12 +178,12 @@ const loadDashboardData = async () => {
           ? tournamentsData.data
           : tournamentsData.data?.tournaments || tournamentsData.data?.active_tournaments || []
     } else {
-      showToast('Не удалось загрузить список турниров', 'error')
+      showToast(t('refereeDashboard.tournamentsLoadFailed'), 'error')
       activeTournaments.value = []
     }
   } catch (error) {
     console.error('Ошибка загрузки данных панели судьи:', error)
-    showToast('Не удалось загрузить данные панели. Попробуйте позже.', 'error')
+    showToast(t('refereeDashboard.dashboardLoadFailed'), 'error')
     stats.value = {}
     activeTournaments.value = []
   }
@@ -200,16 +202,16 @@ const getStatusClass = (status) => {
 const getStatusText = (status) => {
   const statusMap = {
     'LIVE': 'LIVE',
-    'BRACKETS': 'Сетки',
-    'REGISTRATION': 'Регистрация',
-    'WEIGHING': 'Взвешивание'
+    'BRACKETS': t('refereeDashboard.statusBrackets'),
+    'REGISTRATION': t('refereeDashboard.statusRegistration'),
+    'WEIGHING': t('refereeDashboard.statusWeighing')
   }
   return statusMap[status] || status
 }
 
 const formatDate = (dateString) => {
   if (!dateString) return ''
-  return new Date(dateString).toLocaleDateString('ru-RU')
+  return new Date(dateString).toLocaleDateString(t('refereeDashboard.dateLocale'))
 }
 
 const navigateToBrackets = () => router.push('/brackets')

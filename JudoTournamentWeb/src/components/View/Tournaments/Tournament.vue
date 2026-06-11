@@ -2,20 +2,20 @@
   <!-- ФИЛЬТРЫ -->
   <div class="judo-tournament-setting_search">
     <select v-model="categoryFilter" class="judo-tournament-setting_search_select_category" name="tournament_filter_category">
-      <option value="all">Все категории</option>
+      <option value="all">{{ t('tournaments.allCategories') }}</option>
       <option
           v-if="categories.length > 0"
           v-for="cat in categories"
           :key="cat.id"
           :value="cat.id"
       >
-        {{ cat.name }} ({{ cat.gender }}, {{ cat.min_age }}–{{ cat.max_age }} лет, {{ cat.min_weight }}–{{ cat.max_weight }} кг)
+        {{ cat.name }} ({{ cat.gender }}, {{ cat.min_age }}–{{ cat.max_age }} {{ t('tournaments.years') }}, {{ cat.min_weight }}–{{ cat.max_weight }} {{ t('tournaments.kg') }})
       </option>
-      <option v-else disabled>Категории загружаются или недоступны...</option>
+      <option v-else disabled>{{ t('tournaments.categoriesLoading') }}</option>
     </select>
 
     <select v-model="yearFilter" class="judo-tournament-setting_date" name="tournament_date">
-      <option value="all">Год проведения</option>
+      <option value="all">{{ t('tournaments.year') }}</option>
       <option value="2026">2026</option>
       <option value="2025">2025</option>
       <option value="2024">2024</option>
@@ -26,7 +26,7 @@
         v-model="searchQuery"
         type="search"
         name="tournament_search"
-        placeholder="Поиск турниров"
+        :placeholder="t('tournaments.searchPlaceholder')"
         class="search-input"
     />
   </div>
@@ -34,16 +34,16 @@
   <!-- СПИСОК ТУРНИРОВ -->
   <div class="judo-tournament_info">
     <section class="judo-tournament-list">
-      <h2>Ближайшие турниры</h2>
+      <h2>{{ t('tournaments.upcoming') }}</h2>
 
       <div v-if="isLoading" class="loading-indicator">
         <div class="loading-spinner"></div>
-        <p>Загрузка турниров...</p>
+        <p>{{ t('tournaments.loading') }}</p>
       </div>
 
       <div v-else-if="error" class="error-message">
         <p>{{ error }}</p>
-        <button @click="loadTournaments(categoryFilter)" class="retry-button">Попробовать снова</button>
+        <button @click="loadTournaments(categoryFilter)" class="retry-button">{{ t('tournaments.retry') }}</button>
       </div>
 
       <div v-else class="tournament-cards-container">
@@ -63,9 +63,9 @@
             <h3 class="judo-tournament_card_name">{{ tournament.name }}</h3>
             <p class="judo-tournament_card_location">{{ getLocation(tournament) }}</p>
             <div class="tournament-stats">
-              <span class="stat-item">{{ tournament.athletes_count || 0 }} участников</span>
+              <span class="stat-item">{{ t('tournaments.participants', { count: tournament.athletes_count || 0 }) }}</span>
               <span class="stat-divider">•</span>
-              <span class="stat-item">{{ tournament.progress_percentage || 0 }}% завершено</span>
+              <span class="stat-item">{{ t('tournaments.progress', { count: tournament.progress_percentage || 0 }) }}</span>
             </div>
             <div v-if="tournament.description" class="tournament-description">
               {{ tournament.description }}
@@ -77,7 +77,7 @@
                   class="tournament-action-btn tournament-view-details-btn"
                   @click="navigateToDetails(tournament.id)"
               >
-                Подробнее
+                {{ t('tournaments.details') }}
               </button>
 
               <!-- Кнопка регистрации — только для Админа, Судьи и Участника -->
@@ -88,7 +88,7 @@
                     class="tournament-action-btn tournament-register-disabled-btn"
                     disabled
                 >
-                  Регистрация закрыта
+                  {{ t('tournaments.registrationClosed') }}
                 </button>
 
                 <template v-else-if="userRole === ATHLETE">
@@ -98,7 +98,7 @@
                       class="tournament-action-btn tournament-unregister-btn"
                       @click="unassignTournament(tournament.id)"
                   >
-                    Отменить регистрацию
+                    {{ t('tournaments.unregister') }}
                   </button>
 
                   <!-- Не зарегистрирован -->
@@ -107,7 +107,7 @@
                       class="tournament-action-btn tournament-register-btn"
                       @click="isAssignTournament(tournament.id)"
                   >
-                    Зарегистрироваться
+                    {{ t('tournaments.register') }}
                   </button>
                 </template>
 
@@ -116,7 +116,7 @@
                     class="tournament-action-btn tournament-register-btn"
                     @click="navigateToRegistration(tournament.id)"
                 >
-                  Зарегистрироваться
+                  {{ t('tournaments.register') }}
                 </button>
 
               </template>
@@ -125,8 +125,8 @@
         </article>
 
         <div v-if="visibleTournaments.length === 0 && !isLoading" class="no-tournaments">
-          <p>Нет доступных турниров</p>
-          <small v-if="hasActiveFilters">Попробуйте изменить фильтры</small>
+          <p>{{ t('tournaments.empty') }}</p>
+          <small v-if="hasActiveFilters">{{ t('tournaments.changeFilters') }}</small>
         </div>
       </div>
     </section>
@@ -135,7 +135,7 @@
   <!-- ПАГИНАЦИЯ -->
   <div v-if="hasMore" class="judo-tournament_button_pagination">
     <button type="button" class="judo-tournament_button_pagination_next" @click="loadMore">
-      Показать ещё турниры
+      {{ t('tournaments.loadMore') }}
     </button>
   </div>
 </template>
@@ -151,9 +151,12 @@ import {
 } from '@/components/View/Tournaments/fetchTournaments.js'
 import { fetchCategories } from "@/components/View/TournamentManagement/fetchTournamentManagement.js"
 import { useAuth, USER_ROLES } from '@/composables/useAuth.js'
+import { useI18n } from '@/i18n'
 import "./Tournaments.css"
 
 const router = useRouter()
+const { locale, t } = useI18n()
+const dateLocale = computed(() => ({ ru: 'ru-RU', en: 'en-US', kk: 'kk-KZ' })[locale.value] ?? 'ru-RU')
 
 // ─── Роли ─────────────────────────────────────────────────────────
 const { canSee, userRole } = useAuth()
@@ -298,11 +301,11 @@ const loadTournaments = async (category = 'all') => {
     if (result && result.success) {
       rawTournaments.value = result.data || []
     } else {
-      throw new Error(result?.error || 'Неизвестная ошибка')
+      throw new Error(result?.error || t('tournaments.unknownError'))
     }
   } catch (err) {
     console.error('Ошибка при загрузке турниров:', err)
-    error.value = 'Не удалось загрузить турниры. Пожалуйста, попробуйте позже.'
+    error.value = t('tournaments.loadError')
     rawTournaments.value = []
   } finally {
     isLoading.value = false
@@ -327,13 +330,13 @@ const isRegistrationAvailable = (tournament) => {
 }
 
 const formatDate = (startDate, endDate) => {
-  if (!startDate) return 'Дата не указана'
+  if (!startDate) return t('tournaments.dateMissing')
   const start = new Date(startDate)
   const options = { day: 'numeric', month: 'long', year: 'numeric' }
-  const startStr = start.toLocaleDateString('ru-RU', options)
+  const startStr = start.toLocaleDateString(dateLocale.value, options)
   if (!endDate || startDate === endDate) return startStr
   const end = new Date(endDate)
-  return `${startStr} – ${end.toLocaleDateString('ru-RU', options)}`
+  return `${startStr} – ${end.toLocaleDateString(dateLocale.value, options)}`
 }
 
 const getLocation = (tournament) => {
@@ -341,7 +344,7 @@ const getLocation = (tournament) => {
   if (tournament.venue) parts.push(tournament.venue)
   if (tournament.city) parts.push(tournament.city)
   if (tournament.country) parts.push(tournament.country)
-  return parts.join(', ') || 'Место не указано'
+  return parts.join(', ') || t('tournaments.locationMissing')
 }
 
 const getStatusClass = (status) => {
@@ -358,12 +361,12 @@ const getStatusClass = (status) => {
 
 const getStatusText = (status) => {
   const statusMap = {
-    'LIVE': 'LIVE',
-    'PLANNED': 'ПЛАНИРУЕТСЯ',
-    'COMPLETED': 'ЗАВЕРШЁН',
-    'REGISTRATION': 'РЕГИСТРАЦИЯ',
-    'WEIGHING': 'ВЗВЕШИВАНИЕ',
-    'BRACKETS': 'СЕТКИ'
+    'LIVE': t('tournaments.status.LIVE'),
+    'PLANNED': t('tournaments.status.PLANNED'),
+    'COMPLETED': t('tournaments.status.COMPLETED'),
+    'REGISTRATION': t('tournaments.status.REGISTRATION'),
+    'WEIGHING': t('tournaments.status.WEIGHING'),
+    'BRACKETS': t('tournaments.status.BRACKETS')
   }
   return statusMap[status] || status
 }

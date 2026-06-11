@@ -3,7 +3,7 @@
   <div class="role-content">
     <div class="login-section">
       <button class="login-button" @click="redirectToLogin">
-        Войти в систему
+        {{ t('selectRole.loginSystem') }}
       </button>
     </div>
   </div>
@@ -11,8 +11,10 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { useI18n } from '@/i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const redirectToLogin = () => {
   router.push('/Login')

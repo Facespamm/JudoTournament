@@ -3,11 +3,11 @@
 
     <div class="page-header">
       <div>
-        <h1>Управление судьями</h1>
-        <p>Регистрация, редактирование и назначение судей дзюдо</p>
+        <h1>{{ t('refereeManagement.title') }}</h1>
+        <p>{{ t('refereeManagement.subtitle') }}</p>
       </div>
       <button class="btn-primary" @click="openCreateModal">
-        <span class="btn-icon">+</span> Добавить судью
+        <span class="btn-icon">+</span> {{ t('refereeManagement.addReferee') }}
       </button>
     </div>
 
@@ -20,12 +20,12 @@
         <input
             v-model="searchQuery"
             type="search"
-            placeholder="Поиск по ФИО, категории, телефону..."
+            :placeholder="t('refereeManagement.searchPlaceholder')"
             class="search-input"
         />
       </div>
       <select v-model="categoryFilter" class="filter-select">
-        <option value="">Все категории</option>
+        <option value="">{{ t('refereeManagement.allCategories') }}</option>
         <option
             v-for="cat in categories"
             :key="cat.id ?? cat.name ?? cat"
@@ -42,22 +42,22 @@
           {{ filteredReferees.length }} {{ pluralReferees(filteredReferees.length) }}
         </span>
         <div class="toolbar-actions">
-          <button class="tb-btn tb-edit" :disabled="selectedRefereeIds.length !== 1" @click="openEditModal">Редактировать</button>
-          <button class="tb-btn tb-assign" :disabled="selectedRefereeIds.length !== 3" @click="openAssignModal">Назначить</button>
-          <button class="tb-btn tb-delete" :disabled="selectedRefereeIds.length !== 1" @click="confirmDelete">Удалить</button>
+          <button class="tb-btn tb-edit" :disabled="selectedRefereeIds.length !== 1" @click="openEditModal">{{ t('refereeManagement.edit') }}</button>
+          <button class="tb-btn tb-assign" :disabled="selectedRefereeIds.length !== 3" @click="openAssignModal">{{ t('refereeManagement.assign') }}</button>
+          <button class="tb-btn tb-delete" :disabled="selectedRefereeIds.length !== 1" @click="confirmDelete">{{ t('refereeManagement.delete') }}</button>
         </div>
       </div>
 
       <div v-if="loading" class="state-box">
         <div class="spinner"></div>
-        <p>Загрузка судей…</p>
+        <p>{{ t('refereeManagement.loading') }}</p>
       </div>
 
       <div v-else-if="filteredReferees.length === 0" class="state-box">
         <div class="state-icon">⚖️</div>
-        <h3>Судьи не найдены</h3>
-        <p>Измените параметры поиска или добавьте нового судью</p>
-        <button class="btn-primary" style="margin-top:8px" @click="openCreateModal">+ Добавить судью</button>
+        <h3>{{ t('refereeManagement.emptyTitle') }}</h3>
+        <p>{{ t('refereeManagement.emptyText') }}</p>
+        <button class="btn-primary" style="margin-top:8px" @click="openCreateModal">+ {{ t('refereeManagement.addReferee') }}</button>
       </div>
 
       <div v-else class="table-scroll">
@@ -65,9 +65,9 @@
           <thead>
           <tr>
             <th class="th-checkbox"></th>
-            <th class="th-name">ФИО</th>
-            <th class="th-cat">Категория</th>
-            <th class="th-phone">Телефон</th>
+            <th class="th-name">{{ t('refereeManagement.fullName') }}</th>
+            <th class="th-cat">{{ t('refereeManagement.category') }}</th>
+            <th class="th-phone">{{ t('refereeManagement.phone') }}</th>
             <th class="th-email">Email</th>
           </tr>
           </thead>
@@ -86,16 +86,16 @@
                   @change="toggleReferee(ref.id)"
               />
             </td>
-            <td class="td-name" data-label="ФИО">
+            <td class="td-name" :data-label="t('refereeManagement.fullName')">
               {{ ref.last_name }} {{ ref.first_name }} {{ ref.middle_name || '' }}
             </td>
-            <td class="td-cat" data-label="Категория">
+            <td class="td-cat" :data-label="t('refereeManagement.category')">
               <span v-if="ref.certification_level" class="badge" :class="badgeClass(ref.certification_level)">
                 {{ ref.certification_level }}
               </span>
               <span v-else class="muted">—</span>
             </td>
-            <td class="td-phone" data-label="Телефон">
+            <td class="td-phone" :data-label="t('refereeManagement.phone')">
               <span :class="ref.phone ? '' : 'muted'">{{ ref.phone || '—' }}</span>
             </td>
             <td class="td-email" data-label="Email">
@@ -125,25 +125,25 @@
 
         <div class="modal-header">
           <div>
-            <h3>Назначение судей на бои</h3>
-            <p class="modal-subtitle">Выберите турнир и категорию</p>
+            <h3>{{ t('refereeManagement.assignTitle') }}</h3>
+            <p class="modal-subtitle">{{ t('refereeManagement.assignSubtitle') }}</p>
           </div>
         </div>
 
         <!-- Сообщение появляется только если выбрано НЕ 3 судьи -->
         <div class="error-container" :class="{ visible: selectedRefereeIds.length !== 3 }">
           <span class="error-text">
-            Требуется ровно 3 судьи для назначения
+            {{ t('refereeManagement.assignNeedThree') }}
           </span>
         </div>
 
         <div class="form-group">
-          <label>Турнир</label>
+          <label>{{ t('refereeManagement.tournament') }}</label>
           <select
               v-model="selectedTournamentId"
               @change="onTournamentChange"
               class="modal-select">
-            <option value="">— Выберите турнир —</option>
+            <option value="">{{ t('refereeManagement.selectTournament') }}</option>
             <option v-for="t in tournaments" :key="t.id" :value="t.id">
               {{ t.name || t.title }}
             </option>
@@ -151,12 +151,12 @@
         </div>
 
         <div class="form-group">
-          <label>Категория турнира</label>
+          <label>{{ t('refereeManagement.tournamentCategory') }}</label>
           <select
               v-model="selectedCategoryId"
               class="modal-select"
               :disabled="!selectedTournamentId">
-            <option value="">— Выберите категорию —</option>
+            <option value="">{{ t('refereeManagement.selectCategory') }}</option>
             <option
                 v-for="cat in availableCategoriesForTournament"
                 :key="cat.id ?? cat.name ?? cat"
@@ -167,12 +167,12 @@
         </div>
 
         <div class="modal-actions">
-          <button class="btn-ghost" @click="closeAssignModal">Отмена</button>
+          <button class="btn-ghost" @click="closeAssignModal">{{ t('refereeManagement.cancel') }}</button>
           <button
               class="btn-primary assign-btn"
               :disabled="!selectedTournamentId || !selectedCategoryId || selectedRefereeIds.length !== 3"
               @click="executeAssign">
-            Назначить на бои
+            {{ t('refereeManagement.assignToFights') }}
           </button>
         </div>
       </div>
@@ -187,12 +187,12 @@
             <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2"/>
           </svg>
         </div>
-        <h3>Удалить судью?</h3>
+        <h3>{{ t('refereeManagement.deleteQuestion') }}</h3>
         <p class="modal-name">{{ refereeToDelete.last_name }} {{ refereeToDelete.first_name }}</p>
-        <p class="modal-warn">Это действие нельзя отменить</p>
+        <p class="modal-warn">{{ t('refereeManagement.deleteWarning') }}</p>
         <div class="modal-actions">
-          <button class="btn-ghost" @click="cancelDelete">Отмена</button>
-          <button class="btn-danger" @click="executeDelete">Удалить</button>
+          <button class="btn-ghost" @click="cancelDelete">{{ t('refereeManagement.cancel') }}</button>
+          <button class="btn-danger" @click="executeDelete">{{ t('refereeManagement.delete') }}</button>
         </div>
       </div>
     </div>
@@ -207,12 +207,14 @@ import { getReferees } from '@/components/View/Referee/fetchReferee.js'
 import { DeleteReferee, assignRefereeFight } from '@/components/View/RefereeManagement/fetchRefereeManagement.js'
 import { fetchCategories } from '@/components/View/TournamentManagement/fetchTournamentManagement.js'
 import { fetchTournaments } from "@/components/View/Tournaments/fetchTournaments.js"
+import { useI18n } from '@/i18n'
 
 import AddRefereeModal from '@/components/View/RefereeManagement/AddRefereeModal.vue'
 import UpdateRefereeModal from '@/components/View/RefereeManagement/UpdateRefereeModal.vue'
 
 console.log('=== RefereeManagement.vue загружен ===')
 
+const { t } = useI18n()
 const referees = ref([])
 const categories = ref([])
 const tournaments = ref([])
@@ -243,14 +245,14 @@ const filteredReferees = computed(() => {
 })
 
 function pluralReferees(n) {
-  if (n % 10 === 1 && n % 100 !== 11) return 'судья'
-  if ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) return 'судьи'
-  return 'судей'
+  if (n % 10 === 1 && n % 100 !== 11) return t('refereeManagement.refereeOne')
+  if ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) return t('refereeManagement.refereeFew')
+  return t('refereeManagement.refereeMany')
 }
 
 function badgeClass(level) {
   if (!level) return 'badge--gray'
-  if (level.includes('Международный')) return 'badge--gold'
+  if (level.includes('Международный') || level.includes('International') || level.includes('Халықаралық')) return 'badge--gold'
   if (level.includes('1')) return 'badge--blue'
   if (level.includes('2')) return 'badge--teal'
   if (level.includes('3')) return 'badge--green'
@@ -332,11 +334,11 @@ const executeAssign = async () => {
   const payload = { referees: selectedRefereeIds.value }
   try {
     await assignRefereeFight(payload, selectedTournamentId.value, selectedCategoryId.value)
-    alert(`✅ Назначено ${selectedRefereeIds.value.length} судей`)
+    alert(t('refereeManagement.assignedSuccess', { count: selectedRefereeIds.value.length }))
     closeAssignModal()
     selectedRefereeIds.value = []
   } catch (e) {
-    alert(`Ошибка при назначении:\n${e.message || e}`)
+    alert(t('refereeManagement.assignError', { message: e.message || e }))
   }
 }
 
@@ -353,7 +355,7 @@ const executeDelete = async () => {
     selectedRefereeIds.value = []
     await loadReferees()
   } catch (e) {
-    alert(`Не удалось удалить судью:\n${e.message || e}`)
+    alert(t('refereeManagement.deleteError', { message: e.message || e }))
   }
 }
 

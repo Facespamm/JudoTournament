@@ -1,16 +1,16 @@
 <template>
   <div class="tab-section">
-    <h2>Дзюдоисты</h2>
+    <h2>{{ t('athletesPage.title') }}</h2>
 
     <!-- Лоадер категорий -->
     <div v-if="isLoadingCategories" class="categories-loading">
       <div class="spinner"></div>
-      <p>Загрузка весовых категорий...</p>
+      <p>{{ t('brackets.loadingWeightCategories') }}</p>
     </div>
 
     <!-- Нет категорий -->
     <div v-else-if="!categories.length" class="no-categories">
-      <p>В этом турнире пока нет весовых категорий</p>
+      <p>{{ t('brackets.noCategories') }}</p>
     </div>
 
     <!-- Дропдаун категорий -->
@@ -24,19 +24,19 @@
 
     <!-- Заголовок выбранной категории (кроме «Все») -->
     <div v-if="selectedCategory && selectedCategory.id !== null" class="group-section">
-      <span class="group-label">ВЕСОВАЯ КАТЕГОРИЯ</span>
+      <span class="group-label">{{ t('brackets.weightCategory') }}</span>
       <span class="group-weight">{{ selectedCategory.name }}</span>
     </div>
 
     <!-- Лоадер дзюдоистов -->
     <div v-if="isLoadingJudoists" class="judoists-loading">
       <div class="spinner"></div>
-      <p>Загрузка дзюдоистов...</p>
+      <p>{{ t('athletesPage.loading') }}</p>
     </div>
 
     <!-- Нет дзюдоистов -->
     <div v-else-if="judoists.length === 0" class="no-judoists">
-      <p>В этой категории пока нет участников</p>
+      <p>{{ t('athletesPage.empty') }}</p>
     </div>
 
     <!-- Список дзюдоистов -->
@@ -58,7 +58,7 @@
     </div>
 
     <div class="load-more-wrapper">
-      <button class="load-more">Загрузить еще</button>
+      <button class="load-more">{{ t('athletesPage.loadMore') }}</button>
     </div>
   </div>
 </template>
@@ -67,8 +67,10 @@
 import { ref, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchGetCategoryByTournament } from "@/components/View/Brackets/fetchBrackets.js"
+import { useI18n } from '@/i18n'
 
 const route = useRoute()
+const { t } = useI18n()
 const tournamentId = ref(Number(route.params.id))
 
 const categories = ref([])
@@ -84,11 +86,11 @@ const loadCategories = async () => {
   try {
     const data = await fetchGetCategoryByTournament(tournamentId.value)
     const fetchedCats = Array.isArray(data) ? data : []
-    categories.value = [{ id: null, name: 'Все категории' }, ...fetchedCats]
+    categories.value = [{ id: null, name: t('tournaments.allCategories') }, ...fetchedCats]
     selectedCategory.value = categories.value[0]
   } catch (err) {
     console.error('Ошибка загрузки категорий:', err)
-    categories.value = [{ id: null, name: 'Все категории' }]
+    categories.value = [{ id: null, name: t('tournaments.allCategories') }]
     selectedCategory.value = categories.value[0]
   } finally {
     isLoadingCategories.value = false
@@ -128,8 +130,8 @@ const loadJudoists = async (catId = null) => {
       id: athlete.athlete_id,
       rank: athlete.rank || '-', // "6KYU" или другой пояс/ранг
       initials: `${athlete.first_name?.[0] || ''}${athlete.last_name?.[0] || ''}`.toUpperCase() || '??',
-      name: `${(athlete.last_name || '').toUpperCase()} ${athlete.first_name || ''} (${athlete.gender === 'male' ? 'м' : 'ж'})`.trim(),
-      categoryName: athlete.category_name || 'Неизвестно'
+      name: `${(athlete.last_name || '').toUpperCase()} ${athlete.first_name || ''} (${athlete.gender === 'male' ? t('registrationTournament.maleShort') : t('registrationTournament.femaleShort')})`.trim(),
+      categoryName: athlete.category_name || t('fight.unknown')
     }))
 
     // Сортировка (если нужно, например по рангу или ID)

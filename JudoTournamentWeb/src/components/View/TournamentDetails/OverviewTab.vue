@@ -4,44 +4,44 @@
       <div class="tournament-info">
         <!-- Заголовок + кнопка Документ -->
         <div class="tournament-header">
-          <h1>{{ tournament?.name || 'Название турнира' }}</h1>
+          <h1>{{ tournament?.name || t('tournamentDetails.tournamentNameFallback') }}</h1>
           <button
               class="document-btn"
               @click="downloadDocument"
-              title="Скачать протокол турнира в PDF"
+              :title="t('tournamentDetails.documentTitle')"
           >
-            📄 Документ
+            {{ t('tournamentDetails.document') }}
           </button>
         </div>
 
-        <p class="tournament-description">{{ tournament?.description || 'Описание отсутствует' }}</p>
+        <p class="tournament-description">{{ tournament?.description || t('tournamentDetails.descriptionMissing') }}</p>
 
         <div class="tournament-meta">
           <div class="meta-item">
-            <span class="meta-label">Дата проведения:</span>
+            <span class="meta-label">{{ t('tournamentDetails.dateLabel') }}</span>
             <span class="meta-value">{{ formatDate(tournament?.start_date, tournament?.end_date) }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Место проведения:</span>
+            <span class="meta-label">{{ t('tournamentDetails.locationLabel') }}</span>
             <span class="meta-value">{{ getLocation(tournament) }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Статус:</span>
+            <span class="meta-label">{{ t('tournamentDetails.statusLabel') }}</span>
             <span class="meta-value status-badge" :class="getStatusClass(tournament?.status)">
               {{ getStatusText(tournament?.status) }}
             </span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Количество участников:</span>
+            <span class="meta-label">{{ t('tournamentDetails.athletesCountLabel') }}</span>
             <span class="meta-value">{{ tournament?.athletes_count || 0 }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Количество татами:</span>
+            <span class="meta-label">{{ t('tournamentDetails.tatamiCountLabel') }}</span>
             <span class="meta-value">{{ tournament?.tatami_count || 0 }}</span>
           </div>
           <div v-if="tournament?.progress_percentage > 0" class="meta-item">
-            <span class="meta-label">Прогресс:</span>
-            <span class="meta-value">{{ tournament?.progress_percentage }}% завершено</span>
+            <span class="meta-label">{{ t('tournamentDetails.progressLabel') }}</span>
+            <span class="meta-value">{{ t('tournamentDetails.progressValue', { count: tournament?.progress_percentage }) }}</span>
           </div>
         </div>
       </div>
@@ -53,9 +53,12 @@
 import { inject, computed } from 'vue'          // ← ИСПРАВЛЕНИЕ: добавлен computed
 import { useRoute } from 'vue-router'
 import { fetchGetDocument } from "@/components/View/Brackets/fetchBrackets.js"
+import { useI18n } from '@/i18n'
 
 const tournament = inject('tournament')
 const route = useRoute()
+const { locale, t } = useI18n()
+const dateLocale = computed(() => ({ ru: 'ru-RU', en: 'en-US', kk: 'kk-KZ' })[locale.value] ?? 'ru-RU')
 
 // Надёжное получение ID турнира
 const tournamentId = computed(() => {
@@ -65,20 +68,20 @@ const tournamentId = computed(() => {
 })
 
 const formatDate = (startDate, endDate) => {
-  if (!startDate) return 'Дата не указана'
+  if (!startDate) return t('tournamentDetails.dateMissing')
   const start = new Date(startDate)
   const end = new Date(endDate || startDate)
-  if (startDate === endDate) return start.toLocaleDateString('ru-RU')
-  return `${start.toLocaleDateString('ru-RU')} – ${end.toLocaleDateString('ru-RU')}`
+  if (startDate === endDate) return start.toLocaleDateString(dateLocale.value)
+  return `${start.toLocaleDateString(dateLocale.value)} – ${end.toLocaleDateString(dateLocale.value)}`
 }
 
 const getLocation = (t) => {
-  if (!t) return 'Место не указано'
+  if (!t) return t('tournamentDetails.locationMissing')
   const parts = []
   if (t.venue && t.venue !== 'string') parts.push(t.venue)
   if (t.city && t.city !== 'string') parts.push(t.city)
   if (t.country && t.country !== 'string') parts.push(t.country)
-  return parts.join(', ') || 'Место не указано'
+  return parts.join(', ') || t('tournamentDetails.locationMissing')
 }
 
 const getStatusClass = (status) => {
@@ -96,11 +99,11 @@ const getStatusClass = (status) => {
 const getStatusText = (status) => {
   const map = {
     'LIVE': 'LIVE',
-    'PLANNED': 'Запланирован',
-    'COMPLETED': 'Завершен',
-    'REGISTRATION': 'Регистрация',
-    'WEIGHING': 'Взвешивание',
-    'BRACKETS': 'Сетки'
+    'PLANNED': t('tournamentDetails.statusPlanned'),
+    'COMPLETED': t('tournamentDetails.statusCompleted'),
+    'REGISTRATION': t('tournamentDetails.statusRegistration'),
+    'WEIGHING': t('tournamentDetails.statusWeighing'),
+    'BRACKETS': t('tournamentDetails.statusBrackets')
   }
   return map[status] || status
 }
@@ -111,7 +114,7 @@ const downloadDocument = async () => {
 
   if (!id || isNaN(id)) {
     console.error('❌ Не удалось определить ID турнира', { tournament, routeParams: route.params })
-    alert('Не удалось определить ID турнира. Обновите страницу и попробуйте снова.')
+    alert(t('tournamentDetails.documentIdError'))
     return
   }
 
@@ -121,7 +124,7 @@ const downloadDocument = async () => {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `Протокол_турнира_${(tournament?.name || 'Турнир').replace(/\s+/g, '_')}_${id}.pdf`
+    link.download = `${t('tournamentDetails.protocolFileName')}_${(tournament?.name || t('tournamentDetails.tournamentFileFallback')).replace(/\s+/g, '_')}_${id}.pdf`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -130,7 +133,7 @@ const downloadDocument = async () => {
     console.log(`✅ PDF турнира ${id} успешно скачан`)
   } catch (error) {
     console.error('❌ Ошибка при скачивании PDF турнира:', error)
-    alert('Не удалось скачать документ. Попробуйте позже.')
+    alert(t('tournamentDetails.documentDownloadError'))
   }
 }
 </script>

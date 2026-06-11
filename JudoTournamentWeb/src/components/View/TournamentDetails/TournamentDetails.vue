@@ -4,7 +4,7 @@
 
     <!-- КНОПКА НАЗАД — только стрелка -->
     <div class="tournament-detail-header">
-      <button class="back-button" @click="goBack" title="Назад">
+      <button class="back-button" @click="goBack" :title="t('tournamentDetails.back')">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 12H5"/>
           <path d="M12 19l-7-7 7-7"/>
@@ -26,7 +26,7 @@
             <line x1="12" y1="8" x2="12.01" y2="8"/>
           </svg>
         </span>
-        <span class="label">Обзор</span>
+        <span class="label">{{ t('tournamentDetails.overview') }}</span>
       </button>
 
       <button
@@ -41,7 +41,7 @@
             <circle cx="15.5" cy="15.5" r="1.5"/>
           </svg>
         </span>
-        <span class="label">Жеребьевка</span>
+        <span class="label">{{ t('tournamentDetails.draw') }}</span>
       </button>
 
       <button
@@ -55,7 +55,7 @@
             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
           </svg>
         </span>
-        <span class="label">Порядок схваток</span>
+        <span class="label">{{ t('tournamentDetails.order') }}</span>
       </button>
 
       <button
@@ -69,7 +69,7 @@
             <circle cx="12" cy="7" r="4"/>
           </svg>
         </span>
-        <span class="label">Дзюдоисты</span>
+        <span class="label">{{ t('tournamentDetails.athletes') }}</span>
       </button>
 
       <button
@@ -86,7 +86,7 @@
       <path d="M17 16v-4"/>
     </svg>
   </span>
-        <span class="label">Взвешивание</span>
+        <span class="label">{{ t('tournamentDetails.weighing') }}</span>
       </button>
       <button
           class="tab-button"
@@ -103,7 +103,7 @@
             <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
           </svg>
         </span>
-        <span class="label">Результаты</span>
+        <span class="label">{{ t('tournamentDetails.results') }}</span>
       </button>
 
       <button
@@ -116,20 +116,20 @@
             <polygon points="5 3 19 12 5 21 5 3"/>
           </svg>
         </span>
-        <span class="label">Live</span>
+        <span class="label">{{ t('tournamentDetails.live') }}</span>
       </button>
     </div>
 
     <!-- ЛОАДЕР -->
     <div v-if="isLoading" class="loading">
       <div class="spinner"></div>
-      <p>Загрузка данных турнира...</p>
+      <p>{{ t('tournamentDetails.loading') }}</p>
     </div>
 
     <!-- ОШИБКА -->
     <div v-else-if="error" class="error">
       <p>{{ error }}</p>
-      <button class="retry-button" @click="loadTournamentDetail">Попробовать снова</button>
+      <button class="retry-button" @click="loadTournamentDetail">{{ t('tournamentDetails.retry') }}</button>
     </div>
 
     <!-- СОДЕРЖИМОЕ ТАБОВ -->
@@ -147,9 +147,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { fetchTournamentDetail } from '@/components/View/TournamentDetails/fetchTournamentDetail.js'
 import "./TournamentDetails.css"
 import { useAuth, USER_ROLES } from '@/composables/useAuth.js'
+import { useI18n } from '@/i18n'
 
 const { canSee } = useAuth()
 const { ADMIN, REFEREE, ATHLETE, SCOREBOARD } = USER_ROLES
+const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
@@ -181,17 +183,17 @@ const loadTournamentDetail = async () => {
   error.value = ''
   try {
     const tournamentId = Number(route.params.id)
-    if (isNaN(tournamentId)) throw new Error('Неверный ID турнира')
+    if (isNaN(tournamentId)) throw new Error(t('tournamentDetails.invalidId'))
 
     const response = await fetchTournamentDetail(tournamentId)
     if (response && response.success !== false) {
       tournament.value = response.tournament || response
     } else {
-      throw new Error('Не удалось загрузить данные турнира')
+      throw new Error(t('tournamentDetails.loadFailed'))
     }
   } catch (err) {
     console.error('Error loading tournament data:', err)
-    error.value = err instanceof Error ? err.message : 'Произошла ошибка при загрузке данных'
+    error.value = err instanceof Error ? err.message : t('tournamentDetails.loadError')
   } finally {
     isLoading.value = false
   }
