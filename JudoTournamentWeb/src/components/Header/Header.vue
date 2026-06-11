@@ -11,9 +11,11 @@
 import { useRouter } from "vue-router";
 import { useI18n } from "@/i18n";
 import UserIcon from "@/components/icons/Open.png"; // ← ПОПРАВЬ ПУТЬ НА СВОЙ
+import { useAuthStore } from "@/components/stores/authStore";
 
 const router = useRouter();
 const { t } = useI18n();
+const authStore = useAuthStore();
 
 const handleLogout = () => {
     // Подтверждение выхода
@@ -21,11 +23,7 @@ const handleLogout = () => {
 
     if (confirmLogout) {
         // Удаляем JWT-токен из кук
-        document.cookie =
-            "jwt_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;";
-        // Дополнительно можно очистить другие куки, если нужно (например, другие токены)
-        localStorage.removeItem("jwt_token");
-        localStorage.removeItem("user_data");
+        authStore.logout();
         // Переход на страницу логина
         router.push({ name: "login" });
     }
