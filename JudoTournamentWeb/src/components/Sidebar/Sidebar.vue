@@ -3,22 +3,20 @@
 
     <div class="sidebar">
         <div class="sidebar-header">
-            <h1>
+            <h1
+                class="sidebar-brand"
+                role="button"
+                tabindex="0"
+                @click="RedirectToHome"
+                @keydown.enter="RedirectToHome"
+                @keydown.space.prevent="RedirectToHome"
+            >
                 <img :src="TrophyIcon" class="logo-icon" alt="Trophy" />
                 <span class="header-text">Judo-Stream</span>
             </h1>
         </div>
 
         <nav class="nav-buttons">
-            <button
-                type="button"
-                name="main_page"
-                @click="RedirectToHome"
-                :title="t('nav.home')"
-            >
-                <img :src="HomeIcon" class="nav-icon" :alt="t('nav.home')" />
-                <span class="nav-text">{{ t("nav.home") }}</span>
-            </button>
             <button
                 type="button"
                 name="athletes_page"
@@ -31,19 +29,6 @@
                     :alt="t('nav.athletes')"
                 />
                 <span class="nav-text">{{ t("nav.athletes") }}</span>
-            </button>
-            <button
-                type="button"
-                name="tournament_page"
-                @click="RedirectToTournament"
-                :title="t('nav.tournaments')"
-            >
-                <img
-                    :src="TrophyIcon"
-                    class="nav-icon"
-                    :alt="t('nav.tournaments')"
-                />
-                <span class="nav-text">{{ t("nav.tournaments") }}</span>
             </button>
             <button
                 type="button"
@@ -189,15 +174,31 @@ const cycleLanguage = () => {
     gap: 0.45rem;
 }
 
+.sidebar-brand {
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 0.25rem;
+    transition: background 0.2s ease;
+}
+
+.sidebar-brand:hover {
+    background: var(--hover-bg);
+}
+
+.sidebar-brand:focus-visible {
+    outline: 2px solid var(--active-color);
+    outline-offset: 3px;
+}
+
 .logo-icon {
-    width: clamp(28px, 3.5vh, 42px);
-    height: clamp(28px, 3.5vh, 42px);
+    width: clamp(54px, 6vh, 72px);
+    height: clamp(54px, 6vh, 72px);
     object-fit: contain;
 }
 
 .header-text {
-    font-size: clamp(0.6rem, 1vh, 0.82rem);
-    font-weight: 700;
+    font-size: clamp(1.05rem, 1.55vh, 1.25rem);
+    font-weight: 800;
     color: var(--text-color);
     white-space: nowrap;
 }
@@ -244,15 +245,15 @@ const cycleLanguage = () => {
 }
 
 .nav-icon {
-    width: clamp(22px, 3vh, 36px);
-    height: clamp(22px, 3vh, 36px);
+    width: clamp(34px, 4.3vh, 48px);
+    height: clamp(34px, 4.3vh, 48px);
     object-fit: contain;
 }
 
 .nav-text,
 .lang-text {
-    font-size: clamp(0.58rem, 0.95vh, 0.76rem);
-    font-weight: 500;
+    font-size: clamp(0.82rem, 1.15vh, 0.98rem);
+    font-weight: 600;
     text-align: center;
     line-height: 1.2;
     white-space: nowrap;

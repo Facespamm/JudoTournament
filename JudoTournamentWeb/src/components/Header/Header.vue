@@ -11,9 +11,11 @@
 import { useRouter } from "vue-router";
 import { useI18n } from "@/i18n";
 import UserIcon from "@/components/icons/Open.png"; // ← ПОПРАВЬ ПУТЬ НА СВОЙ
+import { useAuthStore } from "@/components/stores/authStore";
 
 const router = useRouter();
 const { t } = useI18n();
+const authStore = useAuthStore();
 
 const handleLogout = () => {
     // Подтверждение выхода
@@ -21,11 +23,7 @@ const handleLogout = () => {
 
     if (confirmLogout) {
         // Удаляем JWT-токен из кук
-        document.cookie =
-            "jwt_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;";
-        // Дополнительно можно очистить другие куки, если нужно (например, другие токены)
-        localStorage.removeItem("jwt_token");
-        localStorage.removeItem("user_data");
+        authStore.logout();
         // Переход на страницу логина
         router.push({ name: "login" });
     }
@@ -39,7 +37,7 @@ const handleLogout = () => {
     top: 0;
     left: 0;
     right: 0;
-    height: 70px;
+    height: 40px;
     background: #f5f5f5; /* --sidebar-bg */
     border-bottom: 1px solid #bdbdbd; /* --sidebar-border */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* --shadow */
@@ -56,7 +54,7 @@ const handleLogout = () => {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0.75rem;
+    padding: 0.5rem;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -67,7 +65,7 @@ const handleLogout = () => {
 .header-btn:hover {
     background: #d5d5d5; /* --hover-bg */
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
 
 .header-btn:active {
