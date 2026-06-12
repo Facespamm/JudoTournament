@@ -37,7 +37,7 @@ const handleLogout = () => {
     top: 0;
     left: 0;
     right: 0;
-    height: 70px;
+    height: 40px;
     background: #f5f5f5; /* --sidebar-bg */
     border-bottom: 1px solid #bdbdbd; /* --sidebar-border */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* --shadow */
@@ -54,7 +54,7 @@ const handleLogout = () => {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0.75rem;
+    padding: 0.5rem;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -65,7 +65,7 @@ const handleLogout = () => {
 .header-btn:hover {
     background: #d5d5d5; /* --hover-bg */
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
 
 .header-btn:active {

@@ -55,15 +55,49 @@
                         <label for="password" class="form-title">{{
                             t("authPages.password")
                         }}</label>
-                        <input
-                            id="password"
-                            v-model="form.password"
-                            type="password"
-                            :placeholder="t('authPages.passwordPlaceholder')"
-                            required
-                            autocomplete="current-password"
-                            :disabled="isLoading"
-                        />
+                        <div class="password-field">
+                            <input
+                                id="password"
+                                v-model="form.password"
+                                :type="showPassword ? 'text' : 'password'"
+                                :placeholder="t('authPages.passwordPlaceholder')"
+                                required
+                                autocomplete="current-password"
+                                :disabled="isLoading"
+                            />
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                :aria-label="
+                                    showPassword
+                                        ? 'Скрыть пароль'
+                                        : 'Показать пароль'
+                                "
+                                :title="
+                                    showPassword
+                                        ? 'Скрыть пароль'
+                                        : 'Показать пароль'
+                                "
+                                :disabled="isLoading"
+                                @click="showPassword = !showPassword"
+                            >
+                                <svg
+                                    v-if="!showPassword"
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"
+                                    />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                <svg v-else viewBox="0 0 24 24" aria-hidden="true">
+                                    <path
+                                        d="M3 3l18 18M10.6 10.6A3 3 0 0 0 13.4 13.4M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a18.5 18.5 0 0 1-3.2 4.1M6.1 6.1C3.4 8 2 12 2 12s3.5 7 10 7a10.8 10.8 0 0 0 5.2-1.3"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <button
@@ -119,6 +153,7 @@ const form = ref({
 
 const isLoading = ref(false);
 const errorMessage = ref("");
+const showPassword = ref(false);
 
 const handleLogin = async () => {
     if (!form.value.username.trim() || !form.value.password) {
@@ -236,6 +271,54 @@ const RedirectToRegistration = () => {
 .auth-language-btn:disabled {
     opacity: 0.55;
     cursor: not-allowed;
+}
+
+.password-field {
+    position: relative;
+    width: 100%;
+}
+
+.password-field input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 48px;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #777;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: color 0.2s ease;
+}
+
+.password-toggle:hover:not(:disabled) {
+    color: #c89b3c;
+}
+
+.password-toggle:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.password-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 @media (max-width: 480px) {

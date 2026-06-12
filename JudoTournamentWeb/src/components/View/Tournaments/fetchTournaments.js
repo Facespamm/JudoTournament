@@ -3,9 +3,14 @@ import Cookies from "js-cookie";
 const API_KEY = 'mobile_app_2024';
 
 
-export const fetchTournaments = async () => {
+export const fetchTournaments = async ({ page = 1, perPage = 10 } = {}) => {
     try {
-        const response = await fetch(`/api/tournaments/`, {
+        const params = new URLSearchParams({
+            page_size: String(page),
+            per_page: String(perPage),
+        });
+
+        const response = await fetch(`/api/tournaments/?${params.toString()}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'X-API-Key': API_KEY
@@ -33,9 +38,14 @@ export const fetchTournaments = async () => {
 };
 
 
-export const fetchTournamentsByCategory = async (categoryId) => {
+export const fetchTournamentsByCategory = async (categoryId, { page = 1, perPage = 10 } = {}) => {
     try {
-        const response = await fetch(`/api/tournaments/by-category/${categoryId}`, {
+        const params = new URLSearchParams({
+            page_size: String(page),
+            per_page: String(perPage),
+        });
+
+        const response = await fetch(`/api/tournaments/by-category/${categoryId}?${params.toString()}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'X-API-Key': API_KEY
