@@ -1,146 +1,130 @@
 import Cookies from "js-cookie";
 
-const API_KEY = 'mobile_app_2024';
+const API_KEY = "mobile_app_2024";
 
+export const fetchTournaments = async ({
+  page = 1,
+  perPage = 10,
+  status,
+  categoryId,
+  search,
+} = {}) => {
+  try {
+    const params = new URLSearchParams({
+      page_size: String(page),
+      per_page: String(perPage),
+    });
 
-export const fetchTournaments = async ({ page = 1, perPage = 10 } = {}) => {
-    try {
-        const params = new URLSearchParams({
-            page_size: String(page),
-            per_page: String(perPage),
-        });
-
-        const response = await fetch(`/api/tournaments/?${params.toString()}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': API_KEY
-            }
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        return {
-            success: true,
-            data: result
-        };
-
-    } catch (error) {
-        console.error('Ошибка при загрузке турниров:', error);
-        return {
-            success: false,
-            error: error.message || 'Произошла неизвестная ошибка'
-        };
+    if (status) params.set("status", status);
+    if (categoryId) {
+      params.set("category_id", String(categoryId));
     }
-};
+    if (search) params.set("search", search);
 
+    const response = await fetch(`/api/tournaments/?${params.toString()}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": API_KEY,
+      },
+    });
 
-export const fetchTournamentsByCategory = async (categoryId, { page = 1, perPage = 10 } = {}) => {
-    try {
-        const params = new URLSearchParams({
-            page_size: String(page),
-            per_page: String(perPage),
-        });
-
-        const response = await fetch(`/api/tournaments/by-category/${categoryId}?${params.toString()}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': API_KEY
-            }
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        return {
-            success: true,
-            data: result
-        };
-
-    } catch (error) {
-        console.error('Ошибка при загрузке турниров:', error);
-        return {
-            success: false,
-            error: error.message || 'Произошла неизвестная ошибка'
-        };
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`,
+      );
     }
+
+    const result = await response.json();
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (error) {
+    console.error("Ошибка при загрузке турниров:", error);
+    return {
+      success: false,
+      error: error.message || "Произошла неизвестная ошибка",
+    };
+  }
 };
 
 export const fetchAssignToTournament = async (tournamentId) => {
-    try {
-        const token = Cookies.get('jwt_token')
+  try {
+    const token = Cookies.get("jwt_token");
 
-        const response = await fetch(`/api/user/assign_to_tournament/${tournamentId}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': API_KEY,
-                'Authorization': `Bearer ${token}`
-            },
-            method: 'POST',
-        });
+    const response = await fetch(
+      `/api/user/assign_to_tournament/${tournamentId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        method: "POST",
+      },
+    );
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        return {
-            success: true,
-            data: result.message
-        };
-
-    } catch (error) {
-        console.error('Ошибка при загрузке турниров:', error);
-        return {
-            success: false,
-            error: error.message || 'Произошла неизвестная ошибка'
-        };
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`,
+      );
     }
-}
+
+    const result = await response.json();
+    return {
+      success: true,
+      data: result.message,
+    };
+  } catch (error) {
+    console.error("Ошибка при загрузке турниров:", error);
+    return {
+      success: false,
+      error: error.message || "Произошла неизвестная ошибка",
+    };
+  }
+};
 
 export async function checkRegistration(tournamentId) {
-    const token = Cookies.get('jwt_token')
-    const response = await fetch(`/api/user/is_registered/${tournamentId}`, {
-        headers: { 'Authorization': `Bearer ${token}` },
-        method: 'GET',
-    });
-    const data = await response.json();
-    return data.is_registered;
+  const token = Cookies.get("jwt_token");
+  const response = await fetch(`/api/user/is_registered/${tournamentId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    method: "GET",
+  });
+  const data = await response.json();
+  return data.is_registered;
 }
 
 export async function fetchunassignTournament(tournamentId) {
-    const token = Cookies.get('jwt_token')
-    const response = await fetch(`/api/user/unassign_to_tournament/${tournamentId}`, {
-        method: 'PATCH',
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await response.json();
-    return {
-        success: data.success,
-        data: data.message
-    };
+  const token = Cookies.get("jwt_token");
+  const response = await fetch(
+    `/api/user/unassign_to_tournament/${tournamentId}`,
+    {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+  const data = await response.json();
+  return {
+    success: data.success,
+    data: data.message,
+  };
 }
 
 export async function getTournamentTatamis(tournamentId) {
-    const uri = `/api/tournaments/${tournamentId}/tatami`;
-    try {
-        const response = await fetch(uri, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': 'mobile_app_2024'
-            },
-        })
-        return await response.json()
-    }catch(error) {
-        console.error('Ошибка смены атлетов:', error)
-        return { success: false, error: error.message }
-    }
+  const uri = `/api/tournaments/${tournamentId}/tatami`;
+  try {
+    const response = await fetch(uri, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": "mobile_app_2024",
+      },
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Ошибка смены атлетов:", error);
+    return { success: false, error: error.message };
+  }
 }

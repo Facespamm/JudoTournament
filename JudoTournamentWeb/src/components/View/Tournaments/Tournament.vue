@@ -6,7 +6,7 @@
             class="judo-tournament-setting_search_select_category"
             name="tournament_filter_category"
         >
-            <option value="all">{{ t("tournaments.allCategories") }}</option>
+            <option value="">{{ t("tournaments.allCategories") }}</option>
             <option
                 v-if="categories.length > 0"
                 v-for="cat in categories"
@@ -27,15 +27,18 @@
         </select>
 
         <select
-            v-model="yearFilter"
+            v-model="statusFilter"
             class="judo-tournament-setting_date"
-            name="tournament_date"
+            name="tournament_status"
         >
-            <option value="all">{{ t("tournaments.year") }}</option>
-            <option value="2026">2026</option>
-            <option value="2025">2025</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
+            <option value="">{{ t("tournaments.allStatuses") }}</option>
+            <option
+                v-for="status in tournamentStatuses"
+                :key="status"
+                :value="status"
+            >
+                {{ getStatusText(status) }}
+            </option>
         </select>
 
         <input
@@ -60,7 +63,7 @@
             <div v-else-if="error" class="error-message">
                 <p>{{ error }}</p>
                 <button
-                    @click="loadTournaments(categoryFilter)"
+                    @click="loadTournaments()"
                     class="retry-button"
                 >
                     {{ t("tournaments.retry") }}
@@ -204,7 +207,6 @@ import {
     checkRegistration,
     fetchAssignToTournament,
     fetchTournaments,
-    fetchTournamentsByCategory,
     fetchunassignTournament,
 } from "@/components/View/Tournaments/fetchTournaments.js";
 import { fetchCategories } from "@/components/View/TournamentManagement/fetchTournamentManagement.js";
@@ -223,11 +225,12 @@ const { canSee, userRole } = useAuth();
 const { ADMIN, REFEREE, ATHLETE } = USER_ROLES;
 
 // ─── Фильтры ──────────────────────────────────────────────────────
-const categoryFilter = ref("all");
-const yearFilter = ref("all");
+const categoryFilter = ref("");
+const statusFilter = ref("");
 const searchQuery = ref("");
 const debouncedSearch = ref("");
 const timeoutId = ref(null);
+const searchRequestId = ref(0);
 
 // ─── Данные ───────────────────────────────────────────────────────
 const categories = ref([]);
@@ -242,26 +245,32 @@ const currentPage = ref(1);
 const hasMore = ref(true);
 
 // ─── Вычисляемые свойства ─────────────────────────────────────────
+const tournamentStatuses = [
+    "LIVE",
+    "REGISTRATION",
+    "PLANNED",
+    "WEIGHING",
+    "BRACKETS",
+    "COMPLETED",
+];
+
+const matchesSearch = (tournament, query) => {
+    if (!query) return true;
+    return (
+        (tournament.name || "").toLowerCase().includes(query) ||
+        (tournament.venue || "").toLowerCase().includes(query) ||
+        (tournament.city || "").toLowerCase().includes(query) ||
+        (tournament.description || "").toLowerCase().includes(query)
+    );
+};
+
 const filteredTournaments = computed(() => {
     let list = rawTournaments.value;
 
     if (debouncedSearch.value) {
-        const query = debouncedSearch.value.toLowerCase();
-        list = list.filter(
-            (t) =>
-                (t.name || "").toLowerCase().includes(query) ||
-                (t.venue || "").toLowerCase().includes(query) ||
-                (t.city || "").toLowerCase().includes(query) ||
-                (t.description || "").toLowerCase().includes(query),
+        list = list.filter((tournament) =>
+            matchesSearch(tournament, debouncedSearch.value),
         );
-    }
-
-    if (yearFilter.value !== "all" && yearFilter.value) {
-        const selectedYear = Number(yearFilter.value);
-        list = list.filter((t) => {
-            if (!t.start_date) return false;
-            return new Date(t.start_date).getFullYear() === selectedYear;
-        });
     }
 
     const statusPriority = {
@@ -289,13 +298,28 @@ const visibleTournaments = computed(() => filteredTournaments.value);
 const hasActiveFilters = computed(
     () =>
         searchQuery.value ||
-        yearFilter.value !== "all" ||
-        categoryFilter.value !== "all",
+        categoryFilter.value ||
+        statusFilter.value,
 );
 
 const loadMore = async () => {
     if (isLoading.value || isLoadingMore.value || !hasMore.value) return;
-    await loadTournaments(categoryFilter.value, { append: true });
+    await loadTournaments({ append: true });
+};
+
+const loadMoreUntilSearchMatch = async (requestId) => {
+    if (!debouncedSearch.value) return;
+
+    while (
+        searchRequestId.value === requestId &&
+        debouncedSearch.value &&
+        filteredTournaments.value.length === 0 &&
+        hasMore.value
+    ) {
+        const previousPage = currentPage.value;
+        await loadMore();
+        if (currentPage.value === previousPage) break;
+    }
 };
 
 // ─── Загрузка данных ──────────────────────────────────────────────
@@ -361,7 +385,7 @@ const unassignTournament = async (id) => {
     }
 };
 
-const loadTournaments = async (category = "all", { append = false } = {}) => {
+const loadTournaments = async ({ append = false, status } = {}) => {
     if (append) {
         isLoadingMore.value = true;
     } else {
@@ -375,15 +399,12 @@ const loadTournaments = async (category = "all", { append = false } = {}) => {
 
     try {
         const page = append ? currentPage.value + 1 : 1;
-        let result;
-        if (category === "all") {
-            result = await fetchTournaments({ page, perPage });
-        } else {
-            result = await fetchTournamentsByCategory(category, {
-                page,
-                perPage,
-            });
-        }
+        const result = await fetchTournaments({
+            page,
+            perPage,
+            status: status || statusFilter.value || undefined,
+            categoryId: categoryFilter.value || undefined,
+        });
 
         if (result && result.success) {
             const nextTournaments = result.data || [];
@@ -410,17 +431,25 @@ const loadTournaments = async (category = "all", { append = false } = {}) => {
 };
 
 // ─── Вотчеры ──────────────────────────────────────────────────────
-watch(categoryFilter, (newCategory) => {
-    loadTournaments(newCategory);
+watch(categoryFilter, async () => {
+    const requestId = searchRequestId.value + 1;
+    searchRequestId.value = requestId;
+    await loadTournaments();
+    await loadMoreUntilSearchMatch(requestId);
 });
-watch(yearFilter, () => {
-    loadTournaments(categoryFilter.value);
+watch(statusFilter, async () => {
+    const requestId = searchRequestId.value + 1;
+    searchRequestId.value = requestId;
+    await loadTournaments();
+    await loadMoreUntilSearchMatch(requestId);
 });
 watch(searchQuery, (newQuery) => {
     if (timeoutId.value !== null) clearTimeout(timeoutId.value);
     timeoutId.value = setTimeout(() => {
+        const requestId = searchRequestId.value + 1;
+        searchRequestId.value = requestId;
         debouncedSearch.value = newQuery.trim().toLowerCase();
-        loadTournaments(categoryFilter.value);
+        loadMoreUntilSearchMatch(requestId);
     }, 500);
 });
 
@@ -490,7 +519,7 @@ const navigateToRegistration = (id) => {
 // ─── Инициализация ────────────────────────────────────────────────
 onMounted(async () => {
     await loadCategories();
-    await loadTournaments("all");
+    await loadTournaments();
     window.addEventListener("scroll", handleScroll, { passive: true });
 });
 

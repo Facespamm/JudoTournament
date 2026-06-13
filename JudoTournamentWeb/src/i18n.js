@@ -175,6 +175,7 @@ const messages = {
     },
     tournaments: {
       allCategories: "Все категории",
+      allStatuses: "Все статусы",
       categoriesLoading: "Категории загружаются или недоступны...",
       year: "Год проведения",
       searchPlaceholder: "Поиск турниров",
@@ -1201,6 +1202,7 @@ const messages = {
     },
     tournaments: {
       allCategories: "All categories",
+      allStatuses: "All statuses",
       categoriesLoading: "Categories are loading or unavailable...",
       year: "Year",
       searchPlaceholder: "Search tournaments",
@@ -2226,6 +2228,7 @@ const messages = {
     },
     tournaments: {
       allCategories: "Барлық санаттар",
+      allStatuses: "Барлық мәртебелер",
       categoriesLoading: "Санаттар жүктелуде немесе қолжетімсіз...",
       year: "Өткізу жылы",
       searchPlaceholder: "Турнирлерді іздеу",

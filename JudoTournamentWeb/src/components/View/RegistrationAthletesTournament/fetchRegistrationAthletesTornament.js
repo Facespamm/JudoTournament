@@ -1,10 +1,25 @@
 const API_BASE_URL = "/api/";
 const API_KEY = "mobile_app_2024";
 
-export const getClubAthletes = async (clubId = null) => {
+export const getClubAthletes = async (
+  clubId,
+  {
+    page = 1,
+    perPage = 10,
+    includeTournamentInfo = true,
+    tournamentId,
+  } = {},
+) => {
   try {
-    const url = `/api/clubs/${clubId}/club-athletes/?include_tournament_info=true`;
-    // Не добавляем tournament_id — получаем ВСЕХ спортсменов клуба с информацией о турнирах
+    const params = new URLSearchParams({
+      page_size: String(page),
+      per_page: String(perPage),
+      include_tournament_info: String(includeTournamentInfo),
+    });
+
+    if (tournamentId) params.set("tournament_id", String(tournamentId));
+
+    const url = `/api/clubs/${clubId}/club-athletes/?${params}`;
 
     const response = await fetch(url, {
       headers: {
@@ -100,17 +115,29 @@ export const searchAthletes = async (
  * 3. Получить всех атлетов
  * Использует эндпоинт: GET /athletes/
  */
-export const getAllAthletesForRegister = async (tournament_id) => {
+export const getAllAthletesForRegister = async ({
+  tournamentId,
+  clubId,
+  search,
+  page = 1,
+  perPage = 10,
+} = {}) => {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}athletes/?tournament_id=${tournament_id}`,
-      {
-        headers: {
-          "X-API-Key": API_KEY,
-          "Content-Type": "application/json",
-        },
+    const params = new URLSearchParams({
+      page_size: String(page),
+      per_page: String(perPage),
+    });
+
+    if (clubId) params.set("club_id", String(clubId));
+    if (search) params.set("search", search);
+    if (tournamentId) params.set("tournament_id", String(tournamentId));
+
+    const response = await fetch(`${API_BASE_URL}athletes/?${params}`, {
+      headers: {
+        "X-API-Key": API_KEY,
+        "Content-Type": "application/json",
       },
-    );
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
