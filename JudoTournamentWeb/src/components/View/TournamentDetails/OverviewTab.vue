@@ -44,21 +44,44 @@
             <span class="meta-value">{{ t('tournamentDetails.progressValue', { count: tournament?.progress_percentage }) }}</span>
           </div>
         </div>
+
+        <div class="overview-categories">
+          <h2>{{ t('tournamentDetails.categoriesTitle') }}</h2>
+
+          <div v-if="isLoadingCategories" class="categories-state">
+            {{ t('tournamentDetails.loadingCategories') }}
+          </div>
+          <div v-else-if="!categories.length" class="categories-state">
+            {{ t('tournamentDetails.noCategories') }}
+          </div>
+          <div v-else class="overview-categories-list">
+            <span
+                v-for="category in categories"
+                :key="category.id"
+                class="overview-category-chip"
+            >
+              {{ getCategoryName(category) }}
+            </span>
+          </div>
+        </div>
       </div>
     </section>
   </div>
 </template>
 
 <script setup>
-import { inject, computed } from 'vue'          // ← ИСПРАВЛЕНИЕ: добавлен computed
+import { inject, computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchGetDocument } from "@/components/View/Brackets/fetchBrackets.js"
+import { fetchGetCategoryByTournament } from "@/components/View/Brackets/fetchBrackets.js"
 import { useI18n } from '@/i18n'
 
 const tournament = inject('tournament')
 const route = useRoute()
 const { locale, t } = useI18n()
 const dateLocale = computed(() => ({ ru: 'ru-RU', en: 'en-US', kk: 'kk-KZ' })[locale.value] ?? 'ru-RU')
+const categories = ref([])
+const isLoadingCategories = ref(false)
 
 // Надёжное получение ID турнира
 const tournamentId = computed(() => {
@@ -108,6 +131,26 @@ const getStatusText = (status) => {
   return map[status] || status
 }
 
+const getCategoryName = (category) => {
+  return category?.name || t('tournamentDetails.categoryFallback', { id: category?.id })
+}
+
+const loadCategories = async () => {
+  const id = tournamentId.value
+  if (!id || isNaN(id)) return
+
+  isLoadingCategories.value = true
+  try {
+    const data = await fetchGetCategoryByTournament(id)
+    categories.value = Array.isArray(data) ? data : data?.categories || data?.data?.categories || []
+  } catch (error) {
+    console.error('Ошибка загрузки категорий турнира:', error)
+    categories.value = []
+  } finally {
+    isLoadingCategories.value = false
+  }
+}
+
 // Функция скачивания PDF турнира
 const downloadDocument = async () => {
   const id = tournamentId.value
@@ -136,6 +179,10 @@ const downloadDocument = async () => {
     alert(t('tournamentDetails.documentDownloadError'))
   }
 }
+
+onMounted(() => {
+  loadCategories()
+})
 </script>
 
 <style scoped>
@@ -209,6 +256,46 @@ const downloadDocument = async () => {
 .status-registration { background: #fff3e0; color: #f57c00; }
 .status-weighing { background: #f3e5f5; color: #7b1fa2; }
 .status-brackets { background: #e8eaf6; color: #303f9f; }
+
+.overview-categories {
+  margin-top: 1.75rem;
+  text-align: left;
+}
+
+.overview-categories h2 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.categories-state {
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  background: #f8f9fa;
+  color: #666;
+  font-weight: 500;
+}
+
+.overview-categories-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.overview-category-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  max-width: 100%;
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+  background: #f8f9fa;
+  color: #333;
+  font-weight: 600;
+  line-height: 1.25;
+  word-break: break-word;
+}
 
 .document-btn {
   padding: 0.55rem 1.6rem;

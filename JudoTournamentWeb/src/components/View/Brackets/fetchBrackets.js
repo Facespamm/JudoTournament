@@ -248,8 +248,7 @@ export const createFight = async (bracketFightData, id) => {
 
 export const fetchGetCategoryByTournament = async (id) => {
     try {
-        const response = await fetch(`/api/tournaments/${id}/categories
-`);
+        const response = await fetch(`/api/tournaments/${id}/categories`);
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

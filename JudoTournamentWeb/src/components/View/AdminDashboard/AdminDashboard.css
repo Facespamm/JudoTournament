@@ -1,15 +1,16 @@
 .admin-dashboard {
     min-height: 100vh;
-    padding-top: 80px;
-    max-width: calc(100vw - var(--sidebar-width, 120px) - 40px);
-    margin-left: 0;
-    padding-left: 20px;
+    width: calc(100vw - var(--sidebar-width, 120px));
+    max-width: calc(100vw - var(--sidebar-width, 120px));
+    padding: 50px 24px 10px;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 .dashboard-header {
     text-align: center;
     margin-bottom: 3rem;
-    padding-top: 1rem;
+    /*padding-top: 1rem;*/
 }
 
 .dashboard-header h1 {
@@ -26,7 +27,7 @@
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 1.5rem;
     margin-bottom: 3rem;
 }
@@ -89,7 +90,7 @@
 
 .actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 1rem;
 }
 
@@ -130,7 +131,7 @@
 }
 
 .active-tournaments-section {
-    margin-bottom: 3rem;
+    margin-bottom: 0px;
 }
 
 .section-header {
@@ -191,11 +192,26 @@
     text-transform: uppercase;
 }
 
-.status-live { background: #ff4444; color: white; }
-.status-brackets { background: #ffaa00; color: white; }
-.status-registration { background: #00aa00; color: white; }
-.status-weighing { background: #0088ff; color: white; }
-.status-default { background: #666; color: white; }
+.status-live {
+    background: #ff4444;
+    color: white;
+}
+.status-brackets {
+    background: #ffaa00;
+    color: white;
+}
+.status-registration {
+    background: #00aa00;
+    color: white;
+}
+.status-weighing {
+    background: #0088ff;
+    color: white;
+}
+.status-default {
+    background: #666;
+    color: white;
+}
 
 .tournament-date {
     font-size: 0.9rem;
@@ -262,8 +278,30 @@
     margin-top: 1rem;
 }
 
+@media (max-width: 1400px) {
+    .stats-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .actions-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .actions-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
     .admin-dashboard {
+        width: 100vw;
+        max-width: 100vw;
         padding: 80px 1rem 1rem;
     }
 
@@ -302,23 +340,53 @@
     border-radius: 12px;
     color: white;
     font-weight: 600;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
     z-index: 10000;
     animation: slideIn 0.4s ease-out;
 }
-.toast-notification.success { background: linear-gradient(135deg, #28a745, #34ce57); }
-.toast-notification.error   { background: linear-gradient(135deg, #dc3545, #e4606d); }
-.toast-content { display: flex; align-items: center; gap: 12px; }
-.toast-icon { font-size: 1.5rem; font-weight: bold; }
+.toast-notification.success {
+    background: linear-gradient(135deg, #28a745, #34ce57);
+}
+.toast-notification.error {
+    background: linear-gradient(135deg, #dc3545, #e4606d);
+}
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.toast-icon {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
 
-.fade-enter-active, .fade-leave-active { transition: opacity .3s ease, transform .3s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(20px); }
+.fade-enter-active,
+.fade-leave-active {
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
+}
 
 @keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to   { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 @media (max-width: 768px) {
-    .toast-notification { left: 20px; right: 20px; bottom: 20px; }
+    .toast-notification {
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+    }
 }

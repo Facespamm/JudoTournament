@@ -60,12 +60,26 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/tournamentdetails/:id/update",
+    name: "tournament-update",
+    component: () =>
+      import("@/components/View/TournamentDetails/TournamentUpdate.vue"),
+    meta: { roles: [ADMIN] },
+  },
 
   {
     path: "/home",
     name: "home",
     component: () => import("@/components/View/Tournaments/Tournament.vue"),
     meta: { public: true },
+  },
+  {
+    path: "/tournaments/administration",
+    name: "tournaments-administration",
+    component: () =>
+      import("@/components/View/Tournaments/TournamentAdministration.vue"),
+    meta: { roles: [ADMIN] },
   },
   {
     path: "/adminregistration",

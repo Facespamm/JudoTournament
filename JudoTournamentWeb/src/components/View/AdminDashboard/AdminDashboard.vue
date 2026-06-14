@@ -170,7 +170,7 @@
       </div>
 
       <div class="tournaments-grid">
-        <div v-for="tournament in activeTournaments" :key="tournament.id" class="tournament-card">
+        <div v-for="tournament in activeTournaments" :key="getTournamentId(tournament)" class="tournament-card">
           <div class="tournament-header">
             <span class="tournament-status" :class="getStatusClass(tournament.status)">
               {{ getStatusText(tournament.status) }}
@@ -188,7 +188,7 @@
             <span class="stat" v-if="tournament.live_fights_count !== undefined">{{ t('adminDashboard.liveFightCount', { count: tournament.live_fights_count }) }}</span>
             <span class="stat" v-if="tournament.tatami_count">{{ t('adminDashboard.tatamiCount', { count: tournament.tatami_count }) }}</span>
           </div>
-          <button class="manage-btn" @click="navigateToTournament(tournament.id)">{{ t('adminDashboard.manage') }}</button>
+          <button class="manage-btn" @click="navigateToTournament(tournament)">{{ t('adminDashboard.manage') }}</button>
         </div>
 
         <div v-if="activeTournaments.length === 0" class="no-tournaments">
@@ -312,8 +312,13 @@ const navigateToBrackets = () => router.push('/brackets')
 const navigateToUsers = () => router.push('/admin/users')
 const navigateToClubs = () => router.push('/admin/clubsAdmin')
 const navigateToAthletes = () => router.push('/registrationathletes')
-const navigateToTournaments = () => router.push('/tournament')
-const navigateToTournament = (id) => router.push(`/tournament/${id}`)
+const navigateToTournaments = () => router.push('/tournaments/administration')
+const getTournamentId = (tournament) => tournament?.tournament_id ?? tournament?.id
+const navigateToTournament = (tournament) => {
+  const id = getTournamentId(tournament)
+  if (!id) return
+  router.push(`/tournamentdetails/${id}/update`)
+}
 const navigateToReferee = () => router.push('/refereeManagement')
 const navigateToRegisterAthlete = () => router.push('/adminregistration')   // НОВОЕ
 

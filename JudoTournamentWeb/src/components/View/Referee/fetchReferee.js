@@ -4,7 +4,6 @@ export async function getReferees() {
   try {
     const authStore = useAuthStore();
     const token = authStore.token;
-    console.log(token);
     const response = await fetch("/api/referee/", {
       method: "GET",
       headers: {

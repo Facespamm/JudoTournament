@@ -2,7 +2,15 @@
   <div class="judo_referees">
     <!-- ПОИСК -->
     <div class="judo_referees-setting_search">
-      <input type="search" :placeholder="t('refereesPage.searchPlaceholder')" class="search-input" />
+      <button type="button" class="back-button" @click="goBack">
+        ←
+      </button>
+      <input
+          v-model.trim="searchQuery"
+          type="search"
+          :placeholder="t('refereesPage.searchPlaceholder')"
+          class="search-input"
+      />
     </div>
 
     <!-- СПИСОК -->
@@ -21,7 +29,7 @@
         <!-- Карточки -->
         <div v-else class="cards-container">
           <article
-              v-for="referee in referees"
+              v-for="referee in filteredReferees"
               :key="referee.id"
               class="judo-card"
               @click="goToRefereeDetail(referee.id)"
@@ -37,7 +45,7 @@
             </div>
           </article>
 
-          <div v-if="referees.length === 0" class="no-data">
+          <div v-if="filteredReferees.length === 0" class="no-data">
             <p>{{ t('refereesPage.empty') }}</p>
           </div>
         </div>
@@ -54,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {getReferees} from "@/components/View/Referee/fetchReferee.js";
 import { useI18n } from '@/i18n'
@@ -63,8 +71,20 @@ import "@/components/View/Referee/Referee.css"
 const router = useRouter()
 const { t } = useI18n()
 const referees = ref([])
+const searchQuery = ref('')
 const isLoading = ref(true)
 const error = ref('')
+
+const filteredReferees = computed(() => {
+  const query = searchQuery.value.toLowerCase()
+  if (!query) return referees.value
+
+  return referees.value.filter((referee) => {
+    const fullName = getFullName(referee).toLowerCase()
+    const rank = String(referee.certification_level || '').toLowerCase()
+    return fullName.includes(query) || rank.includes(query)
+  })
+})
 
 // Функция для получения полного имени
 const getFullName = (referee) => {
@@ -75,6 +95,10 @@ const getFullName = (referee) => {
 // Функция перехода на детальную страницу атлета
 const goToRefereeDetail = (refereeId) => {
   router.push(`/referee/${refereeId}`)
+}
+
+const goBack = () => {
+  router.back()
 }
 
 const loadReferees = async () => {
