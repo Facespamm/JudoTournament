@@ -183,7 +183,10 @@ export const fetchTournamentAthletesForAssign = async ({
 
         if (tournamentId) params.set("tournament_id", String(tournamentId));
         if (clubId) params.set("club_id", String(clubId));
-        if (search) params.set("search", search);
+        if (search) {
+            params.set("search_name", search);
+            params.set("search", search);
+        }
 
         const response = await fetch(`/api/athletes/?${params.toString()}`, {
             method: "GET",
